@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+		Sign in with Apple capability — required for the
+		sign_in_with_apple Flutter package to function. Without this
+		entitlement, calling SignInWithApple.getAppleIDCredential
+		throws AuthorizationErrorCode.unknown.
+
+		The matching Service ID must be registered in the Apple
+		Developer Portal under our app's bundle ID
+		(ai.cyberneurova.app — the real one; an earlier version of
+		this comment named a stale id) and "Sign In with Apple"
+		capability enabled there.
+	-->
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
+</dict>
+</plist>

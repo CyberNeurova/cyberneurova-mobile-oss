@@ -1,0 +1,220 @@
+{
+  "@@locale": "vi",
+  "appName": "CyberNeurova",
+  "signIn": "Đăng nhập",
+  "signUp": "Đăng ký",
+  "signOut": "Đăng xuất",
+  "signInToContinue": "Đăng nhập để tiếp tục",
+  "createAccount": "Tạo tài khoản",
+  "joinCyberNeurovaFree": "Tham gia CyberNeurova miễn phí",
+  "email": "Email",
+  "password": "Mật khẩu",
+  "nameOptional": "Tên (tùy chọn)",
+  "forgotPassword": "Quên mật khẩu?",
+  "dontHaveAccount": "Chưa có tài khoản? Đăng ký",
+  "alreadyHaveAccount": "Đã có tài khoản? Đăng nhập",
+  "orDivider": "HOẶC",
+  "continueWithGoogle": "Tiếp tục với Google",
+  "continueWithApple": "Tiếp tục với Apple",
+  "enterValidEmail": "Nhập email hợp lệ",
+  "passwordTooShort": "Mật khẩu quá ngắn",
+  "passwordMin8": "Ít nhất 8 ký tự",
+  "enterYourPassword": "Nhập mật khẩu",
+  "resetPassword": "Đặt lại mật khẩu",
+  "resetPasswordHint": "Nhập email tài khoản và chúng tôi sẽ gửi liên kết để đặt lại mật khẩu.",
+  "sendResetLink": "Gửi liên kết",
+  "backToSignIn": "Quay lại đăng nhập",
+  "checkYourEmail": "Kiểm tra email của bạn",
+  "resetSentBody": "Nếu có tài khoản cho {email}, liên kết đặt lại đã được gửi. Kiểm tra thư mục spam nếu không thấy.",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailTitle": "Kiểm tra email của bạn",
+  "verifyEmailBody": "Chúng tôi đã gửi liên kết xác minh đến {email}. Nhấn vào liên kết để kích hoạt tài khoản, sau đó đăng nhập.",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "OK",
+  "chats": "Trò chuyện",
+  "images": "Hình ảnh",
+  "discover": "Khám phá",
+  "profile": "Hồ sơ",
+  "noChatsYet": "Chưa có cuộc trò chuyện",
+  "startChattingHint": "Bắt đầu trò chuyện với CyberNeurova AI",
+  "newConversation": "Cuộc trò chuyện mới",
+  "messageInputHint": "Nhắn tin cho CyberNeurova...",
+  "howCanIHelp": "Hôm nay tôi có thể giúp gì?",
+  "search": "Tìm kiếm",
+  "searchChatsHint": "Tìm trong cuộc trò chuyện…",
+  "typeToSearchChats": "Gõ để tìm trong các cuộc trò chuyện của bạn",
+  "noChatsMatch": "Không có cuộc trò chuyện nào khớp với \"{query}\"",
+  "@noChatsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "Đổi tên",
+  "deleteChat": "Xóa cuộc trò chuyện",
+  "deleteChatQuestion": "Xóa cuộc trò chuyện?",
+  "cannotBeUndone": "Hành động này không thể hoàn tác.",
+  "cancel": "Hủy",
+  "delete": "Xóa",
+  "save": "Lưu",
+  "retry": "Thử lại",
+  "copiedToClipboard": "Đã sao chép vào bộ nhớ tạm",
+  "waitForResponseToFinish": "Vui lòng đợi phản hồi hoàn tất.",
+  "noImagesYet": "Chưa có hình ảnh",
+  "tapGenerateHint": "Nhấn Tạo để tạo hình ảnh đầu tiên",
+  "generate": "Tạo",
+  "generateImage": "Tạo hình ảnh",
+  "describeImage": "Mô tả hình ảnh bạn muốn...",
+  "yourImageWillAppear": "Hình ảnh của bạn sẽ xuất hiện tại đây",
+  "starting": "Đang bắt đầu...",
+  "generatingPercent": "Đang tạo {percent}%",
+  "@generatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "generateAnother": "Tạo cái khác",
+  "generationFailed": "Tạo không thành công",
+  "trending": "Thịnh hành",
+  "recent": "Gần đây",
+  "nothingToDiscover": "Chưa có gì để khám phá",
+  "freePlan": "Gói miễn phí",
+  "premiumPlan": "Gói Premium",
+  "proPlan": "Gói Pro",
+  "proMaxPlan": "Gói Pro Max",
+  "upgrade": "Nâng cấp",
+  "upgradeHint": "Nâng cấp để có thêm token và mô hình",
+  "tokenUsage": "Sử dụng token",
+  "used": "đã dùng",
+  "limit": "giới hạn",
+  "settings": "Cài đặt",
+  "notifications": "Thông báo",
+  "changePassword": "Đổi mật khẩu",
+  "language": "Ngôn ngữ",
+  "account": "Tài khoản",
+  "editProfile": "Chỉnh sửa hồ sơ",
+  "activeSessions": "Phiên đang hoạt động",
+  "deleteAccount": "Xóa tài khoản",
+  "deleteAccountConfirm": "Xóa vĩnh viễn tài khoản của bạn? Hành động này không thể hoàn tác.",
+  "deleteAccountPasswordOptional": "Để trống nếu bạn đăng nhập bằng Google hoặc Apple.",
+  "signOutQuestion": "Đăng xuất?",
+  "signOutBody": "Bạn sẽ cần đăng nhập lại.",
+  "voiceInput": "Nhập bằng giọng nói",
+  "voiceInputHint": "Giữ để ghi âm, thả ra để gửi.",
+  "voiceTranscribing": "Đang chuyển thành văn bản…",
+  "voicePermissionDenied": "Quyền micro bị từ chối.",
+  "attach": "Đính kèm",
+  "takePhoto": "Chụp ảnh",
+  "fromLibrary": "Từ thư viện",
+  "uploadingFile": "Đang tải lên…",
+  "shareChat": "Chia sẻ cuộc trò chuyện",
+  "visibility": "Hiển thị",
+  "visibilityPrivate": "Riêng tư",
+  "visibilityShared": "Chia sẻ với người cụ thể",
+  "visibilityPublic": "Liên kết công khai",
+  "shareWithEmail": "Chia sẻ với ai đó (email)",
+  "addPerson": "Thêm",
+  "copyLink": "Sao chép liên kết",
+  "linkCopied": "Đã sao chép liên kết",
+  "errorGeneric": "Đã xảy ra lỗi. Vui lòng thử lại.",
+  "errorNetwork": "Không có kết nối internet.",
+  "errorSessionExpired": "Phiên đã hết hạn. Vui lòng đăng nhập lại.",
+  "errorRateLimited": "Quá nhiều yêu cầu. Thử lại sau {seconds} giây.",
+  "@errorRateLimited": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorQuotaExceeded": "Đã vượt hạn ngạch token.",
+  "errorServer": "Lỗi máy chủ. Thử lại sau.",
+  "couldNotOpenBrowser": "Không thể mở trình duyệt.",
+  "comingSoon": "Sắp ra mắt",
+  "newChat": "Trò chuyện mới",
+  "media": "Phương tiện",
+  "research": "Nghiên cứu",
+  "recents": "Gần đây",
+  "chatsWillAppearHere": "Cuộc trò chuyện của bạn sẽ hiện ở đây",
+  "billing": "Thanh toán",
+  "usageLabel": "Sử dụng",
+  "customPrompts": "Lời nhắc tùy chỉnh",
+  "memory": "Bộ nhớ",
+  "capabilities": "Khả năng",
+  "designLab": "Phòng thiết kế",
+  "skills": "Kỹ năng",
+  "tools": "Công cụ",
+  "premiumRequired": "Tính năng Premium — nâng cấp để bật",
+  "memoryEmptyTitle": "Chưa có bộ nhớ",
+  "memoryEmptyHint": "CyberNeurova sẽ lưu ngữ cảnh quan trọng từ các cuộc trò chuyện của bạn tại đây.",
+  "memoryAtCapacity": "Bộ nhớ đầy — các mục cũ nhất sẽ bị thay thế.",
+  "memoryCapacityWarning": "Bộ nhớ sắp đầy ({percent}%)",
+  "@memoryCapacityWarning": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "memoryLastExtracted": "Trích xuất gần nhất {when}",
+  "@memoryLastExtracted": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryPreferences": "Tùy chọn",
+  "categoryFacts": "Sự kiện",
+  "categoryProjects": "Dự án",
+  "categoryPatterns": "Mẫu",
+  "categoryContext": "Ngữ cảnh",
+  "researchAll": "Tất cả",
+  "researchCVE": "CVE",
+  "researchExploit": "Khai thác",
+  "researchBugBounty": "Bug bounty",
+  "researchMalware": "Mã độc",
+  "researchPentest": "Pentest",
+  "newResearch": "Nghiên cứu mới",
+  "noResearchYet": "Chưa có nghiên cứu nào",
+  "researchEmptyHint": "Bắt đầu nghiên cứu mới về CVE, lỗ hổng hoặc mối đe dọa.",
+  "sources": "Nguồn",
+  "close": "Đóng",
+  "doneLabel": "Xong",
+  "projectsTitle": "Dự án",
+  "freePlan2": "Gói miễn phí",
+  "greetingMorning": "Chào buổi sáng",
+  "greetingAfternoon": "Chào buổi chiều",
+  "greetingEvening": "Chào buổi tối",
+  "greetingWithName": "{period}, {name}",
+  "@greetingWithName": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "system": "Hệ thống",
+  "noConversations": "Chưa có cuộc trò chuyện",
+  "promptBrainstorm": "Lên ý tưởng",
+  "promptExplain": "Giải thích một khái niệm",
+  "promptCode": "Giúp tôi viết code"
+}

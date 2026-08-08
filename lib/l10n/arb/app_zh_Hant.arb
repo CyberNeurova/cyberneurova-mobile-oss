@@ -1,0 +1,220 @@
+{
+  "@@locale": "zh_Hant",
+  "appName": "CyberNeurova",
+  "signIn": "登入",
+  "signUp": "註冊",
+  "signOut": "登出",
+  "signInToContinue": "登入以繼續",
+  "createAccount": "建立帳戶",
+  "joinCyberNeurovaFree": "免費加入 CyberNeurova",
+  "email": "電子郵件",
+  "password": "密碼",
+  "nameOptional": "姓名（選填）",
+  "forgotPassword": "忘記密碼？",
+  "dontHaveAccount": "還沒有帳戶？前往註冊",
+  "alreadyHaveAccount": "已有帳戶？前往登入",
+  "orDivider": "或",
+  "continueWithGoogle": "使用 Google 繼續",
+  "continueWithApple": "使用 Apple 繼續",
+  "enterValidEmail": "請輸入有效的電子郵件",
+  "passwordTooShort": "密碼過短",
+  "passwordMin8": "至少 8 個字元",
+  "enterYourPassword": "請輸入密碼",
+  "resetPassword": "重設密碼",
+  "resetPasswordHint": "輸入您帳戶的電子郵件，我們將傳送重設密碼的連結給您。",
+  "sendResetLink": "傳送重設連結",
+  "backToSignIn": "返回登入",
+  "checkYourEmail": "請查看您的電子郵件",
+  "resetSentBody": "若 {email} 有對應帳戶，重設連結已寄出。若未收到，請查看垃圾郵件資料夾。",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailTitle": "請查看您的電子郵件",
+  "verifyEmailBody": "我們已將驗證連結傳送至 {email}。點擊連結以啟用您的帳戶，然後登入。",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "確定",
+  "chats": "聊天",
+  "images": "圖片",
+  "discover": "探索",
+  "profile": "個人檔案",
+  "noChatsYet": "尚無對話",
+  "startChattingHint": "開始與 CyberNeurova AI 聊天",
+  "newConversation": "新對話",
+  "messageInputHint": "傳訊息給 CyberNeurova...",
+  "howCanIHelp": "今天我能幫您什麼？",
+  "search": "搜尋",
+  "searchChatsHint": "搜尋聊天…",
+  "typeToSearchChats": "輸入以搜尋您的聊天",
+  "noChatsMatch": "沒有符合「{query}」的聊天",
+  "@noChatsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "重新命名",
+  "deleteChat": "刪除聊天",
+  "deleteChatQuestion": "刪除聊天？",
+  "cannotBeUndone": "此動作無法復原。",
+  "cancel": "取消",
+  "delete": "刪除",
+  "save": "儲存",
+  "retry": "重試",
+  "copiedToClipboard": "已複製到剪貼簿",
+  "waitForResponseToFinish": "請等待回覆完成。",
+  "noImagesYet": "尚無圖片",
+  "tapGenerateHint": "點擊「生成」以建立您的第一張圖片",
+  "generate": "生成",
+  "generateImage": "生成圖片",
+  "describeImage": "描述您想要的圖片...",
+  "yourImageWillAppear": "您的圖片將顯示於此",
+  "starting": "啟動中...",
+  "generatingPercent": "生成中 {percent}%",
+  "@generatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "generateAnother": "再生成一張",
+  "generationFailed": "生成失敗",
+  "trending": "熱門",
+  "recent": "最近",
+  "nothingToDiscover": "尚無可探索內容",
+  "freePlan": "免費方案",
+  "premiumPlan": "高級方案",
+  "proPlan": "專業方案",
+  "proMaxPlan": "專業 Max 方案",
+  "upgrade": "升級",
+  "upgradeHint": "升級以獲得更多 Token 和模型",
+  "tokenUsage": "Token 用量",
+  "used": "已使用",
+  "limit": "上限",
+  "settings": "設定",
+  "notifications": "通知",
+  "changePassword": "變更密碼",
+  "language": "語言",
+  "account": "帳戶",
+  "editProfile": "編輯個人檔案",
+  "activeSessions": "使用中工作階段",
+  "deleteAccount": "刪除帳戶",
+  "deleteAccountConfirm": "永久刪除您的帳戶？此動作無法復原。",
+  "deleteAccountPasswordOptional": "如果你使用 Google 或 Apple 登入，請留空。",
+  "signOutQuestion": "登出？",
+  "signOutBody": "您需要重新登入。",
+  "voiceInput": "語音輸入",
+  "voiceInputHint": "按住錄音，放開傳送。",
+  "voiceTranscribing": "轉錄中…",
+  "voicePermissionDenied": "麥克風權限遭拒。",
+  "attach": "附件",
+  "takePhoto": "拍照",
+  "fromLibrary": "從相簿",
+  "uploadingFile": "上傳中…",
+  "shareChat": "分享聊天",
+  "visibility": "可見性",
+  "visibilityPrivate": "私人",
+  "visibilityShared": "與特定人士共享",
+  "visibilityPublic": "公開連結",
+  "shareWithEmail": "與他人分享（電子郵件）",
+  "addPerson": "新增",
+  "copyLink": "複製連結",
+  "linkCopied": "已複製連結",
+  "errorGeneric": "發生錯誤，請重試。",
+  "errorNetwork": "沒有網路連線。",
+  "errorSessionExpired": "工作階段已過期，請重新登入。",
+  "errorRateLimited": "請求過多，請在 {seconds} 秒後重試。",
+  "@errorRateLimited": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorQuotaExceeded": "Token 配額已用完。",
+  "errorServer": "伺服器錯誤，請稍後再試。",
+  "couldNotOpenBrowser": "無法開啟瀏覽器。",
+  "comingSoon": "即將推出",
+  "newChat": "新對話",
+  "media": "媒體",
+  "research": "研究",
+  "recents": "最近",
+  "chatsWillAppearHere": "您的對話將顯示在這裡",
+  "billing": "帳單",
+  "usageLabel": "用量",
+  "customPrompts": "自訂提示詞",
+  "memory": "記憶",
+  "capabilities": "能力",
+  "designLab": "設計實驗室",
+  "skills": "技能",
+  "tools": "工具",
+  "premiumRequired": "進階功能 — 升級以啟用",
+  "memoryEmptyTitle": "尚無記憶",
+  "memoryEmptyHint": "CyberNeurova 將在此儲存您對話中的重要上下文。",
+  "memoryAtCapacity": "記憶已滿 — 最舊的項目將被替換。",
+  "memoryCapacityWarning": "記憶即將滿載 ({percent}%)",
+  "@memoryCapacityWarning": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "memoryLastExtracted": "上次擷取 {when}",
+  "@memoryLastExtracted": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryPreferences": "偏好",
+  "categoryFacts": "事實",
+  "categoryProjects": "專案",
+  "categoryPatterns": "模式",
+  "categoryContext": "上下文",
+  "researchAll": "全部",
+  "researchCVE": "CVE",
+  "researchExploit": "漏洞利用",
+  "researchBugBounty": "漏洞賞金",
+  "researchMalware": "惡意軟體",
+  "researchPentest": "滲透測試",
+  "newResearch": "新建研究",
+  "noResearchYet": "尚無研究記錄",
+  "researchEmptyHint": "開始新研究,調查 CVE、漏洞或威脅。",
+  "sources": "來源",
+  "close": "關閉",
+  "doneLabel": "完成",
+  "projectsTitle": "專案",
+  "freePlan2": "免費版",
+  "greetingMorning": "早安",
+  "greetingAfternoon": "午安",
+  "greetingEvening": "晚安",
+  "greetingWithName": "{period},{name}",
+  "@greetingWithName": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "system": "系統",
+  "noConversations": "尚無對話",
+  "promptBrainstorm": "腦力激盪",
+  "promptExplain": "解釋一個概念",
+  "promptCode": "幫我寫程式"
+}

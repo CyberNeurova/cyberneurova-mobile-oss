@@ -1,0 +1,220 @@
+{
+  "@@locale": "ru",
+  "appName": "CyberNeurova",
+  "signIn": "Войти",
+  "signUp": "Регистрация",
+  "signOut": "Выйти",
+  "signInToContinue": "Войдите, чтобы продолжить",
+  "createAccount": "Создать аккаунт",
+  "joinCyberNeurovaFree": "Присоединяйтесь к CyberNeurova бесплатно",
+  "email": "Эл. почта",
+  "password": "Пароль",
+  "nameOptional": "Имя (необязательно)",
+  "forgotPassword": "Забыли пароль?",
+  "dontHaveAccount": "Нет аккаунта? Зарегистрируйтесь",
+  "alreadyHaveAccount": "Уже есть аккаунт? Войдите",
+  "orDivider": "ИЛИ",
+  "continueWithGoogle": "Продолжить с Google",
+  "continueWithApple": "Продолжить с Apple",
+  "enterValidEmail": "Введите корректный email",
+  "passwordTooShort": "Пароль слишком короткий",
+  "passwordMin8": "Минимум 8 символов",
+  "enterYourPassword": "Введите пароль",
+  "resetPassword": "Сбросить пароль",
+  "resetPasswordHint": "Введите email вашего аккаунта, и мы отправим вам ссылку для сброса пароля.",
+  "sendResetLink": "Отправить ссылку",
+  "backToSignIn": "Назад ко входу",
+  "checkYourEmail": "Проверьте почту",
+  "resetSentBody": "Если аккаунт для {email} существует, ссылка для сброса уже отправлена. Проверьте папку «Спам», если не видите её.",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailTitle": "Проверьте почту",
+  "verifyEmailBody": "Мы отправили ссылку подтверждения на {email}. Нажмите на ссылку, чтобы активировать аккаунт, затем войдите.",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "OK",
+  "chats": "Чаты",
+  "images": "Изображения",
+  "discover": "Обзор",
+  "profile": "Профиль",
+  "noChatsYet": "Чатов пока нет",
+  "startChattingHint": "Начните общение с CyberNeurova AI",
+  "newConversation": "Новый чат",
+  "messageInputHint": "Сообщение для CyberNeurova...",
+  "howCanIHelp": "Чем я могу помочь?",
+  "search": "Поиск",
+  "searchChatsHint": "Поиск по чатам…",
+  "typeToSearchChats": "Введите запрос для поиска по чатам",
+  "noChatsMatch": "Нет чатов по запросу «{query}»",
+  "@noChatsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "Переименовать",
+  "deleteChat": "Удалить чат",
+  "deleteChatQuestion": "Удалить чат?",
+  "cannotBeUndone": "Это действие нельзя отменить.",
+  "cancel": "Отмена",
+  "delete": "Удалить",
+  "save": "Сохранить",
+  "retry": "Повторить",
+  "copiedToClipboard": "Скопировано в буфер обмена",
+  "waitForResponseToFinish": "Дождитесь окончания ответа.",
+  "noImagesYet": "Изображений пока нет",
+  "tapGenerateHint": "Нажмите «Сгенерировать», чтобы создать первое изображение",
+  "generate": "Сгенерировать",
+  "generateImage": "Создать изображение",
+  "describeImage": "Опишите нужное изображение...",
+  "yourImageWillAppear": "Ваше изображение появится здесь",
+  "starting": "Запуск...",
+  "generatingPercent": "Генерация {percent}%",
+  "@generatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "generateAnother": "Создать ещё",
+  "generationFailed": "Ошибка генерации",
+  "trending": "В тренде",
+  "recent": "Недавнее",
+  "nothingToDiscover": "Пока нечего открыть",
+  "freePlan": "Бесплатный план",
+  "premiumPlan": "План Premium",
+  "proPlan": "План Pro",
+  "proMaxPlan": "План Pro Max",
+  "upgrade": "Улучшить",
+  "upgradeHint": "Улучшите для большего числа токенов и моделей",
+  "tokenUsage": "Использование токенов",
+  "used": "использовано",
+  "limit": "лимит",
+  "settings": "Настройки",
+  "notifications": "Уведомления",
+  "changePassword": "Сменить пароль",
+  "language": "Язык",
+  "account": "Аккаунт",
+  "editProfile": "Редактировать профиль",
+  "activeSessions": "Активные сеансы",
+  "deleteAccount": "Удалить аккаунт",
+  "deleteAccountConfirm": "Удалить аккаунт навсегда? Это действие нельзя отменить.",
+  "deleteAccountPasswordOptional": "Оставьте пустым, если вы вошли через Google или Apple.",
+  "signOutQuestion": "Выйти?",
+  "signOutBody": "Вам нужно будет войти снова.",
+  "voiceInput": "Голосовой ввод",
+  "voiceInputHint": "Удерживайте для записи, отпустите для отправки.",
+  "voiceTranscribing": "Распознавание…",
+  "voicePermissionDenied": "Доступ к микрофону запрещён.",
+  "attach": "Прикрепить",
+  "takePhoto": "Сделать фото",
+  "fromLibrary": "Из галереи",
+  "uploadingFile": "Загрузка…",
+  "shareChat": "Поделиться чатом",
+  "visibility": "Видимость",
+  "visibilityPrivate": "Личный",
+  "visibilityShared": "Доступен определённым людям",
+  "visibilityPublic": "Публичная ссылка",
+  "shareWithEmail": "Поделиться с кем-либо (email)",
+  "addPerson": "Добавить",
+  "copyLink": "Копировать ссылку",
+  "linkCopied": "Ссылка скопирована",
+  "errorGeneric": "Что-то пошло не так. Попробуйте снова.",
+  "errorNetwork": "Нет подключения к интернету.",
+  "errorSessionExpired": "Сеанс истёк. Войдите снова.",
+  "errorRateLimited": "Слишком много запросов. Повторите через {seconds} с.",
+  "@errorRateLimited": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorQuotaExceeded": "Квота токенов исчерпана.",
+  "errorServer": "Ошибка сервера. Попробуйте позже.",
+  "couldNotOpenBrowser": "Не удалось открыть браузер.",
+  "comingSoon": "Скоро",
+  "newChat": "Новый чат",
+  "media": "Медиа",
+  "research": "Исследование",
+  "recents": "Недавние",
+  "chatsWillAppearHere": "Ваши чаты появятся здесь",
+  "billing": "Оплата",
+  "usageLabel": "Использование",
+  "customPrompts": "Свои промпты",
+  "memory": "Память",
+  "capabilities": "Возможности",
+  "designLab": "Дизайн-лаборатория",
+  "skills": "Навыки",
+  "tools": "Инструменты",
+  "premiumRequired": "Функция Premium — улучшите тариф для активации",
+  "memoryEmptyTitle": "Пока нет воспоминаний",
+  "memoryEmptyHint": "CyberNeurova будет сохранять здесь важный контекст из ваших чатов.",
+  "memoryAtCapacity": "Память заполнена — старые записи будут заменены.",
+  "memoryCapacityWarning": "Память почти заполнена ({percent}%)",
+  "@memoryCapacityWarning": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "memoryLastExtracted": "Последнее извлечение {when}",
+  "@memoryLastExtracted": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryPreferences": "Предпочтения",
+  "categoryFacts": "Факты",
+  "categoryProjects": "Проекты",
+  "categoryPatterns": "Шаблоны",
+  "categoryContext": "Контекст",
+  "researchAll": "Все",
+  "researchCVE": "CVE",
+  "researchExploit": "Эксплойт",
+  "researchBugBounty": "Bug bounty",
+  "researchMalware": "Вредоносы",
+  "researchPentest": "Пентест",
+  "newResearch": "Новое исследование",
+  "noResearchYet": "Исследований пока нет",
+  "researchEmptyHint": "Начните новое исследование по CVE, эксплойтам или угрозам.",
+  "sources": "Источники",
+  "close": "Закрыть",
+  "doneLabel": "Готово",
+  "projectsTitle": "Проекты",
+  "freePlan2": "Бесплатный тариф",
+  "greetingMorning": "Доброе утро",
+  "greetingAfternoon": "Добрый день",
+  "greetingEvening": "Добрый вечер",
+  "greetingWithName": "{period}, {name}",
+  "@greetingWithName": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "system": "Система",
+  "noConversations": "Пока нет разговоров",
+  "promptBrainstorm": "Идеи для мозгового штурма",
+  "promptExplain": "Объясни концепцию",
+  "promptCode": "Помоги мне с кодом"
+}

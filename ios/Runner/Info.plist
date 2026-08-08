@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<!-- Performance: enable ProMotion 120Hz on supported iPhones -->
+		<key>CADisableMinimumFrameDurationOnPhone</key>
+		<true/>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>$(DEVELOPMENT_LANGUAGE)</string>
+		<!-- Display name shown on the home screen -->
+		<key>CFBundleDisplayName</key>
+		<string>CyberNeurova</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleIdentifier</key>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>CyberNeurova</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>$(FLUTTER_BUILD_NAME)</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleVersion</key>
+		<string>$(FLUTTER_BUILD_NUMBER)</string>
+		<key>LSRequiresIPhoneOS</key>
+		<true/>
+		<!-- iPhone: portrait only. Chat input + keyboard layout breaks in
+	     landscape on small screens. Matches the runtime lock in main.dart. -->
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+		</array>
+		<!-- iPad: all four orientations. Apple's review team rejects iPad apps
+	     that lock to portrait-only; iPads are commonly held in landscape. -->
+		<key>UISupportedInterfaceOrientations~ipad</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationPortraitUpsideDown</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<!-- Always dark UI — no light mode flash -->
+		<key>UIUserInterfaceStyle</key>
+		<string>Dark</string>
+		<!-- Status bar: dark content = light icons (matches our dark theme) -->
+		<key>UIStatusBarStyle</key>
+		<string>UIStatusBarStyleLightContent</string>
+		<key>UIViewControllerBasedStatusBarAppearance</key>
+		<false/>
+		<!-- Export compliance: the app uses only HTTPS (Apple-exempt under
+	     U.S. Export Administration Regulations §740.17(b)(3)(i)) and no
+	     proprietary cryptography. Declaring this here skips Apple's
+	     per-build "does your app use encryption?" prompt in App Store
+	     Connect on every upload. -->
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
+		<!-- Google Sign-In client ID + OAuth callback URL scheme.
+	     Values mirror ios/Runner/GoogleService-Info.plist (the backend API); the Google Sign-In SDK reads GIDClientID from THIS
+	     Info.plist, not the GoogleService plist (we're not on Firebase).
+	     The REVERSED_CLIENT_ID URL scheme is how Google's OAuth flow
+	     redirects back into the app after consent. -->
+		<key>GIDClientID</key>
+		<string>440622763104-9k83qoo1vsi17jqngbj69pm4fmk95v4f.apps.googleusercontent.com</string>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.440622763104-9k83qoo1vsi17jqngbj69pm4fmk95v4f</string>
+				</array>
+			</dict>
+		</array>
+		<!-- Privacy permission strings (required by App Store) -->
+		<key>NSCameraUsageDescription</key>
+		<string>CyberNeurova needs camera access to attach photos to your messages.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>CyberNeurova needs photo library access to attach images to your messages.</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>CyberNeurova saves generated images to your photo library when you tap Save.</string>
+		<!-- Required for ANY LAN access on iOS 14+. The agent's device
+		     executor runs host discovery and TCP connect scans against the
+		     network the phone is on, so this is not optional. Apple rejects
+		     generic strings here — be specific about what and why. -->
+		<key>NSLocalNetworkUsageDescription</key>
+		<string>CyberNeurova scans your local network only when you ask the agent to, and only within the scope you authorize for that session.</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>CyberNeurova needs microphone access for voice chat.</string>
+		<key>NSSpeechRecognitionUsageDescription</key>
+		<string>CyberNeurova uses speech recognition for voice-to-text input.</string>
+		<!-- CyberNeurova does NOT use location services. Apple's automated
+	     build review (ITMS-90683) requires this purpose string because
+	     a transitive SDK (likely file_picker / image_picker on certain
+	     platforms) references CoreLocation symbols even though we never
+	     call them. The string below is what users would see IF location
+	     were ever requested — but our flow never triggers a prompt. -->
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>CyberNeurova does not use your location.</string>
+		<!-- Scene configuration (required for Flutter on iOS 13+) -->
+		<key>UIApplicationSceneManifest</key>
+		<dict>
+			<key>UIApplicationSupportsMultipleScenes</key>
+			<false/>
+			<key>UISceneConfigurations</key>
+			<dict>
+				<key>UIWindowSceneSessionRoleApplication</key>
+				<array>
+					<dict>
+						<key>UISceneClassName</key>
+						<string>UIWindowScene</string>
+						<key>UISceneConfigurationName</key>
+						<string>flutter</string>
+						<key>UISceneDelegateClassName</key>
+						<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+						<key>UISceneStoryboardFile</key>
+						<string>Main</string>
+					</dict>
+				</array>
+			</dict>
+		</dict>
+		<key>UIApplicationSupportsIndirectInputEvents</key>
+		<true/>
+		<key>UILaunchStoryboardName</key>
+		<string>LaunchScreen</string>
+		<key>UIMainStoryboardFile</key>
+		<string>Main</string>
+		<key>UIStatusBarHidden</key>
+		<true/>
+	</dict>
+</plist>

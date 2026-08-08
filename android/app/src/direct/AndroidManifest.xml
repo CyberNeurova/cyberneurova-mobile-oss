@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Direct-download build only.
+
+         Lets us ASK to install an APK; Android still draws the confirmation
+         and the user still has to have allowed this app to install apps. It is
+         what makes on-device install work on a phone with no root and no ADB —
+         which is most phones.
+
+         Deliberately not in src/main: Play grants this only to apps whose core
+         purpose is installing other apps, behind a declaration form, so
+         shipping it in the store build risks the submission over a capability
+         that build barely needs. `ApkInstaller` already handles the permission
+         being absent — `canRequestPackageInstalls()` returns false and the
+         user is told, rather than the call failing silently. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
+</manifest>

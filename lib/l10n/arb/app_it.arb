@@ -1,0 +1,220 @@
+{
+  "@@locale": "it",
+  "appName": "CyberNeurova",
+  "signIn": "Accedi",
+  "signUp": "Registrati",
+  "signOut": "Esci",
+  "signInToContinue": "Accedi per continuare",
+  "createAccount": "Crea account",
+  "joinCyberNeurovaFree": "Unisciti a CyberNeurova gratis",
+  "email": "Email",
+  "password": "Password",
+  "nameOptional": "Nome (facoltativo)",
+  "forgotPassword": "Password dimenticata?",
+  "dontHaveAccount": "Non hai un account? Registrati",
+  "alreadyHaveAccount": "Hai già un account? Accedi",
+  "orDivider": "O",
+  "continueWithGoogle": "Continua con Google",
+  "continueWithApple": "Continua con Apple",
+  "enterValidEmail": "Inserisci un'email valida",
+  "passwordTooShort": "Password troppo corta",
+  "passwordMin8": "Almeno 8 caratteri",
+  "enterYourPassword": "Inserisci la password",
+  "resetPassword": "Reimposta password",
+  "resetPasswordHint": "Inserisci l'email del tuo account e ti invieremo un link per reimpostare la password.",
+  "sendResetLink": "Invia link",
+  "backToSignIn": "Torna all'accesso",
+  "checkYourEmail": "Controlla la tua email",
+  "resetSentBody": "Se esiste un account per {email}, un link di reimpostazione è in arrivo. Controlla la cartella spam se non lo vedi.",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailTitle": "Controlla la tua email",
+  "verifyEmailBody": "Abbiamo inviato un link di verifica a {email}. Tocca il link per attivare il tuo account, poi accedi.",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "OK",
+  "chats": "Chat",
+  "images": "Immagini",
+  "discover": "Scopri",
+  "profile": "Profilo",
+  "noChatsYet": "Nessuna conversazione",
+  "startChattingHint": "Inizia a chattare con CyberNeurova AI",
+  "newConversation": "Nuova conversazione",
+  "messageInputHint": "Messaggio a CyberNeurova...",
+  "howCanIHelp": "Come posso aiutarti oggi?",
+  "search": "Cerca",
+  "searchChatsHint": "Cerca chat…",
+  "typeToSearchChats": "Digita per cercare nelle chat",
+  "noChatsMatch": "Nessuna chat per \"{query}\"",
+  "@noChatsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "Rinomina",
+  "deleteChat": "Elimina chat",
+  "deleteChatQuestion": "Eliminare la chat?",
+  "cannotBeUndone": "Questa azione non può essere annullata.",
+  "cancel": "Annulla",
+  "delete": "Elimina",
+  "save": "Salva",
+  "retry": "Riprova",
+  "copiedToClipboard": "Copiato negli appunti",
+  "waitForResponseToFinish": "Attendi il termine della risposta.",
+  "noImagesYet": "Nessuna immagine",
+  "tapGenerateHint": "Tocca Genera per creare la tua prima immagine",
+  "generate": "Genera",
+  "generateImage": "Genera immagine",
+  "describeImage": "Descrivi l'immagine che vuoi...",
+  "yourImageWillAppear": "La tua immagine apparirà qui",
+  "starting": "Avvio...",
+  "generatingPercent": "Generazione {percent}%",
+  "@generatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "generateAnother": "Genera un'altra",
+  "generationFailed": "Generazione fallita",
+  "trending": "Di tendenza",
+  "recent": "Recenti",
+  "nothingToDiscover": "Nulla da scoprire per ora",
+  "freePlan": "Piano Gratuito",
+  "premiumPlan": "Piano Premium",
+  "proPlan": "Piano Pro",
+  "proMaxPlan": "Piano Pro Max",
+  "upgrade": "Aggiorna",
+  "upgradeHint": "Aggiorna per più token e modelli",
+  "tokenUsage": "Utilizzo token",
+  "used": "usati",
+  "limit": "limite",
+  "settings": "Impostazioni",
+  "notifications": "Notifiche",
+  "changePassword": "Cambia password",
+  "language": "Lingua",
+  "account": "Account",
+  "editProfile": "Modifica profilo",
+  "activeSessions": "Sessioni attive",
+  "deleteAccount": "Elimina account",
+  "deleteAccountConfirm": "Eliminare l'account in modo permanente? Questa azione non può essere annullata.",
+  "deleteAccountPasswordOptional": "Lascia vuoto se hai effettuato l'accesso con Google o Apple.",
+  "signOutQuestion": "Disconnettersi?",
+  "signOutBody": "Dovrai accedere di nuovo.",
+  "voiceInput": "Input vocale",
+  "voiceInputHint": "Tieni premuto per registrare, rilascia per inviare.",
+  "voiceTranscribing": "Trascrizione…",
+  "voicePermissionDenied": "Autorizzazione microfono negata.",
+  "attach": "Allega",
+  "takePhoto": "Scatta foto",
+  "fromLibrary": "Dalla galleria",
+  "uploadingFile": "Caricamento…",
+  "shareChat": "Condividi chat",
+  "visibility": "Visibilità",
+  "visibilityPrivate": "Privata",
+  "visibilityShared": "Condivisa con persone specifiche",
+  "visibilityPublic": "Link pubblico",
+  "shareWithEmail": "Condividi con qualcuno (email)",
+  "addPerson": "Aggiungi",
+  "copyLink": "Copia link",
+  "linkCopied": "Link copiato",
+  "errorGeneric": "Qualcosa è andato storto. Riprova.",
+  "errorNetwork": "Nessuna connessione a internet.",
+  "errorSessionExpired": "Sessione scaduta. Accedi di nuovo.",
+  "errorRateLimited": "Troppe richieste. Riprova tra {seconds} s.",
+  "@errorRateLimited": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorQuotaExceeded": "Quota token superata.",
+  "errorServer": "Errore del server. Riprova più tardi.",
+  "couldNotOpenBrowser": "Impossibile aprire il browser.",
+  "comingSoon": "In arrivo",
+  "newChat": "Nuova chat",
+  "media": "Media",
+  "research": "Ricerca",
+  "recents": "Recenti",
+  "chatsWillAppearHere": "Le tue chat appariranno qui",
+  "billing": "Fatturazione",
+  "usageLabel": "Utilizzo",
+  "customPrompts": "Prompt personalizzati",
+  "memory": "Memoria",
+  "capabilities": "Capacità",
+  "designLab": "Laboratorio di design",
+  "skills": "Competenze",
+  "tools": "Strumenti",
+  "premiumRequired": "Funzione Premium — esegui l'upgrade per attivarla",
+  "memoryEmptyTitle": "Ancora nessun ricordo",
+  "memoryEmptyHint": "CyberNeurova salverà qui il contesto importante delle tue chat.",
+  "memoryAtCapacity": "Memoria piena — le voci più vecchie saranno sostituite.",
+  "memoryCapacityWarning": "Memoria quasi piena ({percent}%)",
+  "@memoryCapacityWarning": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "memoryLastExtracted": "Ultima estrazione {when}",
+  "@memoryLastExtracted": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryPreferences": "Preferenze",
+  "categoryFacts": "Fatti",
+  "categoryProjects": "Progetti",
+  "categoryPatterns": "Schemi",
+  "categoryContext": "Contesto",
+  "researchAll": "Tutto",
+  "researchCVE": "CVE",
+  "researchExploit": "Exploit",
+  "researchBugBounty": "Bug bounty",
+  "researchMalware": "Malware",
+  "researchPentest": "Pentest",
+  "newResearch": "Nuova ricerca",
+  "noResearchYet": "Ancora nessuna ricerca",
+  "researchEmptyHint": "Avvia una nuova ricerca su CVE, exploit o minacce.",
+  "sources": "Fonti",
+  "close": "Chiudi",
+  "doneLabel": "Fatto",
+  "projectsTitle": "Progetti",
+  "freePlan2": "Piano gratuito",
+  "greetingMorning": "Buongiorno",
+  "greetingAfternoon": "Buon pomeriggio",
+  "greetingEvening": "Buonasera",
+  "greetingWithName": "{period}, {name}",
+  "@greetingWithName": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "system": "Sistema",
+  "noConversations": "Ancora nessuna conversazione",
+  "promptBrainstorm": "Genera idee",
+  "promptExplain": "Spiega un concetto",
+  "promptCode": "Aiutami a programmare"
+}

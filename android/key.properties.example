@@ -1,0 +1,14 @@
+# Release signing — copy this file to android/key.properties (git-ignored) and
+# fill in the values. Never commit the real key.properties or the .jks keystore.
+#
+# Generate an upload keystore:
+#   keytool -genkey -v -keystore upload-keystore.jks -storetype JKS \
+#     -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+#
+# Then enroll the app in Play App Signing. In CI, materialise the keystore from
+# a base64 secret and write this file before `flutter build appbundle --release`.
+
+storePassword=CHANGE_ME
+keyPassword=CHANGE_ME
+keyAlias=upload
+storeFile=upload-keystore.jks

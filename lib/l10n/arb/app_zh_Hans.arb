@@ -1,0 +1,220 @@
+{
+  "@@locale": "zh_Hans",
+  "appName": "CyberNeurova",
+  "signIn": "登录",
+  "signUp": "注册",
+  "signOut": "退出登录",
+  "signInToContinue": "登录以继续",
+  "createAccount": "创建账户",
+  "joinCyberNeurovaFree": "免费加入 CyberNeurova",
+  "email": "邮箱",
+  "password": "密码",
+  "nameOptional": "姓名（可选）",
+  "forgotPassword": "忘记密码？",
+  "dontHaveAccount": "还没有账户？去注册",
+  "alreadyHaveAccount": "已有账户？去登录",
+  "orDivider": "或",
+  "continueWithGoogle": "使用 Google 继续",
+  "continueWithApple": "使用 Apple 继续",
+  "enterValidEmail": "请输入有效邮箱",
+  "passwordTooShort": "密码过短",
+  "passwordMin8": "至少 8 个字符",
+  "enterYourPassword": "请输入密码",
+  "resetPassword": "重置密码",
+  "resetPasswordHint": "输入您账户的邮箱，我们将向您发送重置密码的链接。",
+  "sendResetLink": "发送重置链接",
+  "backToSignIn": "返回登录",
+  "checkYourEmail": "请查收邮件",
+  "resetSentBody": "如果 {email} 存在账户，重置链接已发送。如果没看到，请检查垃圾邮件文件夹。",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailTitle": "请查收邮件",
+  "verifyEmailBody": "我们已向 {email} 发送了验证链接。点击链接以激活您的账户，然后登录。",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "确定",
+  "chats": "聊天",
+  "images": "图片",
+  "discover": "发现",
+  "profile": "个人资料",
+  "noChatsYet": "暂无对话",
+  "startChattingHint": "开始与 CyberNeurova AI 聊天",
+  "newConversation": "新对话",
+  "messageInputHint": "向 CyberNeurova 发送消息...",
+  "howCanIHelp": "今天我能帮您什么？",
+  "search": "搜索",
+  "searchChatsHint": "搜索聊天…",
+  "typeToSearchChats": "输入以搜索您的聊天",
+  "noChatsMatch": "没有匹配「{query}」的聊天",
+  "@noChatsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "重命名",
+  "deleteChat": "删除聊天",
+  "deleteChatQuestion": "删除聊天？",
+  "cannotBeUndone": "此操作无法撤销。",
+  "cancel": "取消",
+  "delete": "删除",
+  "save": "保存",
+  "retry": "重试",
+  "copiedToClipboard": "已复制到剪贴板",
+  "waitForResponseToFinish": "请等待回复完成。",
+  "noImagesYet": "暂无图片",
+  "tapGenerateHint": "点击「生成」以创建您的第一张图片",
+  "generate": "生成",
+  "generateImage": "生成图片",
+  "describeImage": "描述您想要的图片...",
+  "yourImageWillAppear": "您的图片将显示在这里",
+  "starting": "正在启动...",
+  "generatingPercent": "生成中 {percent}%",
+  "@generatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "generateAnother": "再生成一张",
+  "generationFailed": "生成失败",
+  "trending": "热门",
+  "recent": "最近",
+  "nothingToDiscover": "暂无可发现内容",
+  "freePlan": "免费版",
+  "premiumPlan": "高级版",
+  "proPlan": "专业版",
+  "proMaxPlan": "专业 Max 版",
+  "upgrade": "升级",
+  "upgradeHint": "升级以获取更多 Token 和模型",
+  "tokenUsage": "Token 使用量",
+  "used": "已用",
+  "limit": "上限",
+  "settings": "设置",
+  "notifications": "通知",
+  "changePassword": "修改密码",
+  "language": "语言",
+  "account": "账户",
+  "editProfile": "编辑个人资料",
+  "activeSessions": "活跃会话",
+  "deleteAccount": "删除账户",
+  "deleteAccountConfirm": "永久删除您的账户？此操作无法撤销。",
+  "deleteAccountPasswordOptional": "如果你使用 Google 或 Apple 登录，请留空。",
+  "signOutQuestion": "退出登录？",
+  "signOutBody": "您需要重新登录。",
+  "voiceInput": "语音输入",
+  "voiceInputHint": "按住录音，松开发送。",
+  "voiceTranscribing": "转录中…",
+  "voicePermissionDenied": "麦克风权限被拒绝。",
+  "attach": "附件",
+  "takePhoto": "拍照",
+  "fromLibrary": "从相册",
+  "uploadingFile": "上传中…",
+  "shareChat": "分享聊天",
+  "visibility": "可见性",
+  "visibilityPrivate": "私密",
+  "visibilityShared": "与特定人共享",
+  "visibilityPublic": "公开链接",
+  "shareWithEmail": "与他人分享（邮箱）",
+  "addPerson": "添加",
+  "copyLink": "复制链接",
+  "linkCopied": "链接已复制",
+  "errorGeneric": "出错了，请重试。",
+  "errorNetwork": "无网络连接。",
+  "errorSessionExpired": "会话已过期，请重新登录。",
+  "errorRateLimited": "请求过多，请在 {seconds} 秒后重试。",
+  "@errorRateLimited": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorQuotaExceeded": "Token 配额已用尽。",
+  "errorServer": "服务器错误，请稍后重试。",
+  "couldNotOpenBrowser": "无法打开浏览器。",
+  "comingSoon": "即将推出",
+  "newChat": "新对话",
+  "media": "媒体",
+  "research": "研究",
+  "recents": "最近",
+  "chatsWillAppearHere": "您的对话将显示在这里",
+  "billing": "账单",
+  "usageLabel": "用量",
+  "customPrompts": "自定义提示词",
+  "memory": "记忆",
+  "capabilities": "能力",
+  "designLab": "设计实验室",
+  "skills": "技能",
+  "tools": "工具",
+  "premiumRequired": "高级功能 — 升级以启用",
+  "memoryEmptyTitle": "暂无记忆",
+  "memoryEmptyHint": "CyberNeurova 将在此保存您对话中的重要上下文。",
+  "memoryAtCapacity": "记忆已满 — 最旧的条目将被替换。",
+  "memoryCapacityWarning": "记忆即将满载 ({percent}%)",
+  "@memoryCapacityWarning": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "memoryLastExtracted": "上次提取 {when}",
+  "@memoryLastExtracted": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryPreferences": "偏好",
+  "categoryFacts": "事实",
+  "categoryProjects": "项目",
+  "categoryPatterns": "模式",
+  "categoryContext": "上下文",
+  "researchAll": "全部",
+  "researchCVE": "CVE",
+  "researchExploit": "漏洞利用",
+  "researchBugBounty": "漏洞赏金",
+  "researchMalware": "恶意软件",
+  "researchPentest": "渗透测试",
+  "newResearch": "新建研究",
+  "noResearchYet": "暂无研究记录",
+  "researchEmptyHint": "开始新研究,调查 CVE、漏洞或威胁。",
+  "sources": "来源",
+  "close": "关闭",
+  "doneLabel": "完成",
+  "projectsTitle": "项目",
+  "freePlan2": "免费版",
+  "greetingMorning": "早上好",
+  "greetingAfternoon": "下午好",
+  "greetingEvening": "晚上好",
+  "greetingWithName": "{period},{name}",
+  "@greetingWithName": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "system": "系统",
+  "noConversations": "暂无对话",
+  "promptBrainstorm": "头脑风暴",
+  "promptExplain": "解释一个概念",
+  "promptCode": "帮我写代码"
+}

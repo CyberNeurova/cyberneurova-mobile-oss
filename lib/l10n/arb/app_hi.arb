@@ -1,0 +1,220 @@
+{
+  "@@locale": "hi",
+  "appName": "CyberNeurova",
+  "signIn": "साइन इन",
+  "signUp": "साइन अप",
+  "signOut": "साइन आउट",
+  "signInToContinue": "जारी रखने के लिए साइन इन करें",
+  "createAccount": "खाता बनाएं",
+  "joinCyberNeurovaFree": "CyberNeurova में मुफ्त में शामिल हों",
+  "email": "ईमेल",
+  "password": "पासवर्ड",
+  "nameOptional": "नाम (वैकल्पिक)",
+  "forgotPassword": "पासवर्ड भूल गए?",
+  "dontHaveAccount": "खाता नहीं है? साइन अप करें",
+  "alreadyHaveAccount": "पहले से खाता है? साइन इन करें",
+  "orDivider": "या",
+  "continueWithGoogle": "Google से जारी रखें",
+  "continueWithApple": "Apple से जारी रखें",
+  "enterValidEmail": "मान्य ईमेल दर्ज करें",
+  "passwordTooShort": "पासवर्ड बहुत छोटा है",
+  "passwordMin8": "कम से कम 8 अक्षर",
+  "enterYourPassword": "अपना पासवर्ड दर्ज करें",
+  "resetPassword": "पासवर्ड रीसेट करें",
+  "resetPasswordHint": "अपने खाते का ईमेल दर्ज करें और हम आपको पासवर्ड रीसेट करने के लिए एक लिंक भेजेंगे।",
+  "sendResetLink": "रीसेट लिंक भेजें",
+  "backToSignIn": "साइन इन पर वापस",
+  "checkYourEmail": "अपना ईमेल देखें",
+  "resetSentBody": "अगर {email} के लिए खाता मौजूद है, तो रीसेट लिंक भेज दिया गया है। यदि न दिखे तो स्पैम फ़ोल्डर देखें।",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailTitle": "अपना ईमेल देखें",
+  "verifyEmailBody": "हमने {email} पर सत्यापन लिंक भेजा है। अपने खाते को सक्रिय करने के लिए लिंक पर टैप करें, फिर साइन इन करें।",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "ठीक है",
+  "chats": "चैट",
+  "images": "इमेज",
+  "discover": "खोजें",
+  "profile": "प्रोफ़ाइल",
+  "noChatsYet": "अभी तक कोई बातचीत नहीं",
+  "startChattingHint": "CyberNeurova AI के साथ चैट करना शुरू करें",
+  "newConversation": "नई बातचीत",
+  "messageInputHint": "CyberNeurova को मैसेज करें...",
+  "howCanIHelp": "मैं आज आपकी कैसे मदद कर सकता हूँ?",
+  "search": "खोजें",
+  "searchChatsHint": "चैट खोजें…",
+  "typeToSearchChats": "अपनी चैट खोजने के लिए टाइप करें",
+  "noChatsMatch": "\"{query}\" से मेल खाने वाली कोई चैट नहीं",
+  "@noChatsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "नाम बदलें",
+  "deleteChat": "चैट हटाएं",
+  "deleteChatQuestion": "चैट हटाएं?",
+  "cannotBeUndone": "इसे पूर्ववत नहीं किया जा सकता।",
+  "cancel": "रद्द करें",
+  "delete": "हटाएं",
+  "save": "सहेजें",
+  "retry": "फिर से कोशिश करें",
+  "copiedToClipboard": "क्लिपबोर्ड पर कॉपी हो गया",
+  "waitForResponseToFinish": "जवाब पूरा होने तक प्रतीक्षा करें।",
+  "noImagesYet": "अभी तक कोई इमेज नहीं",
+  "tapGenerateHint": "अपनी पहली इमेज बनाने के लिए जनरेट पर टैप करें",
+  "generate": "जनरेट करें",
+  "generateImage": "इमेज जनरेट करें",
+  "describeImage": "जिस इमेज को आप चाहते हैं उसका वर्णन करें...",
+  "yourImageWillAppear": "आपकी इमेज यहाँ दिखाई देगी",
+  "starting": "शुरू हो रहा है...",
+  "generatingPercent": "जनरेट हो रहा है {percent}%",
+  "@generatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "generateAnother": "एक और जनरेट करें",
+  "generationFailed": "जनरेशन विफल",
+  "trending": "ट्रेंडिंग",
+  "recent": "हाल का",
+  "nothingToDiscover": "अभी खोजने के लिए कुछ नहीं",
+  "freePlan": "फ्री प्लान",
+  "premiumPlan": "प्रीमियम प्लान",
+  "proPlan": "प्रो प्लान",
+  "proMaxPlan": "प्रो मैक्स प्लान",
+  "upgrade": "अपग्रेड",
+  "upgradeHint": "अधिक टोकन और मॉडल के लिए अपग्रेड करें",
+  "tokenUsage": "टोकन उपयोग",
+  "used": "उपयोग किया गया",
+  "limit": "सीमा",
+  "settings": "सेटिंग्स",
+  "notifications": "सूचनाएँ",
+  "changePassword": "पासवर्ड बदलें",
+  "language": "भाषा",
+  "account": "खाता",
+  "editProfile": "प्रोफ़ाइल संपादित करें",
+  "activeSessions": "सक्रिय सत्र",
+  "deleteAccount": "खाता हटाएं",
+  "deleteAccountConfirm": "अपना खाता स्थायी रूप से हटाएं? इसे पूर्ववत नहीं किया जा सकता।",
+  "deleteAccountPasswordOptional": "यदि आपने Google या Apple से साइन इन किया है तो इसे खाली छोड़ें।",
+  "signOutQuestion": "साइन आउट करें?",
+  "signOutBody": "आपको फिर से लॉगिन करना होगा।",
+  "voiceInput": "वॉइस इनपुट",
+  "voiceInputHint": "रिकॉर्ड करने के लिए दबाए रखें, भेजने के लिए छोड़ें।",
+  "voiceTranscribing": "ट्रांसक्राइब हो रहा है…",
+  "voicePermissionDenied": "माइक्रोफ़ोन अनुमति अस्वीकृत।",
+  "attach": "अटैच करें",
+  "takePhoto": "फ़ोटो लें",
+  "fromLibrary": "गैलरी से",
+  "uploadingFile": "अपलोड हो रहा है…",
+  "shareChat": "चैट साझा करें",
+  "visibility": "दृश्यता",
+  "visibilityPrivate": "निजी",
+  "visibilityShared": "विशिष्ट लोगों के साथ साझा",
+  "visibilityPublic": "सार्वजनिक लिंक",
+  "shareWithEmail": "किसी के साथ साझा करें (ईमेल)",
+  "addPerson": "जोड़ें",
+  "copyLink": "लिंक कॉपी करें",
+  "linkCopied": "लिंक कॉपी किया गया",
+  "errorGeneric": "कुछ गलत हो गया। कृपया पुनः प्रयास करें।",
+  "errorNetwork": "इंटरनेट कनेक्शन नहीं है।",
+  "errorSessionExpired": "सत्र समाप्त। कृपया फिर से साइन इन करें।",
+  "errorRateLimited": "बहुत सारे अनुरोध। {seconds} सेकंड में पुनः प्रयास करें।",
+  "@errorRateLimited": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorQuotaExceeded": "टोकन कोटा समाप्त।",
+  "errorServer": "सर्वर त्रुटि। बाद में पुनः प्रयास करें।",
+  "couldNotOpenBrowser": "ब्राउज़र नहीं खुल सका।",
+  "comingSoon": "जल्द आ रहा है",
+  "newChat": "नई चैट",
+  "media": "मीडिया",
+  "research": "रिसर्च",
+  "recents": "हाल का",
+  "chatsWillAppearHere": "आपकी चैट यहाँ दिखाई देंगी",
+  "billing": "बिलिंग",
+  "usageLabel": "उपयोग",
+  "customPrompts": "कस्टम प्रॉम्प्ट",
+  "memory": "मेमोरी",
+  "capabilities": "क्षमताएँ",
+  "designLab": "डिज़ाइन लैब",
+  "skills": "कौशल",
+  "tools": "उपकरण",
+  "premiumRequired": "प्रीमियम सुविधा — सक्षम करने के लिए अपग्रेड करें",
+  "memoryEmptyTitle": "अभी कोई यादें नहीं",
+  "memoryEmptyHint": "CyberNeurova आपकी चैट का महत्वपूर्ण संदर्भ यहाँ सहेजेगा।",
+  "memoryAtCapacity": "मेमोरी पूरी — सबसे पुरानी प्रविष्टियाँ बदली जाएँगी।",
+  "memoryCapacityWarning": "मेमोरी लगभग भरी ({percent}%)",
+  "@memoryCapacityWarning": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "memoryLastExtracted": "अंतिम बार निकाला गया {when}",
+  "@memoryLastExtracted": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryPreferences": "प्राथमिकताएँ",
+  "categoryFacts": "तथ्य",
+  "categoryProjects": "प्रोजेक्ट",
+  "categoryPatterns": "पैटर्न",
+  "categoryContext": "संदर्भ",
+  "researchAll": "सभी",
+  "researchCVE": "CVE",
+  "researchExploit": "एक्सप्लॉइट",
+  "researchBugBounty": "बग बाउंटी",
+  "researchMalware": "मैलवेयर",
+  "researchPentest": "पेंटेस्ट",
+  "newResearch": "नया रिसर्च",
+  "noResearchYet": "अभी कोई रिसर्च नहीं",
+  "researchEmptyHint": "CVE, एक्सप्लॉइट या खतरों की जाँच के लिए नया रिसर्च शुरू करें।",
+  "sources": "स्रोत",
+  "close": "बंद करें",
+  "doneLabel": "पूर्ण",
+  "projectsTitle": "प्रोजेक्ट",
+  "freePlan2": "मुफ़्त प्लान",
+  "greetingMorning": "शुभ प्रभात",
+  "greetingAfternoon": "नमस्ते",
+  "greetingEvening": "शुभ संध्या",
+  "greetingWithName": "{period}, {name}",
+  "@greetingWithName": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "system": "सिस्टम",
+  "noConversations": "अभी कोई बातचीत नहीं",
+  "promptBrainstorm": "विचार-मंथन",
+  "promptExplain": "एक अवधारणा समझाएँ",
+  "promptCode": "कोड लिखने में मदद करें"
+}

@@ -1,0 +1,220 @@
+{
+  "@@locale": "ko",
+  "appName": "CyberNeurova",
+  "signIn": "로그인",
+  "signUp": "회원가입",
+  "signOut": "로그아웃",
+  "signInToContinue": "계속하려면 로그인하세요",
+  "createAccount": "계정 만들기",
+  "joinCyberNeurovaFree": "CyberNeurova에 무료로 가입",
+  "email": "이메일",
+  "password": "비밀번호",
+  "nameOptional": "이름 (선택)",
+  "forgotPassword": "비밀번호를 잊으셨나요?",
+  "dontHaveAccount": "계정이 없으신가요? 가입하기",
+  "alreadyHaveAccount": "이미 계정이 있으신가요? 로그인",
+  "orDivider": "또는",
+  "continueWithGoogle": "Google로 계속하기",
+  "continueWithApple": "Apple로 계속하기",
+  "enterValidEmail": "유효한 이메일을 입력하세요",
+  "passwordTooShort": "비밀번호가 너무 짧습니다",
+  "passwordMin8": "최소 8자 이상",
+  "enterYourPassword": "비밀번호를 입력하세요",
+  "resetPassword": "비밀번호 재설정",
+  "resetPasswordHint": "계정 이메일을 입력하시면 비밀번호 재설정 링크를 보내드립니다.",
+  "sendResetLink": "재설정 링크 보내기",
+  "backToSignIn": "로그인으로 돌아가기",
+  "checkYourEmail": "이메일을 확인하세요",
+  "resetSentBody": "{email}의 계정이 있다면 재설정 링크가 전송되었습니다. 보이지 않는다면 스팸함을 확인하세요.",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailTitle": "이메일을 확인하세요",
+  "verifyEmailBody": "{email}로 인증 링크를 보냈습니다. 링크를 눌러 계정을 활성화한 후 로그인하세요.",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "확인",
+  "chats": "채팅",
+  "images": "이미지",
+  "discover": "둘러보기",
+  "profile": "프로필",
+  "noChatsYet": "아직 대화가 없습니다",
+  "startChattingHint": "CyberNeurova AI와 대화를 시작하세요",
+  "newConversation": "새 대화",
+  "messageInputHint": "CyberNeurova에 메시지...",
+  "howCanIHelp": "오늘 무엇을 도와드릴까요?",
+  "search": "검색",
+  "searchChatsHint": "채팅 검색…",
+  "typeToSearchChats": "채팅을 검색하려면 입력하세요",
+  "noChatsMatch": "\"{query}\"와 일치하는 채팅이 없습니다",
+  "@noChatsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "이름 변경",
+  "deleteChat": "채팅 삭제",
+  "deleteChatQuestion": "채팅을 삭제할까요?",
+  "cannotBeUndone": "이 작업은 취소할 수 없습니다.",
+  "cancel": "취소",
+  "delete": "삭제",
+  "save": "저장",
+  "retry": "다시 시도",
+  "copiedToClipboard": "클립보드에 복사됨",
+  "waitForResponseToFinish": "응답이 끝날 때까지 기다리세요.",
+  "noImagesYet": "아직 이미지가 없습니다",
+  "tapGenerateHint": "생성을 눌러 첫 이미지를 만들어 보세요",
+  "generate": "생성",
+  "generateImage": "이미지 생성",
+  "describeImage": "원하는 이미지를 설명하세요...",
+  "yourImageWillAppear": "이미지가 여기에 표시됩니다",
+  "starting": "시작 중...",
+  "generatingPercent": "생성 중 {percent}%",
+  "@generatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "generateAnother": "다시 생성",
+  "generationFailed": "생성 실패",
+  "trending": "인기",
+  "recent": "최근",
+  "nothingToDiscover": "아직 둘러볼 콘텐츠가 없습니다",
+  "freePlan": "무료 플랜",
+  "premiumPlan": "프리미엄 플랜",
+  "proPlan": "프로 플랜",
+  "proMaxPlan": "프로 맥스 플랜",
+  "upgrade": "업그레이드",
+  "upgradeHint": "더 많은 토큰과 모델을 위해 업그레이드",
+  "tokenUsage": "토큰 사용량",
+  "used": "사용됨",
+  "limit": "한도",
+  "settings": "설정",
+  "notifications": "알림",
+  "changePassword": "비밀번호 변경",
+  "language": "언어",
+  "account": "계정",
+  "editProfile": "프로필 편집",
+  "activeSessions": "활성 세션",
+  "deleteAccount": "계정 삭제",
+  "deleteAccountConfirm": "계정을 영구적으로 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
+  "deleteAccountPasswordOptional": "Google 또는 Apple로 로그인한 경우 비워 두세요.",
+  "signOutQuestion": "로그아웃 하시겠습니까?",
+  "signOutBody": "다시 로그인해야 합니다.",
+  "voiceInput": "음성 입력",
+  "voiceInputHint": "길게 눌러 녹음, 떼면 전송됩니다.",
+  "voiceTranscribing": "변환 중…",
+  "voicePermissionDenied": "마이크 권한이 거부되었습니다.",
+  "attach": "첨부",
+  "takePhoto": "사진 찍기",
+  "fromLibrary": "라이브러리에서",
+  "uploadingFile": "업로드 중…",
+  "shareChat": "채팅 공유",
+  "visibility": "공개 범위",
+  "visibilityPrivate": "비공개",
+  "visibilityShared": "특정 사용자와 공유",
+  "visibilityPublic": "공개 링크",
+  "shareWithEmail": "다른 사람과 공유 (이메일)",
+  "addPerson": "추가",
+  "copyLink": "링크 복사",
+  "linkCopied": "링크가 복사됨",
+  "errorGeneric": "문제가 발생했습니다. 다시 시도하세요.",
+  "errorNetwork": "인터넷 연결이 없습니다.",
+  "errorSessionExpired": "세션이 만료되었습니다. 다시 로그인하세요.",
+  "errorRateLimited": "요청이 너무 많습니다. {seconds}초 후에 다시 시도하세요.",
+  "@errorRateLimited": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorQuotaExceeded": "토큰 할당량을 초과했습니다.",
+  "errorServer": "서버 오류입니다. 나중에 다시 시도하세요.",
+  "couldNotOpenBrowser": "브라우저를 열 수 없습니다.",
+  "comingSoon": "곧 출시",
+  "newChat": "새 채팅",
+  "media": "미디어",
+  "research": "리서치",
+  "recents": "최근 항목",
+  "chatsWillAppearHere": "채팅이 여기에 표시됩니다",
+  "billing": "결제",
+  "usageLabel": "사용량",
+  "customPrompts": "맞춤 프롬프트",
+  "memory": "메모리",
+  "capabilities": "기능",
+  "designLab": "디자인 랩",
+  "skills": "스킬",
+  "tools": "도구",
+  "premiumRequired": "프리미엄 기능 — 업그레이드하여 활성화",
+  "memoryEmptyTitle": "아직 메모리가 없습니다",
+  "memoryEmptyHint": "CyberNeurova가 채팅의 중요한 맥락을 여기에 저장합니다.",
+  "memoryAtCapacity": "메모리가 가득 찼습니다 — 가장 오래된 항목부터 교체됩니다.",
+  "memoryCapacityWarning": "메모리가 거의 찼습니다 ({percent}%)",
+  "@memoryCapacityWarning": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "memoryLastExtracted": "마지막 추출 {when}",
+  "@memoryLastExtracted": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryPreferences": "선호도",
+  "categoryFacts": "사실",
+  "categoryProjects": "프로젝트",
+  "categoryPatterns": "패턴",
+  "categoryContext": "컨텍스트",
+  "researchAll": "전체",
+  "researchCVE": "CVE",
+  "researchExploit": "익스플로잇",
+  "researchBugBounty": "버그 바운티",
+  "researchMalware": "악성코드",
+  "researchPentest": "모의해킹",
+  "newResearch": "새 리서치",
+  "noResearchYet": "리서치 세션이 없습니다",
+  "researchEmptyHint": "CVE, 익스플로잇 또는 위협을 조사할 새 리서치를 시작하세요.",
+  "sources": "출처",
+  "close": "닫기",
+  "doneLabel": "완료",
+  "projectsTitle": "프로젝트",
+  "freePlan2": "무료 요금제",
+  "greetingMorning": "좋은 아침",
+  "greetingAfternoon": "좋은 오후",
+  "greetingEvening": "좋은 저녁",
+  "greetingWithName": "{period}, {name}",
+  "@greetingWithName": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "system": "시스템",
+  "noConversations": "아직 대화가 없습니다",
+  "promptBrainstorm": "아이디어 브레인스토밍",
+  "promptExplain": "개념 설명",
+  "promptCode": "코딩 도와주세요"
+}

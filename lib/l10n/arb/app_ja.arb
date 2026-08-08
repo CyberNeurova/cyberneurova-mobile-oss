@@ -1,0 +1,220 @@
+{
+  "@@locale": "ja",
+  "appName": "CyberNeurova",
+  "signIn": "ログイン",
+  "signUp": "新規登録",
+  "signOut": "ログアウト",
+  "signInToContinue": "続行するにはログインしてください",
+  "createAccount": "アカウントを作成",
+  "joinCyberNeurovaFree": "CyberNeurova に無料で参加",
+  "email": "メール",
+  "password": "パスワード",
+  "nameOptional": "名前（任意）",
+  "forgotPassword": "パスワードをお忘れですか？",
+  "dontHaveAccount": "アカウントをお持ちでない方はこちら",
+  "alreadyHaveAccount": "すでにアカウントをお持ちですか？ログイン",
+  "orDivider": "または",
+  "continueWithGoogle": "Google で続行",
+  "continueWithApple": "Apple で続行",
+  "enterValidEmail": "有効なメールアドレスを入力してください",
+  "passwordTooShort": "パスワードが短すぎます",
+  "passwordMin8": "8 文字以上",
+  "enterYourPassword": "パスワードを入力",
+  "resetPassword": "パスワードをリセット",
+  "resetPasswordHint": "アカウントのメールアドレスを入力すると、パスワードリセット用のリンクをお送りします。",
+  "sendResetLink": "リンクを送信",
+  "backToSignIn": "ログインに戻る",
+  "checkYourEmail": "メールをご確認ください",
+  "resetSentBody": "{email} のアカウントが存在する場合、リセットリンクをお送りしました。見当たらない場合は迷惑メールフォルダをご確認ください。",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailTitle": "メールをご確認ください",
+  "verifyEmailBody": "{email} に確認リンクを送信しました。リンクをタップしてアカウントを有効化し、ログインしてください。",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "OK",
+  "chats": "チャット",
+  "images": "画像",
+  "discover": "発見",
+  "profile": "プロフィール",
+  "noChatsYet": "まだ会話がありません",
+  "startChattingHint": "CyberNeurova AI とチャットを始めましょう",
+  "newConversation": "新しい会話",
+  "messageInputHint": "CyberNeurova にメッセージ...",
+  "howCanIHelp": "今日は何をお手伝いしましょうか？",
+  "search": "検索",
+  "searchChatsHint": "チャットを検索…",
+  "typeToSearchChats": "入力してチャットを検索",
+  "noChatsMatch": "「{query}」に一致するチャットはありません",
+  "@noChatsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "名前を変更",
+  "deleteChat": "チャットを削除",
+  "deleteChatQuestion": "チャットを削除しますか？",
+  "cannotBeUndone": "この操作は取り消せません。",
+  "cancel": "キャンセル",
+  "delete": "削除",
+  "save": "保存",
+  "retry": "再試行",
+  "copiedToClipboard": "クリップボードにコピーしました",
+  "waitForResponseToFinish": "応答が完了するのをお待ちください。",
+  "noImagesYet": "まだ画像がありません",
+  "tapGenerateHint": "「生成」をタップして最初の画像を作成",
+  "generate": "生成",
+  "generateImage": "画像を生成",
+  "describeImage": "作成したい画像を説明してください...",
+  "yourImageWillAppear": "画像はここに表示されます",
+  "starting": "開始中...",
+  "generatingPercent": "生成中 {percent}%",
+  "@generatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "generateAnother": "もう一度生成",
+  "generationFailed": "生成に失敗しました",
+  "trending": "トレンド",
+  "recent": "最近",
+  "nothingToDiscover": "まだ発見するものはありません",
+  "freePlan": "無料プラン",
+  "premiumPlan": "Premium プラン",
+  "proPlan": "Pro プラン",
+  "proMaxPlan": "Pro Max プラン",
+  "upgrade": "アップグレード",
+  "upgradeHint": "アップグレードでトークンとモデルを追加",
+  "tokenUsage": "トークン使用量",
+  "used": "使用済み",
+  "limit": "上限",
+  "settings": "設定",
+  "notifications": "通知",
+  "changePassword": "パスワードを変更",
+  "language": "言語",
+  "account": "アカウント",
+  "editProfile": "プロフィールを編集",
+  "activeSessions": "アクティブなセッション",
+  "deleteAccount": "アカウントを削除",
+  "deleteAccountConfirm": "アカウントを完全に削除しますか？この操作は取り消せません。",
+  "deleteAccountPasswordOptional": "Google または Apple でサインインした場合は空欄のままにしてください。",
+  "signOutQuestion": "ログアウトしますか？",
+  "signOutBody": "再度ログインが必要になります。",
+  "voiceInput": "音声入力",
+  "voiceInputHint": "長押しで録音、離して送信。",
+  "voiceTranscribing": "文字起こし中…",
+  "voicePermissionDenied": "マイクの許可が拒否されました。",
+  "attach": "添付",
+  "takePhoto": "写真を撮る",
+  "fromLibrary": "ライブラリから",
+  "uploadingFile": "アップロード中…",
+  "shareChat": "チャットを共有",
+  "visibility": "公開範囲",
+  "visibilityPrivate": "非公開",
+  "visibilityShared": "特定の人と共有",
+  "visibilityPublic": "公開リンク",
+  "shareWithEmail": "メールで共有",
+  "addPerson": "追加",
+  "copyLink": "リンクをコピー",
+  "linkCopied": "リンクをコピーしました",
+  "errorGeneric": "エラーが発生しました。もう一度お試しください。",
+  "errorNetwork": "インターネット接続がありません。",
+  "errorSessionExpired": "セッションが切れました。再度ログインしてください。",
+  "errorRateLimited": "リクエストが多すぎます。{seconds} 秒後にお試しください。",
+  "@errorRateLimited": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorQuotaExceeded": "トークンの上限を超えました。",
+  "errorServer": "サーバーエラーです。後でお試しください。",
+  "couldNotOpenBrowser": "ブラウザを開けませんでした。",
+  "comingSoon": "近日公開",
+  "newChat": "新規チャット",
+  "media": "メディア",
+  "research": "リサーチ",
+  "recents": "最近",
+  "chatsWillAppearHere": "チャットはここに表示されます",
+  "billing": "請求",
+  "usageLabel": "使用状況",
+  "customPrompts": "カスタムプロンプト",
+  "memory": "メモリ",
+  "capabilities": "機能",
+  "designLab": "デザインラボ",
+  "skills": "スキル",
+  "tools": "ツール",
+  "premiumRequired": "プレミアム機能 — アップグレードで有効化",
+  "memoryEmptyTitle": "まだ記憶はありません",
+  "memoryEmptyHint": "CyberNeurova はチャットの重要な文脈をここに保存します。",
+  "memoryAtCapacity": "メモリが上限です — 最も古いエントリが置き換えられます。",
+  "memoryCapacityWarning": "メモリがほぼ満杯 ({percent}%)",
+  "@memoryCapacityWarning": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "memoryLastExtracted": "最終抽出: {when}",
+  "@memoryLastExtracted": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryPreferences": "好み",
+  "categoryFacts": "事実",
+  "categoryProjects": "プロジェクト",
+  "categoryPatterns": "パターン",
+  "categoryContext": "コンテキスト",
+  "researchAll": "すべて",
+  "researchCVE": "CVE",
+  "researchExploit": "エクスプロイト",
+  "researchBugBounty": "バグ報奨金",
+  "researchMalware": "マルウェア",
+  "researchPentest": "ペンテスト",
+  "newResearch": "新規リサーチ",
+  "noResearchYet": "リサーチはまだありません",
+  "researchEmptyHint": "新しいリサーチを開始して、CVE、エクスプロイト、脅威を調査します。",
+  "sources": "ソース",
+  "close": "閉じる",
+  "doneLabel": "完了",
+  "projectsTitle": "プロジェクト",
+  "freePlan2": "無料プラン",
+  "greetingMorning": "おはようございます",
+  "greetingAfternoon": "こんにちは",
+  "greetingEvening": "こんばんは",
+  "greetingWithName": "{period}、{name}さん",
+  "@greetingWithName": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "system": "システム",
+  "noConversations": "まだ会話がありません",
+  "promptBrainstorm": "アイデアを出す",
+  "promptExplain": "概念を説明する",
+  "promptCode": "コーディングを手伝って"
+}

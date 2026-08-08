@@ -1,0 +1,63 @@
+name: CI
+
+# Analyze + test on every PR and on pushes to main.
+# Generated sources (*.g.dart, *.freezed.dart) are git-ignored, so the build
+# runner has to regenerate them before analyze/test can compile.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze-and-test:
+    name: Analyze & test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          # The dependency set (e.g. sign_in_with_apple 8.x) requires a current
+          # Dart SDK, so the project effectively tracks the latest stable Flutter.
+          channel: stable
+          cache: true
+
+      - name: Print versions
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate code (freezed / json_serializable)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+      # Sahachiel: actually compile the Android app so build-breaking config
+      # (gradle / manifest / assets / plugin drift) fails CI instead of slipping
+      # past analyze+test - the dangling round-icon ref got through before this.
+      - name: Build Android (debug APK)
+        run: flutter build apk --debug --flavor play
+
+  # No iOS lane in CI: iOS is built and released from a Mac. The analyze +
+  # test job above runs on every push/PR, so Dart-side breakage fails fast;
+  # iOS-specific breakage (Podfile/plist/Swift) surfaces on the next Mac build.

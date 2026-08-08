@@ -1,0 +1,220 @@
+{
+  "@@locale": "th",
+  "appName": "CyberNeurova",
+  "signIn": "เข้าสู่ระบบ",
+  "signUp": "สมัครสมาชิก",
+  "signOut": "ออกจากระบบ",
+  "signInToContinue": "เข้าสู่ระบบเพื่อดำเนินการต่อ",
+  "createAccount": "สร้างบัญชี",
+  "joinCyberNeurovaFree": "เข้าร่วม CyberNeurova ฟรี",
+  "email": "อีเมล",
+  "password": "รหัสผ่าน",
+  "nameOptional": "ชื่อ (ไม่บังคับ)",
+  "forgotPassword": "ลืมรหัสผ่าน?",
+  "dontHaveAccount": "ยังไม่มีบัญชี? สมัครสมาชิก",
+  "alreadyHaveAccount": "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ",
+  "orDivider": "หรือ",
+  "continueWithGoogle": "ดำเนินการต่อด้วย Google",
+  "continueWithApple": "ดำเนินการต่อด้วย Apple",
+  "enterValidEmail": "ใส่อีเมลที่ถูกต้อง",
+  "passwordTooShort": "รหัสผ่านสั้นเกินไป",
+  "passwordMin8": "อย่างน้อย 8 ตัวอักษร",
+  "enterYourPassword": "ใส่รหัสผ่านของคุณ",
+  "resetPassword": "รีเซ็ตรหัสผ่าน",
+  "resetPasswordHint": "ใส่อีเมลของบัญชีคุณ แล้วเราจะส่งลิงก์รีเซ็ตรหัสผ่านให้",
+  "sendResetLink": "ส่งลิงก์รีเซ็ต",
+  "backToSignIn": "กลับไปที่หน้าเข้าสู่ระบบ",
+  "checkYourEmail": "ตรวจสอบอีเมลของคุณ",
+  "resetSentBody": "หากมีบัญชีสำหรับ {email} ลิงก์รีเซ็ตจะถูกส่งไป ตรวจสอบโฟลเดอร์สแปมหากไม่พบ",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailTitle": "ตรวจสอบอีเมลของคุณ",
+  "verifyEmailBody": "เราได้ส่งลิงก์ยืนยันไปที่ {email} แตะลิงก์เพื่อเปิดใช้งานบัญชี แล้วเข้าสู่ระบบ",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "ตกลง",
+  "chats": "แชท",
+  "images": "รูปภาพ",
+  "discover": "ค้นพบ",
+  "profile": "โปรไฟล์",
+  "noChatsYet": "ยังไม่มีการสนทนา",
+  "startChattingHint": "เริ่มแชทกับ CyberNeurova AI",
+  "newConversation": "การสนทนาใหม่",
+  "messageInputHint": "ส่งข้อความถึง CyberNeurova...",
+  "howCanIHelp": "วันนี้ให้ช่วยอะไรดี?",
+  "search": "ค้นหา",
+  "searchChatsHint": "ค้นหาแชท…",
+  "typeToSearchChats": "พิมพ์เพื่อค้นหาในแชทของคุณ",
+  "noChatsMatch": "ไม่พบแชทที่ตรงกับ \"{query}\"",
+  "@noChatsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "เปลี่ยนชื่อ",
+  "deleteChat": "ลบแชท",
+  "deleteChatQuestion": "ลบแชท?",
+  "cannotBeUndone": "ไม่สามารถยกเลิกได้",
+  "cancel": "ยกเลิก",
+  "delete": "ลบ",
+  "save": "บันทึก",
+  "retry": "ลองอีกครั้ง",
+  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
+  "waitForResponseToFinish": "โปรดรอให้คำตอบเสร็จสิ้น",
+  "noImagesYet": "ยังไม่มีรูปภาพ",
+  "tapGenerateHint": "แตะ สร้าง เพื่อสร้างรูปภาพแรก",
+  "generate": "สร้าง",
+  "generateImage": "สร้างรูปภาพ",
+  "describeImage": "อธิบายรูปภาพที่คุณต้องการ...",
+  "yourImageWillAppear": "รูปภาพของคุณจะปรากฏที่นี่",
+  "starting": "กำลังเริ่ม...",
+  "generatingPercent": "กำลังสร้าง {percent}%",
+  "@generatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "generateAnother": "สร้างอีกครั้ง",
+  "generationFailed": "การสร้างล้มเหลว",
+  "trending": "กำลังมาแรง",
+  "recent": "ล่าสุด",
+  "nothingToDiscover": "ยังไม่มีสิ่งที่ค้นพบ",
+  "freePlan": "แพ็กเกจฟรี",
+  "premiumPlan": "แพ็กเกจ Premium",
+  "proPlan": "แพ็กเกจ Pro",
+  "proMaxPlan": "แพ็กเกจ Pro Max",
+  "upgrade": "อัปเกรด",
+  "upgradeHint": "อัปเกรดเพื่อรับโทเค็นและโมเดลเพิ่ม",
+  "tokenUsage": "การใช้โทเค็น",
+  "used": "ใช้ไป",
+  "limit": "ขีดจำกัด",
+  "settings": "การตั้งค่า",
+  "notifications": "การแจ้งเตือน",
+  "changePassword": "เปลี่ยนรหัสผ่าน",
+  "language": "ภาษา",
+  "account": "บัญชี",
+  "editProfile": "แก้ไขโปรไฟล์",
+  "activeSessions": "เซสชันที่ใช้งานอยู่",
+  "deleteAccount": "ลบบัญชี",
+  "deleteAccountConfirm": "ลบบัญชีของคุณอย่างถาวร? ไม่สามารถยกเลิกได้",
+  "deleteAccountPasswordOptional": "เว้นว่างไว้หากคุณลงชื่อเข้าใช้ด้วย Google หรือ Apple",
+  "signOutQuestion": "ออกจากระบบ?",
+  "signOutBody": "คุณจะต้องเข้าสู่ระบบอีกครั้ง",
+  "voiceInput": "ป้อนด้วยเสียง",
+  "voiceInputHint": "กดค้างเพื่อบันทึก ปล่อยเพื่อส่ง",
+  "voiceTranscribing": "กำลังถอดเสียง…",
+  "voicePermissionDenied": "ไม่ได้รับอนุญาตให้ใช้ไมโครโฟน",
+  "attach": "แนบไฟล์",
+  "takePhoto": "ถ่ายรูป",
+  "fromLibrary": "จากคลังภาพ",
+  "uploadingFile": "กำลังอัปโหลด…",
+  "shareChat": "แชร์แชท",
+  "visibility": "การมองเห็น",
+  "visibilityPrivate": "ส่วนตัว",
+  "visibilityShared": "แชร์กับบุคคลที่ระบุ",
+  "visibilityPublic": "ลิงก์สาธารณะ",
+  "shareWithEmail": "แชร์กับใครบางคน (อีเมล)",
+  "addPerson": "เพิ่ม",
+  "copyLink": "คัดลอกลิงก์",
+  "linkCopied": "คัดลอกลิงก์แล้ว",
+  "errorGeneric": "เกิดข้อผิดพลาด กรุณาลองอีกครั้ง",
+  "errorNetwork": "ไม่มีการเชื่อมต่ออินเทอร์เน็ต",
+  "errorSessionExpired": "เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง",
+  "errorRateLimited": "คำขอมากเกินไป ลองอีกครั้งใน {seconds} วินาที",
+  "@errorRateLimited": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorQuotaExceeded": "ใช้โควตาโทเค็นเกินแล้ว",
+  "errorServer": "เซิร์ฟเวอร์ผิดพลาด กรุณาลองใหม่ภายหลัง",
+  "couldNotOpenBrowser": "ไม่สามารถเปิดเบราว์เซอร์ได้",
+  "comingSoon": "เร็ว ๆ นี้",
+  "newChat": "แชทใหม่",
+  "media": "สื่อ",
+  "research": "การวิจัย",
+  "recents": "ล่าสุด",
+  "chatsWillAppearHere": "แชทของคุณจะแสดงที่นี่",
+  "billing": "การเรียกเก็บเงิน",
+  "usageLabel": "การใช้งาน",
+  "customPrompts": "พรอมต์ที่กำหนดเอง",
+  "memory": "หน่วยความจำ",
+  "capabilities": "ความสามารถ",
+  "designLab": "ห้องแล็บออกแบบ",
+  "skills": "ทักษะ",
+  "tools": "เครื่องมือ",
+  "premiumRequired": "คุณสมบัติพรีเมียม — อัปเกรดเพื่อเปิดใช้งาน",
+  "memoryEmptyTitle": "ยังไม่มีหน่วยความจำ",
+  "memoryEmptyHint": "CyberNeurova จะบันทึกบริบทสำคัญจากแชทของคุณที่นี่",
+  "memoryAtCapacity": "หน่วยความจำเต็ม — รายการเก่าสุดจะถูกแทนที่",
+  "memoryCapacityWarning": "หน่วยความจำเกือบเต็ม ({percent}%)",
+  "@memoryCapacityWarning": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "memoryLastExtracted": "สกัดล่าสุด {when}",
+  "@memoryLastExtracted": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryPreferences": "ความชอบ",
+  "categoryFacts": "ข้อเท็จจริง",
+  "categoryProjects": "โครงการ",
+  "categoryPatterns": "รูปแบบ",
+  "categoryContext": "บริบท",
+  "researchAll": "ทั้งหมด",
+  "researchCVE": "CVE",
+  "researchExploit": "Exploit",
+  "researchBugBounty": "Bug bounty",
+  "researchMalware": "Malware",
+  "researchPentest": "Pentest",
+  "newResearch": "การวิจัยใหม่",
+  "noResearchYet": "ยังไม่มีการวิจัย",
+  "researchEmptyHint": "เริ่มการวิจัยใหม่เพื่อตรวจสอบ CVE, exploit หรือภัยคุกคาม",
+  "sources": "แหล่งที่มา",
+  "close": "ปิด",
+  "doneLabel": "เสร็จสิ้น",
+  "projectsTitle": "โครงการ",
+  "freePlan2": "แพ็กเกจฟรี",
+  "greetingMorning": "สวัสดีตอนเช้า",
+  "greetingAfternoon": "สวัสดีตอนบ่าย",
+  "greetingEvening": "สวัสดีตอนเย็น",
+  "greetingWithName": "{period}, {name}",
+  "@greetingWithName": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "system": "ระบบ",
+  "noConversations": "ยังไม่มีการสนทนา",
+  "promptBrainstorm": "ระดมความคิด",
+  "promptExplain": "อธิบายแนวคิด",
+  "promptCode": "ช่วยฉันเขียนโค้ด"
+}

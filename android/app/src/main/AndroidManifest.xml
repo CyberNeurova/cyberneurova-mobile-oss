@@ -1,0 +1,137 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Network access for API calls and streaming -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- Three permissions we never asked for, and would have shipped.
+         libadb-android (io.github.muntashirakon.adb) declares no targetSdk at
+         all, so the manifest merger treats it as pre-API-4 and IMPLIES the
+         legacy trio on our behalf — the merger report says so in as many
+         words. READ_PHONE_STATE is a dangerous permission that reads the
+         device identity, and the storage pair drags in Play's storage
+         declaration; none of the three is used by a single line of this app.
+         A permission you cannot explain is one you should not request. -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"
+        tools:node="remove"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        tools:node="remove"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:node="remove"/>
+
+    <!-- The pairing prompt. Its inline reply is the only input surface that
+         works while the system pairing dialog is open: switching apps closes
+         that dialog, and overlays are force-hidden over it. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <!-- Agent work that outlives the app being backgrounded or the screen
+         going off. FOREGROUND_SERVICE_DATA_SYNC because a run is exactly
+         that: talking to our server and writing results to the device.
+         WAKE_LOCK is held ONLY while a run is active — see AgentRunService. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <!-- REQUEST_INSTALL_PACKAGES lives in src/direct, NOT here.
+
+         Play treats it as a sensitive permission: it is granted only to apps
+         whose core purpose is installing other apps, behind a declaration form,
+         and "an AI assistant that can also install an APK" is not that app. It
+         is the kind of thing that gets a submission rejected rather than
+         questioned. The direct build — the one people download from our own
+         site, for exactly this sort of capability — keeps it. -->
+
+    <application
+        android:label="CyberNeurova"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:supportsRtl="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:enableOnBackInvokedCallback="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme"/>
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- Catches the OAuth redirect from the system browser.
+             flutter_web_auth_2 owns this activity; the scheme must match
+             BrowserOAuth.redirectScheme and the redirect URI registered on the
+             Google installed-app client, exactly and case-sensitively.
+             Needed because Play services refuses Google Sign-In on the
+             `direct` flavour's targetSdk 28 (docs/shell/14-FLAVOURS.md). -->
+        <activity
+            android:name="com.linusu.flutter_web_auth_2.CallbackActivity"
+            android:exported="true">
+            <intent-filter android:label="flutter_web_auth_2">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="ai.cyberneurova.app"/>
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2"/>
+
+        <!-- Shizuku's provider. Required for the app to be recognised as a
+             Shizuku client; without it Shizuku.pingBinder() never succeeds.
+             multiprocess=false and enabled per Shizuku's integration guide —
+             it is a handshake surface, not a data provider, and exporting it
+             writable would let any app poke it. -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
+
+        <receiver
+            android:name=".PairingCodeReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="ai.cyberneurova.app.SUBMIT_PAIRING_CODE"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- Keeps agent work and open shells alive when the app is not on
+             screen. dataSync: a run talks to our server and writes its results
+             to this device, which is exactly what that type describes. -->
+        <service
+            android:name=".AgentRunService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync"/>
+
+    </application>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- For url_launcher to open browser links -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
+    </queries>
+</manifest>

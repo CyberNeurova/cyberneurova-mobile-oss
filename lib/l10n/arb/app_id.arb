@@ -1,0 +1,220 @@
+{
+  "@@locale": "id",
+  "appName": "CyberNeurova",
+  "signIn": "Masuk",
+  "signUp": "Daftar",
+  "signOut": "Keluar",
+  "signInToContinue": "Masuk untuk melanjutkan",
+  "createAccount": "Buat akun",
+  "joinCyberNeurovaFree": "Bergabunglah dengan CyberNeurova gratis",
+  "email": "Email",
+  "password": "Kata sandi",
+  "nameOptional": "Nama (opsional)",
+  "forgotPassword": "Lupa kata sandi?",
+  "dontHaveAccount": "Belum punya akun? Daftar",
+  "alreadyHaveAccount": "Sudah punya akun? Masuk",
+  "orDivider": "ATAU",
+  "continueWithGoogle": "Lanjut dengan Google",
+  "continueWithApple": "Lanjut dengan Apple",
+  "enterValidEmail": "Masukkan email yang valid",
+  "passwordTooShort": "Kata sandi terlalu pendek",
+  "passwordMin8": "Minimal 8 karakter",
+  "enterYourPassword": "Masukkan kata sandi",
+  "resetPassword": "Atur ulang kata sandi",
+  "resetPasswordHint": "Masukkan email akun Anda, kami akan mengirimkan tautan untuk mengatur ulang kata sandi.",
+  "sendResetLink": "Kirim tautan",
+  "backToSignIn": "Kembali ke masuk",
+  "checkYourEmail": "Periksa email Anda",
+  "resetSentBody": "Jika akun untuk {email} ada, tautan pengaturan ulang sedang dikirim. Periksa folder spam jika tidak menemukannya.",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailTitle": "Periksa email Anda",
+  "verifyEmailBody": "Kami mengirim tautan verifikasi ke {email}. Ketuk tautan untuk mengaktifkan akun, lalu masuk.",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "OK",
+  "chats": "Obrolan",
+  "images": "Gambar",
+  "discover": "Jelajah",
+  "profile": "Profil",
+  "noChatsYet": "Belum ada percakapan",
+  "startChattingHint": "Mulai mengobrol dengan CyberNeurova AI",
+  "newConversation": "Percakapan baru",
+  "messageInputHint": "Pesan ke CyberNeurova...",
+  "howCanIHelp": "Apa yang bisa saya bantu hari ini?",
+  "search": "Cari",
+  "searchChatsHint": "Cari obrolan…",
+  "typeToSearchChats": "Ketik untuk mencari obrolan Anda",
+  "noChatsMatch": "Tidak ada obrolan yang cocok dengan \"{query}\"",
+  "@noChatsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "Ganti nama",
+  "deleteChat": "Hapus obrolan",
+  "deleteChatQuestion": "Hapus obrolan?",
+  "cannotBeUndone": "Tindakan ini tidak dapat dibatalkan.",
+  "cancel": "Batal",
+  "delete": "Hapus",
+  "save": "Simpan",
+  "retry": "Coba lagi",
+  "copiedToClipboard": "Disalin ke papan klip",
+  "waitForResponseToFinish": "Tunggu hingga respons selesai.",
+  "noImagesYet": "Belum ada gambar",
+  "tapGenerateHint": "Ketuk Buat untuk membuat gambar pertama Anda",
+  "generate": "Buat",
+  "generateImage": "Buat gambar",
+  "describeImage": "Deskripsikan gambar yang Anda inginkan...",
+  "yourImageWillAppear": "Gambar Anda akan muncul di sini",
+  "starting": "Memulai...",
+  "generatingPercent": "Membuat {percent}%",
+  "@generatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "generateAnother": "Buat lagi",
+  "generationFailed": "Pembuatan gagal",
+  "trending": "Tren",
+  "recent": "Terbaru",
+  "nothingToDiscover": "Belum ada yang bisa dijelajahi",
+  "freePlan": "Paket Gratis",
+  "premiumPlan": "Paket Premium",
+  "proPlan": "Paket Pro",
+  "proMaxPlan": "Paket Pro Max",
+  "upgrade": "Tingkatkan",
+  "upgradeHint": "Tingkatkan untuk lebih banyak token & model",
+  "tokenUsage": "Penggunaan token",
+  "used": "terpakai",
+  "limit": "batas",
+  "settings": "Pengaturan",
+  "notifications": "Notifikasi",
+  "changePassword": "Ubah kata sandi",
+  "language": "Bahasa",
+  "account": "Akun",
+  "editProfile": "Edit profil",
+  "activeSessions": "Sesi aktif",
+  "deleteAccount": "Hapus akun",
+  "deleteAccountConfirm": "Hapus akun Anda secara permanen? Tindakan ini tidak dapat dibatalkan.",
+  "deleteAccountPasswordOptional": "Kosongkan jika Anda masuk dengan Google atau Apple.",
+  "signOutQuestion": "Keluar?",
+  "signOutBody": "Anda perlu masuk lagi.",
+  "voiceInput": "Input suara",
+  "voiceInputHint": "Tahan untuk merekam, lepas untuk mengirim.",
+  "voiceTranscribing": "Mentranskripsi…",
+  "voicePermissionDenied": "Izin mikrofon ditolak.",
+  "attach": "Lampirkan",
+  "takePhoto": "Ambil foto",
+  "fromLibrary": "Dari galeri",
+  "uploadingFile": "Mengunggah…",
+  "shareChat": "Bagikan obrolan",
+  "visibility": "Visibilitas",
+  "visibilityPrivate": "Pribadi",
+  "visibilityShared": "Dibagikan dengan orang tertentu",
+  "visibilityPublic": "Tautan publik",
+  "shareWithEmail": "Bagikan dengan seseorang (email)",
+  "addPerson": "Tambah",
+  "copyLink": "Salin tautan",
+  "linkCopied": "Tautan disalin",
+  "errorGeneric": "Terjadi kesalahan. Silakan coba lagi.",
+  "errorNetwork": "Tidak ada koneksi internet.",
+  "errorSessionExpired": "Sesi berakhir. Silakan masuk kembali.",
+  "errorRateLimited": "Terlalu banyak permintaan. Coba lagi dalam {seconds} dtk.",
+  "@errorRateLimited": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorQuotaExceeded": "Kuota token terlampaui.",
+  "errorServer": "Kesalahan server. Coba lagi nanti.",
+  "couldNotOpenBrowser": "Tidak dapat membuka browser.",
+  "comingSoon": "Segera hadir",
+  "newChat": "Obrolan baru",
+  "media": "Media",
+  "research": "Riset",
+  "recents": "Terbaru",
+  "chatsWillAppearHere": "Obrolan Anda akan tampil di sini",
+  "billing": "Penagihan",
+  "usageLabel": "Penggunaan",
+  "customPrompts": "Prompt khusus",
+  "memory": "Memori",
+  "capabilities": "Kemampuan",
+  "designLab": "Lab Desain",
+  "skills": "Keterampilan",
+  "tools": "Alat",
+  "premiumRequired": "Fitur Premium — tingkatkan untuk mengaktifkan",
+  "memoryEmptyTitle": "Belum ada memori",
+  "memoryEmptyHint": "CyberNeurova akan menyimpan konteks penting dari obrolan Anda di sini.",
+  "memoryAtCapacity": "Memori penuh — entri terlama akan diganti.",
+  "memoryCapacityWarning": "Memori hampir penuh ({percent}%)",
+  "@memoryCapacityWarning": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "memoryLastExtracted": "Ekstraksi terakhir {when}",
+  "@memoryLastExtracted": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryPreferences": "Preferensi",
+  "categoryFacts": "Fakta",
+  "categoryProjects": "Proyek",
+  "categoryPatterns": "Pola",
+  "categoryContext": "Konteks",
+  "researchAll": "Semua",
+  "researchCVE": "CVE",
+  "researchExploit": "Exploit",
+  "researchBugBounty": "Bug bounty",
+  "researchMalware": "Malware",
+  "researchPentest": "Pentest",
+  "newResearch": "Riset baru",
+  "noResearchYet": "Belum ada riset",
+  "researchEmptyHint": "Mulai riset baru untuk menyelidiki CVE, exploit, atau ancaman.",
+  "sources": "Sumber",
+  "close": "Tutup",
+  "doneLabel": "Selesai",
+  "projectsTitle": "Proyek",
+  "freePlan2": "Paket gratis",
+  "greetingMorning": "Selamat pagi",
+  "greetingAfternoon": "Selamat siang",
+  "greetingEvening": "Selamat malam",
+  "greetingWithName": "{period}, {name}",
+  "@greetingWithName": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "system": "Sistem",
+  "noConversations": "Belum ada percakapan",
+  "promptBrainstorm": "Curah ide",
+  "promptExplain": "Jelaskan konsep",
+  "promptCode": "Bantu saya menulis kode"
+}

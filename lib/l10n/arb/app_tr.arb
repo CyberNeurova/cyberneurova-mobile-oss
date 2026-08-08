@@ -1,0 +1,220 @@
+{
+  "@@locale": "tr",
+  "appName": "CyberNeurova",
+  "signIn": "Giriş yap",
+  "signUp": "Kaydol",
+  "signOut": "Çıkış yap",
+  "signInToContinue": "Devam etmek için giriş yapın",
+  "createAccount": "Hesap oluştur",
+  "joinCyberNeurovaFree": "CyberNeurova'ya ücretsiz katıl",
+  "email": "E-posta",
+  "password": "Şifre",
+  "nameOptional": "Ad (isteğe bağlı)",
+  "forgotPassword": "Şifrenizi mi unuttunuz?",
+  "dontHaveAccount": "Hesabınız yok mu? Kaydolun",
+  "alreadyHaveAccount": "Zaten hesabınız var mı? Giriş yapın",
+  "orDivider": "VEYA",
+  "continueWithGoogle": "Google ile devam et",
+  "continueWithApple": "Apple ile devam et",
+  "enterValidEmail": "Geçerli bir e-posta girin",
+  "passwordTooShort": "Şifre çok kısa",
+  "passwordMin8": "En az 8 karakter",
+  "enterYourPassword": "Şifrenizi girin",
+  "resetPassword": "Şifreyi sıfırla",
+  "resetPasswordHint": "Hesabınızın e-postasını girin, şifrenizi sıfırlamanız için bir bağlantı gönderelim.",
+  "sendResetLink": "Bağlantı gönder",
+  "backToSignIn": "Girişe dön",
+  "checkYourEmail": "E-postanızı kontrol edin",
+  "resetSentBody": "{email} için bir hesap varsa, sıfırlama bağlantısı yolda. Göremiyorsanız spam klasörünü kontrol edin.",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailTitle": "E-postanızı kontrol edin",
+  "verifyEmailBody": "{email} adresine doğrulama bağlantısı gönderdik. Hesabınızı etkinleştirmek için bağlantıya dokunun, ardından giriş yapın.",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "Tamam",
+  "chats": "Sohbetler",
+  "images": "Görseller",
+  "discover": "Keşfet",
+  "profile": "Profil",
+  "noChatsYet": "Henüz sohbet yok",
+  "startChattingHint": "CyberNeurova AI ile sohbete başlayın",
+  "newConversation": "Yeni sohbet",
+  "messageInputHint": "CyberNeurova'ya mesaj...",
+  "howCanIHelp": "Bugün size nasıl yardımcı olabilirim?",
+  "search": "Ara",
+  "searchChatsHint": "Sohbetlerde ara…",
+  "typeToSearchChats": "Sohbetlerinizde aramak için yazın",
+  "noChatsMatch": "\"{query}\" ile eşleşen sohbet yok",
+  "@noChatsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "Yeniden adlandır",
+  "deleteChat": "Sohbeti sil",
+  "deleteChatQuestion": "Sohbet silinsin mi?",
+  "cannotBeUndone": "Bu işlem geri alınamaz.",
+  "cancel": "İptal",
+  "delete": "Sil",
+  "save": "Kaydet",
+  "retry": "Tekrar dene",
+  "copiedToClipboard": "Panoya kopyalandı",
+  "waitForResponseToFinish": "Yanıt bitene kadar bekleyin.",
+  "noImagesYet": "Henüz görsel yok",
+  "tapGenerateHint": "İlk görselinizi oluşturmak için Oluştur'a dokunun",
+  "generate": "Oluştur",
+  "generateImage": "Görsel oluştur",
+  "describeImage": "İstediğiniz görseli tanımlayın...",
+  "yourImageWillAppear": "Görseliniz burada görünecek",
+  "starting": "Başlatılıyor...",
+  "generatingPercent": "Oluşturuluyor %{percent}",
+  "@generatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "generateAnother": "Yeni bir tane oluştur",
+  "generationFailed": "Oluşturma başarısız",
+  "trending": "Popüler",
+  "recent": "Son",
+  "nothingToDiscover": "Henüz keşfedilecek bir şey yok",
+  "freePlan": "Ücretsiz Plan",
+  "premiumPlan": "Premium Plan",
+  "proPlan": "Pro Plan",
+  "proMaxPlan": "Pro Max Plan",
+  "upgrade": "Yükselt",
+  "upgradeHint": "Daha fazla token ve model için yükseltin",
+  "tokenUsage": "Token kullanımı",
+  "used": "kullanılan",
+  "limit": "limit",
+  "settings": "Ayarlar",
+  "notifications": "Bildirimler",
+  "changePassword": "Şifreyi değiştir",
+  "language": "Dil",
+  "account": "Hesap",
+  "editProfile": "Profili düzenle",
+  "activeSessions": "Etkin oturumlar",
+  "deleteAccount": "Hesabı sil",
+  "deleteAccountConfirm": "Hesabınız kalıcı olarak silinsin mi? Bu işlem geri alınamaz.",
+  "deleteAccountPasswordOptional": "Google veya Apple ile giriş yaptıysanız boş bırakın.",
+  "signOutQuestion": "Çıkış yapılsın mı?",
+  "signOutBody": "Tekrar giriş yapmanız gerekecek.",
+  "voiceInput": "Sesli giriş",
+  "voiceInputHint": "Kaydetmek için basılı tutun, göndermek için bırakın.",
+  "voiceTranscribing": "Yazıya dökülüyor…",
+  "voicePermissionDenied": "Mikrofon izni reddedildi.",
+  "attach": "Ekle",
+  "takePhoto": "Fotoğraf çek",
+  "fromLibrary": "Galeriden",
+  "uploadingFile": "Yükleniyor…",
+  "shareChat": "Sohbeti paylaş",
+  "visibility": "Görünürlük",
+  "visibilityPrivate": "Özel",
+  "visibilityShared": "Belirli kişilerle paylaşıldı",
+  "visibilityPublic": "Herkese açık bağlantı",
+  "shareWithEmail": "Birisiyle paylaş (e-posta)",
+  "addPerson": "Ekle",
+  "copyLink": "Bağlantıyı kopyala",
+  "linkCopied": "Bağlantı kopyalandı",
+  "errorGeneric": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
+  "errorNetwork": "İnternet bağlantısı yok.",
+  "errorSessionExpired": "Oturum sona erdi. Lütfen tekrar giriş yapın.",
+  "errorRateLimited": "Çok fazla istek. {seconds} sn içinde tekrar deneyin.",
+  "@errorRateLimited": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorQuotaExceeded": "Token kotası aşıldı.",
+  "errorServer": "Sunucu hatası. Daha sonra deneyin.",
+  "couldNotOpenBrowser": "Tarayıcı açılamadı.",
+  "comingSoon": "Yakında",
+  "newChat": "Yeni sohbet",
+  "media": "Medya",
+  "research": "Araştırma",
+  "recents": "Son kullanılanlar",
+  "chatsWillAppearHere": "Sohbetleriniz burada görünecek",
+  "billing": "Faturalandırma",
+  "usageLabel": "Kullanım",
+  "customPrompts": "Özel istemler",
+  "memory": "Hafıza",
+  "capabilities": "Yetenekler",
+  "designLab": "Tasarım Laboratuvarı",
+  "skills": "Beceriler",
+  "tools": "Araçlar",
+  "premiumRequired": "Premium özellik — etkinleştirmek için yükseltin",
+  "memoryEmptyTitle": "Henüz hafıza yok",
+  "memoryEmptyHint": "CyberNeurova sohbetlerinizden önemli bağlamı burada saklayacak.",
+  "memoryAtCapacity": "Hafıza dolu — en eski girişler değiştirilecek.",
+  "memoryCapacityWarning": "Hafıza neredeyse dolu ({percent}%)",
+  "@memoryCapacityWarning": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "memoryLastExtracted": "Son çıkarma {when}",
+  "@memoryLastExtracted": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryPreferences": "Tercihler",
+  "categoryFacts": "Gerçekler",
+  "categoryProjects": "Projeler",
+  "categoryPatterns": "Desenler",
+  "categoryContext": "Bağlam",
+  "researchAll": "Tümü",
+  "researchCVE": "CVE",
+  "researchExploit": "Exploit",
+  "researchBugBounty": "Bug bounty",
+  "researchMalware": "Malware",
+  "researchPentest": "Pentest",
+  "newResearch": "Yeni araştırma",
+  "noResearchYet": "Henüz araştırma yok",
+  "researchEmptyHint": "CVE, exploit veya tehditleri araştırmak için yeni bir oturum başlatın.",
+  "sources": "Kaynaklar",
+  "close": "Kapat",
+  "doneLabel": "Tamam",
+  "projectsTitle": "Projeler",
+  "freePlan2": "Ücretsiz plan",
+  "greetingMorning": "Günaydın",
+  "greetingAfternoon": "İyi günler",
+  "greetingEvening": "İyi akşamlar",
+  "greetingWithName": "{period}, {name}",
+  "@greetingWithName": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "system": "Sistem",
+  "noConversations": "Henüz konuşma yok",
+  "promptBrainstorm": "Fikir üret",
+  "promptExplain": "Bir kavramı açıkla",
+  "promptCode": "Kod yazmama yardım et"
+}

@@ -1,0 +1,220 @@
+{
+  "@@locale": "nl",
+  "appName": "CyberNeurova",
+  "signIn": "Inloggen",
+  "signUp": "Registreren",
+  "signOut": "Uitloggen",
+  "signInToContinue": "Log in om door te gaan",
+  "createAccount": "Account aanmaken",
+  "joinCyberNeurovaFree": "Word gratis lid van CyberNeurova",
+  "email": "E-mail",
+  "password": "Wachtwoord",
+  "nameOptional": "Naam (optioneel)",
+  "forgotPassword": "Wachtwoord vergeten?",
+  "dontHaveAccount": "Nog geen account? Registreer",
+  "alreadyHaveAccount": "Al een account? Inloggen",
+  "orDivider": "OF",
+  "continueWithGoogle": "Doorgaan met Google",
+  "continueWithApple": "Doorgaan met Apple",
+  "enterValidEmail": "Voer een geldig e-mailadres in",
+  "passwordTooShort": "Wachtwoord te kort",
+  "passwordMin8": "Minimaal 8 tekens",
+  "enterYourPassword": "Voer je wachtwoord in",
+  "resetPassword": "Wachtwoord resetten",
+  "resetPasswordHint": "Voer het e-mailadres van je account in en we sturen je een link om je wachtwoord te resetten.",
+  "sendResetLink": "Resetlink versturen",
+  "backToSignIn": "Terug naar inloggen",
+  "checkYourEmail": "Controleer je e-mail",
+  "resetSentBody": "Als er een account bestaat voor {email}, is er een resetlink onderweg. Controleer je spammap als je het niet ziet.",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailTitle": "Controleer je e-mail",
+  "verifyEmailBody": "We hebben een verificatielink verzonden naar {email}. Tik op de link om je account te activeren en log daarna in.",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "OK",
+  "chats": "Chats",
+  "images": "Afbeeldingen",
+  "discover": "Ontdek",
+  "profile": "Profiel",
+  "noChatsYet": "Nog geen gesprekken",
+  "startChattingHint": "Begin met chatten met CyberNeurova AI",
+  "newConversation": "Nieuw gesprek",
+  "messageInputHint": "Bericht aan CyberNeurova...",
+  "howCanIHelp": "Hoe kan ik je vandaag helpen?",
+  "search": "Zoeken",
+  "searchChatsHint": "Chats zoeken…",
+  "typeToSearchChats": "Typ om je chats te doorzoeken",
+  "noChatsMatch": "Geen chats komen overeen met \"{query}\"",
+  "@noChatsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "Naam wijzigen",
+  "deleteChat": "Chat verwijderen",
+  "deleteChatQuestion": "Chat verwijderen?",
+  "cannotBeUndone": "Dit kan niet ongedaan worden gemaakt.",
+  "cancel": "Annuleren",
+  "delete": "Verwijderen",
+  "save": "Opslaan",
+  "retry": "Opnieuw proberen",
+  "copiedToClipboard": "Gekopieerd naar klembord",
+  "waitForResponseToFinish": "Wacht tot het antwoord klaar is.",
+  "noImagesYet": "Nog geen afbeeldingen",
+  "tapGenerateHint": "Tik op Genereren om je eerste afbeelding te maken",
+  "generate": "Genereren",
+  "generateImage": "Afbeelding genereren",
+  "describeImage": "Beschrijf de gewenste afbeelding...",
+  "yourImageWillAppear": "Je afbeelding verschijnt hier",
+  "starting": "Bezig met starten...",
+  "generatingPercent": "Genereren {percent}%",
+  "@generatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "generateAnother": "Nog één genereren",
+  "generationFailed": "Genereren mislukt",
+  "trending": "Trending",
+  "recent": "Recent",
+  "nothingToDiscover": "Nog niets om te ontdekken",
+  "freePlan": "Gratis abonnement",
+  "premiumPlan": "Premium-abonnement",
+  "proPlan": "Pro-abonnement",
+  "proMaxPlan": "Pro Max-abonnement",
+  "upgrade": "Upgraden",
+  "upgradeHint": "Upgrade voor meer tokens en modellen",
+  "tokenUsage": "Tokengebruik",
+  "used": "gebruikt",
+  "limit": "limiet",
+  "settings": "Instellingen",
+  "notifications": "Meldingen",
+  "changePassword": "Wachtwoord wijzigen",
+  "language": "Taal",
+  "account": "Account",
+  "editProfile": "Profiel bewerken",
+  "activeSessions": "Actieve sessies",
+  "deleteAccount": "Account verwijderen",
+  "deleteAccountConfirm": "Je account permanent verwijderen? Dit kan niet ongedaan worden gemaakt.",
+  "deleteAccountPasswordOptional": "Laat leeg als je bent ingelogd met Google of Apple.",
+  "signOutQuestion": "Uitloggen?",
+  "signOutBody": "Je moet opnieuw inloggen.",
+  "voiceInput": "Spraakinvoer",
+  "voiceInputHint": "Houd ingedrukt om op te nemen, laat los om te verzenden.",
+  "voiceTranscribing": "Bezig met transcriberen…",
+  "voicePermissionDenied": "Microfoontoestemming geweigerd.",
+  "attach": "Bijvoegen",
+  "takePhoto": "Foto maken",
+  "fromLibrary": "Uit galerij",
+  "uploadingFile": "Uploaden…",
+  "shareChat": "Chat delen",
+  "visibility": "Zichtbaarheid",
+  "visibilityPrivate": "Privé",
+  "visibilityShared": "Gedeeld met specifieke personen",
+  "visibilityPublic": "Openbare link",
+  "shareWithEmail": "Delen met iemand (e-mail)",
+  "addPerson": "Toevoegen",
+  "copyLink": "Link kopiëren",
+  "linkCopied": "Link gekopieerd",
+  "errorGeneric": "Er is iets misgegaan. Probeer het opnieuw.",
+  "errorNetwork": "Geen internetverbinding.",
+  "errorSessionExpired": "Sessie verlopen. Log opnieuw in.",
+  "errorRateLimited": "Te veel verzoeken. Probeer over {seconds} s opnieuw.",
+  "@errorRateLimited": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorQuotaExceeded": "Tokenquotum overschreden.",
+  "errorServer": "Serverfout. Probeer het later opnieuw.",
+  "couldNotOpenBrowser": "Kon browser niet openen.",
+  "comingSoon": "Binnenkort beschikbaar",
+  "newChat": "Nieuwe chat",
+  "media": "Media",
+  "research": "Onderzoek",
+  "recents": "Recent",
+  "chatsWillAppearHere": "Je chats verschijnen hier",
+  "billing": "Facturering",
+  "usageLabel": "Gebruik",
+  "customPrompts": "Aangepaste prompts",
+  "memory": "Geheugen",
+  "capabilities": "Mogelijkheden",
+  "designLab": "Design-lab",
+  "skills": "Vaardigheden",
+  "tools": "Hulpmiddelen",
+  "premiumRequired": "Premium-functie — upgrade om in te schakelen",
+  "memoryEmptyTitle": "Nog geen herinneringen",
+  "memoryEmptyHint": "CyberNeurova bewaart hier belangrijke context uit je chats.",
+  "memoryAtCapacity": "Geheugen vol — oudste items worden vervangen.",
+  "memoryCapacityWarning": "Geheugen bijna vol ({percent}%)",
+  "@memoryCapacityWarning": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "memoryLastExtracted": "Laatst opgehaald {when}",
+  "@memoryLastExtracted": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryPreferences": "Voorkeuren",
+  "categoryFacts": "Feiten",
+  "categoryProjects": "Projecten",
+  "categoryPatterns": "Patronen",
+  "categoryContext": "Context",
+  "researchAll": "Alles",
+  "researchCVE": "CVE",
+  "researchExploit": "Exploit",
+  "researchBugBounty": "Bug bounty",
+  "researchMalware": "Malware",
+  "researchPentest": "Pentest",
+  "newResearch": "Nieuw onderzoek",
+  "noResearchYet": "Nog geen onderzoek",
+  "researchEmptyHint": "Start een nieuw onderzoek naar CVE's, exploits of dreigingen.",
+  "sources": "Bronnen",
+  "close": "Sluiten",
+  "doneLabel": "Klaar",
+  "projectsTitle": "Projecten",
+  "freePlan2": "Gratis abonnement",
+  "greetingMorning": "Goedemorgen",
+  "greetingAfternoon": "Goedemiddag",
+  "greetingEvening": "Goedenavond",
+  "greetingWithName": "{period}, {name}",
+  "@greetingWithName": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "system": "Systeem",
+  "noConversations": "Nog geen gesprekken",
+  "promptBrainstorm": "Brainstorm ideeën",
+  "promptExplain": "Leg een concept uit",
+  "promptCode": "Help me met code"
+}

@@ -1,0 +1,220 @@
+{
+  "@@locale": "es",
+  "appName": "CyberNeurova",
+  "signIn": "Iniciar sesión",
+  "signUp": "Registrarse",
+  "signOut": "Cerrar sesión",
+  "signInToContinue": "Inicia sesión para continuar",
+  "createAccount": "Crear cuenta",
+  "joinCyberNeurovaFree": "Únete a CyberNeurova gratis",
+  "email": "Correo electrónico",
+  "password": "Contraseña",
+  "nameOptional": "Nombre (opcional)",
+  "forgotPassword": "¿Olvidaste tu contraseña?",
+  "dontHaveAccount": "¿No tienes una cuenta? Regístrate",
+  "alreadyHaveAccount": "¿Ya tienes una cuenta? Inicia sesión",
+  "orDivider": "O",
+  "continueWithGoogle": "Continuar con Google",
+  "continueWithApple": "Continuar con Apple",
+  "enterValidEmail": "Introduce un correo válido",
+  "passwordTooShort": "Contraseña demasiado corta",
+  "passwordMin8": "Al menos 8 caracteres",
+  "enterYourPassword": "Introduce tu contraseña",
+  "resetPassword": "Restablecer contraseña",
+  "resetPasswordHint": "Introduce el correo de tu cuenta y te enviaremos un enlace para restablecer tu contraseña.",
+  "sendResetLink": "Enviar enlace",
+  "backToSignIn": "Volver al inicio de sesión",
+  "checkYourEmail": "Revisa tu correo",
+  "resetSentBody": "Si existe una cuenta para {email}, te enviaremos un enlace de restablecimiento. Revisa la carpeta de spam si no lo ves.",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailTitle": "Revisa tu correo",
+  "verifyEmailBody": "Enviamos un enlace de verificación a {email}. Toca el enlace para activar tu cuenta y luego inicia sesión.",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "OK",
+  "chats": "Chats",
+  "images": "Imágenes",
+  "discover": "Descubrir",
+  "profile": "Perfil",
+  "noChatsYet": "Aún no hay conversaciones",
+  "startChattingHint": "Empieza a chatear con CyberNeurova AI",
+  "newConversation": "Nueva conversación",
+  "messageInputHint": "Mensaje a CyberNeurova...",
+  "howCanIHelp": "¿En qué puedo ayudarte hoy?",
+  "search": "Buscar",
+  "searchChatsHint": "Buscar chats…",
+  "typeToSearchChats": "Escribe para buscar tus chats",
+  "noChatsMatch": "Ningún chat coincide con \"{query}\"",
+  "@noChatsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "Renombrar",
+  "deleteChat": "Eliminar chat",
+  "deleteChatQuestion": "¿Eliminar chat?",
+  "cannotBeUndone": "Esto no se puede deshacer.",
+  "cancel": "Cancelar",
+  "delete": "Eliminar",
+  "save": "Guardar",
+  "retry": "Reintentar",
+  "copiedToClipboard": "Copiado al portapapeles",
+  "waitForResponseToFinish": "Espera a que termine la respuesta.",
+  "noImagesYet": "Aún no hay imágenes",
+  "tapGenerateHint": "Toca Generar para crear tu primera imagen",
+  "generate": "Generar",
+  "generateImage": "Generar imagen",
+  "describeImage": "Describe la imagen que quieres...",
+  "yourImageWillAppear": "Tu imagen aparecerá aquí",
+  "starting": "Iniciando...",
+  "generatingPercent": "Generando {percent}%",
+  "@generatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "generateAnother": "Generar otra",
+  "generationFailed": "Error al generar",
+  "trending": "Tendencias",
+  "recent": "Recientes",
+  "nothingToDiscover": "Aún no hay nada que descubrir",
+  "freePlan": "Plan Gratis",
+  "premiumPlan": "Plan Premium",
+  "proPlan": "Plan Pro",
+  "proMaxPlan": "Plan Pro Max",
+  "upgrade": "Mejorar",
+  "upgradeHint": "Mejora para más tokens y modelos",
+  "tokenUsage": "Uso de tokens",
+  "used": "usados",
+  "limit": "límite",
+  "settings": "Ajustes",
+  "notifications": "Notificaciones",
+  "changePassword": "Cambiar contraseña",
+  "language": "Idioma",
+  "account": "Cuenta",
+  "editProfile": "Editar perfil",
+  "activeSessions": "Sesiones activas",
+  "deleteAccount": "Eliminar cuenta",
+  "deleteAccountConfirm": "¿Eliminar tu cuenta permanentemente? Esto no se puede deshacer.",
+  "deleteAccountPasswordOptional": "Déjalo en blanco si iniciaste sesión con Google o Apple.",
+  "signOutQuestion": "¿Cerrar sesión?",
+  "signOutBody": "Tendrás que iniciar sesión de nuevo.",
+  "voiceInput": "Entrada de voz",
+  "voiceInputHint": "Mantén pulsado para grabar, suelta para enviar.",
+  "voiceTranscribing": "Transcribiendo…",
+  "voicePermissionDenied": "Permiso de micrófono denegado.",
+  "attach": "Adjuntar",
+  "takePhoto": "Hacer foto",
+  "fromLibrary": "Desde la galería",
+  "uploadingFile": "Subiendo…",
+  "shareChat": "Compartir chat",
+  "visibility": "Visibilidad",
+  "visibilityPrivate": "Privado",
+  "visibilityShared": "Compartido con personas específicas",
+  "visibilityPublic": "Enlace público",
+  "shareWithEmail": "Compartir con alguien (correo)",
+  "addPerson": "Añadir",
+  "copyLink": "Copiar enlace",
+  "linkCopied": "Enlace copiado",
+  "errorGeneric": "Algo salió mal. Inténtalo de nuevo.",
+  "errorNetwork": "Sin conexión a internet.",
+  "errorSessionExpired": "Sesión expirada. Inicia sesión de nuevo.",
+  "errorRateLimited": "Demasiadas solicitudes. Inténtalo en {seconds} s.",
+  "@errorRateLimited": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorQuotaExceeded": "Cuota de tokens superada.",
+  "errorServer": "Error del servidor. Inténtalo más tarde.",
+  "couldNotOpenBrowser": "No se pudo abrir el navegador.",
+  "comingSoon": "Próximamente",
+  "newChat": "Nuevo chat",
+  "media": "Multimedia",
+  "research": "Investigación",
+  "recents": "Recientes",
+  "chatsWillAppearHere": "Tus chats aparecerán aquí",
+  "billing": "Facturación",
+  "usageLabel": "Uso",
+  "customPrompts": "Indicaciones personalizadas",
+  "memory": "Memoria",
+  "capabilities": "Capacidades",
+  "designLab": "Laboratorio de diseño",
+  "skills": "Habilidades",
+  "tools": "Herramientas",
+  "premiumRequired": "Función Premium — mejora para habilitar",
+  "memoryEmptyTitle": "Sin recuerdos aún",
+  "memoryEmptyHint": "CyberNeurova guardará aquí el contexto importante de tus chats.",
+  "memoryAtCapacity": "Memoria llena — se reemplazarán las entradas más antiguas.",
+  "memoryCapacityWarning": "Memoria casi llena ({percent}%)",
+  "@memoryCapacityWarning": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "memoryLastExtracted": "Última extracción {when}",
+  "@memoryLastExtracted": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryPreferences": "Preferencias",
+  "categoryFacts": "Hechos",
+  "categoryProjects": "Proyectos",
+  "categoryPatterns": "Patrones",
+  "categoryContext": "Contexto",
+  "researchAll": "Todo",
+  "researchCVE": "CVE",
+  "researchExploit": "Exploit",
+  "researchBugBounty": "Bug bounty",
+  "researchMalware": "Malware",
+  "researchPentest": "Pentesting",
+  "newResearch": "Nueva investigación",
+  "noResearchYet": "Aún no hay investigaciones",
+  "researchEmptyHint": "Inicia una nueva investigación sobre CVE, exploits o amenazas.",
+  "sources": "Fuentes",
+  "close": "Cerrar",
+  "doneLabel": "Hecho",
+  "projectsTitle": "Proyectos",
+  "freePlan2": "Plan gratuito",
+  "greetingMorning": "Buenos días",
+  "greetingAfternoon": "Buenas tardes",
+  "greetingEvening": "Buenas noches",
+  "greetingWithName": "{period}, {name}",
+  "@greetingWithName": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "system": "Sistema",
+  "noConversations": "Aún no hay conversaciones",
+  "promptBrainstorm": "Generar ideas",
+  "promptExplain": "Explica un concepto",
+  "promptCode": "Ayúdame a programar"
+}

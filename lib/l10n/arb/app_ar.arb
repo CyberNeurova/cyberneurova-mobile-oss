@@ -1,0 +1,220 @@
+{
+  "@@locale": "ar",
+  "appName": "CyberNeurova",
+  "signIn": "تسجيل الدخول",
+  "signUp": "إنشاء حساب",
+  "signOut": "تسجيل الخروج",
+  "signInToContinue": "سجّل الدخول للمتابعة",
+  "createAccount": "إنشاء حساب",
+  "joinCyberNeurovaFree": "انضم إلى CyberNeurova مجانًا",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "nameOptional": "الاسم (اختياري)",
+  "forgotPassword": "هل نسيت كلمة المرور؟",
+  "dontHaveAccount": "ليس لديك حساب؟ سجّل الآن",
+  "alreadyHaveAccount": "لديك حساب بالفعل؟ سجّل الدخول",
+  "orDivider": "أو",
+  "continueWithGoogle": "المتابعة باستخدام Google",
+  "continueWithApple": "المتابعة باستخدام Apple",
+  "enterValidEmail": "أدخل بريدًا إلكترونيًا صالحًا",
+  "passwordTooShort": "كلمة المرور قصيرة جدًا",
+  "passwordMin8": "8 أحرف على الأقل",
+  "enterYourPassword": "أدخل كلمة المرور",
+  "resetPassword": "إعادة تعيين كلمة المرور",
+  "resetPasswordHint": "أدخل بريد حسابك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور.",
+  "sendResetLink": "إرسال الرابط",
+  "backToSignIn": "العودة إلى تسجيل الدخول",
+  "checkYourEmail": "تحقق من بريدك الإلكتروني",
+  "resetSentBody": "إذا كان هناك حساب لـ {email}، فقد أُرسل رابط إعادة التعيين. تحقق من مجلد البريد المزعج إذا لم تجده.",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailTitle": "تحقق من بريدك الإلكتروني",
+  "verifyEmailBody": "أرسلنا رابط تحقق إلى {email}. اضغط على الرابط لتفعيل حسابك ثم سجّل الدخول.",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "موافق",
+  "chats": "المحادثات",
+  "images": "الصور",
+  "discover": "استكشاف",
+  "profile": "الملف الشخصي",
+  "noChatsYet": "لا توجد محادثات بعد",
+  "startChattingHint": "ابدأ الدردشة مع CyberNeurova AI",
+  "newConversation": "محادثة جديدة",
+  "messageInputHint": "رسالة إلى CyberNeurova...",
+  "howCanIHelp": "كيف يمكنني مساعدتك اليوم؟",
+  "search": "بحث",
+  "searchChatsHint": "ابحث في المحادثات…",
+  "typeToSearchChats": "اكتب للبحث في محادثاتك",
+  "noChatsMatch": "لا توجد محادثات مطابقة لـ \"{query}\"",
+  "@noChatsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "إعادة تسمية",
+  "deleteChat": "حذف المحادثة",
+  "deleteChatQuestion": "حذف المحادثة؟",
+  "cannotBeUndone": "لا يمكن التراجع عن هذا.",
+  "cancel": "إلغاء",
+  "delete": "حذف",
+  "save": "حفظ",
+  "retry": "إعادة المحاولة",
+  "copiedToClipboard": "تم النسخ إلى الحافظة",
+  "waitForResponseToFinish": "انتظر حتى ينتهي الرد.",
+  "noImagesYet": "لا توجد صور بعد",
+  "tapGenerateHint": "اضغط على «إنشاء» لإنشاء صورتك الأولى",
+  "generate": "إنشاء",
+  "generateImage": "إنشاء صورة",
+  "describeImage": "صف الصورة التي تريدها...",
+  "yourImageWillAppear": "ستظهر صورتك هنا",
+  "starting": "جارٍ البدء...",
+  "generatingPercent": "جارٍ الإنشاء {percent}%",
+  "@generatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "generateAnother": "إنشاء صورة أخرى",
+  "generationFailed": "فشل الإنشاء",
+  "trending": "الأكثر رواجًا",
+  "recent": "حديث",
+  "nothingToDiscover": "لا يوجد شيء للاستكشاف بعد",
+  "freePlan": "الخطة المجانية",
+  "premiumPlan": "خطة Premium",
+  "proPlan": "خطة Pro",
+  "proMaxPlan": "خطة Pro Max",
+  "upgrade": "ترقية",
+  "upgradeHint": "ترقية للحصول على مزيد من التوكنات والنماذج",
+  "tokenUsage": "استخدام التوكنات",
+  "used": "مستخدم",
+  "limit": "الحد",
+  "settings": "الإعدادات",
+  "notifications": "الإشعارات",
+  "changePassword": "تغيير كلمة المرور",
+  "language": "اللغة",
+  "account": "الحساب",
+  "editProfile": "تعديل الملف الشخصي",
+  "activeSessions": "الجلسات النشطة",
+  "deleteAccount": "حذف الحساب",
+  "deleteAccountConfirm": "حذف حسابك نهائيًا؟ لا يمكن التراجع عن هذا.",
+  "deleteAccountPasswordOptional": "اتركه فارغًا إذا سجّلت الدخول باستخدام Google أو Apple.",
+  "signOutQuestion": "تسجيل الخروج؟",
+  "signOutBody": "ستحتاج إلى تسجيل الدخول مرة أخرى.",
+  "voiceInput": "إدخال صوتي",
+  "voiceInputHint": "اضغط مطولًا للتسجيل واترك للإرسال.",
+  "voiceTranscribing": "جارٍ النسخ…",
+  "voicePermissionDenied": "تم رفض إذن الميكروفون.",
+  "attach": "إرفاق",
+  "takePhoto": "التقاط صورة",
+  "fromLibrary": "من المكتبة",
+  "uploadingFile": "جارٍ الرفع…",
+  "shareChat": "مشاركة المحادثة",
+  "visibility": "الرؤية",
+  "visibilityPrivate": "خاصة",
+  "visibilityShared": "مشاركة مع أشخاص محددين",
+  "visibilityPublic": "رابط عام",
+  "shareWithEmail": "مشاركة مع شخص (بالبريد الإلكتروني)",
+  "addPerson": "إضافة",
+  "copyLink": "نسخ الرابط",
+  "linkCopied": "تم نسخ الرابط",
+  "errorGeneric": "حدث خطأ ما. حاول مرة أخرى.",
+  "errorNetwork": "لا يوجد اتصال بالإنترنت.",
+  "errorSessionExpired": "انتهت الجلسة. سجّل الدخول مرة أخرى.",
+  "errorRateLimited": "طلبات كثيرة جدًا. حاول مرة أخرى خلال {seconds} ث.",
+  "@errorRateLimited": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorQuotaExceeded": "تم تجاوز حصة التوكنات.",
+  "errorServer": "خطأ في الخادم. حاول لاحقًا.",
+  "couldNotOpenBrowser": "تعذّر فتح المتصفح.",
+  "comingSoon": "قريبًا",
+  "newChat": "محادثة جديدة",
+  "media": "الوسائط",
+  "research": "بحث",
+  "recents": "الأخيرة",
+  "chatsWillAppearHere": "ستظهر محادثاتك هنا",
+  "billing": "الفوترة",
+  "usageLabel": "الاستخدام",
+  "customPrompts": "موجهات مخصصة",
+  "memory": "الذاكرة",
+  "capabilities": "القدرات",
+  "designLab": "مختبر التصميم",
+  "skills": "المهارات",
+  "tools": "الأدوات",
+  "premiumRequired": "ميزة بريميوم — قم بالترقية للتفعيل",
+  "memoryEmptyTitle": "لا توجد ذكريات بعد",
+  "memoryEmptyHint": "ستحفظ CyberNeurova هنا السياق المهم من محادثاتك.",
+  "memoryAtCapacity": "الذاكرة ممتلئة — سيتم استبدال أقدم الإدخالات.",
+  "memoryCapacityWarning": "الذاكرة شبه ممتلئة ({percent}%)",
+  "@memoryCapacityWarning": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "memoryLastExtracted": "آخر استخراج {when}",
+  "@memoryLastExtracted": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryPreferences": "التفضيلات",
+  "categoryFacts": "الحقائق",
+  "categoryProjects": "المشاريع",
+  "categoryPatterns": "الأنماط",
+  "categoryContext": "السياق",
+  "researchAll": "الكل",
+  "researchCVE": "CVE",
+  "researchExploit": "استغلال",
+  "researchBugBounty": "مكافأة الأخطاء",
+  "researchMalware": "برامج ضارة",
+  "researchPentest": "اختبار اختراق",
+  "newResearch": "بحث جديد",
+  "noResearchYet": "لا توجد جلسات بحث بعد",
+  "researchEmptyHint": "ابدأ بحثًا جديدًا للتحقيق في CVE أو الثغرات أو التهديدات.",
+  "sources": "المصادر",
+  "close": "إغلاق",
+  "doneLabel": "تم",
+  "projectsTitle": "المشاريع",
+  "freePlan2": "الخطة المجانية",
+  "greetingMorning": "صباح الخير",
+  "greetingAfternoon": "مساء الخير",
+  "greetingEvening": "مساء الخير",
+  "greetingWithName": "{period}، {name}",
+  "@greetingWithName": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "system": "النظام",
+  "noConversations": "لا توجد محادثات بعد",
+  "promptBrainstorm": "عصف ذهني للأفكار",
+  "promptExplain": "شرح مفهوم",
+  "promptCode": "ساعدني في كتابة الكود"
+}
