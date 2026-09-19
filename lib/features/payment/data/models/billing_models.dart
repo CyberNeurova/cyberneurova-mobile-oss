@@ -76,15 +76,30 @@ class PlansResponse with _$PlansResponse {
             : const ['crypto', 'card'])
         .map((m) => m == 'cryptomus' ? 'crypto' : m)
         .toList();
-    final promo = json['promotion'];
     return PlansResponse(
       monthly: parse(json['monthly'] ?? (plans is Map ? plans['monthly'] : null)),
       yearly: parse(json['yearly'] ?? (plans is Map ? plans['yearly'] : null)),
       paymentMethods: methods,
-      promotion: promo is Map
-          ? PromotionInfo.fromJson(Map<String, dynamic>.from(promo))
-          : null,
+      promotion: _parsePromotion(json['promotion']),
     );
+  }
+
+  // The generated PromotionInfo.fromJson casts `discountPercent` as an int and
+  // parses `expiresAt` as a String, so a fractional percent (12.5) or an
+  // epoch-number date throws inside it and errors the WHOLE Plans/upgrade
+  // screen. Coerce those two fields, then guard the parse so a drifted promo
+  // only drops the banner, never the screen.
+  static PromotionInfo? _parsePromotion(dynamic raw) {
+    if (raw is! Map) return null;
+    final m = Map<String, dynamic>.from(raw);
+    final dp = m['discountPercent'];
+    m['discountPercent'] = dp is num ? dp.toInt() : 0;
+    if (m['expiresAt'] is! String) m['expiresAt'] = null;
+    try {
+      return PromotionInfo.fromJson(m);
+    } catch (_) {
+      return null;
+    }
   }
 }
 

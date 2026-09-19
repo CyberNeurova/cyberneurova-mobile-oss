@@ -76,11 +76,22 @@ class ResearchListResponse with _$ResearchListResponse {
   // Constructs directly (freezed only generates json glue for the plain
   // arrow-redirect form; a normalizing body must build the object itself).
   factory ResearchListResponse.fromJson(Map<String, dynamic> json) {
+    // Sahachiel: skip a drifted row rather than fail the whole list. whereType
+    // dropped non-map elements, but a MAP row with an off-spec field (e.g. an
+    // epoch-number `createdAt` the generated fromJson parses as a String) still
+    // threw out of `.map()` and errored the entire research list.
     final raw = json['sessions'];
-    final sessions = (raw is List ? raw : const [])
-        .whereType<Map>()
-        .map((s) => ResearchSession.fromJson(ResearchSession.normalize(s)))
-        .toList();
+    final sessions = <ResearchSession>[];
+    if (raw is List) {
+      for (final s in raw) {
+        if (s is Map) {
+          try {
+            sessions
+                .add(ResearchSession.fromJson(ResearchSession.normalize(s)));
+          } catch (_) {/* skip a drifted row */}
+        }
+      }
+    }
     return ResearchListResponse(
       sessions: sessions,
       nextCursor: json['nextCursor'] is String ? json['nextCursor'] as String : null,
@@ -107,14 +118,24 @@ class ResearchDetail with _$ResearchDetail {
     final s = rawSession is Map
         ? Map<String, dynamic>.from(rawSession)
         : json;
+    // Sahachiel: per-query try/catch, same reason as the list above - a MAP
+    // query whose nested `sources` element is off-spec (e.g. a bare string
+    // instead of a source object) threw out of `.map()` and blanked the whole
+    // detail screen. Skip the drifted query, keep the rest.
     final rawQueries = s['queries'];
-    final queries = rawQueries is List ? rawQueries : const [];
+    final queries = <ResearchQuery>[];
+    if (rawQueries is List) {
+      for (final q in rawQueries) {
+        if (q is Map) {
+          try {
+            queries.add(ResearchQuery.fromJson(Map<String, dynamic>.from(q)));
+          } catch (_) {/* skip a drifted query */}
+        }
+      }
+    }
     return ResearchDetail(
       session: ResearchSession.fromJson(ResearchSession.normalize(s)),
-      queries: queries
-          .whereType<Map>()
-          .map((q) => ResearchQuery.fromJson(Map<String, dynamic>.from(q)))
-          .toList(),
+      queries: queries,
     );
   }
 }

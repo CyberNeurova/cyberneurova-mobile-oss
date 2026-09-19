@@ -70,4 +70,50 @@ void main() {
           PaymentHistoryResponse.fromJson({'payments': null}).payments, isEmpty);
     });
   });
+
+  group('PlansResponse.fromJson promotion', () {
+    test('tolerates a fractional promo discountPercent', () {
+      // Before the fix, 12.5 hit the generated `discountPercent as int?` and
+      // threw, erroring the whole Plans/upgrade screen for every user.
+      final res = PlansResponse.fromJson({
+        'monthly': <dynamic>[],
+        'yearly': <dynamic>[],
+        'promotion': {'title': 'Spring', 'discountPercent': 12.5},
+      });
+      expect(res.monthly, isEmpty);
+      expect(res.promotion, isNotNull);
+      expect(res.promotion!.title, 'Spring');
+      expect(res.promotion!.discountPercent, anyOf(0, 12));
+    });
+
+    test('tolerates an epoch-number promo expiresAt', () {
+      final res = PlansResponse.fromJson({
+        'monthly': <dynamic>[],
+        'promotion': {'expiresAt': 1737300000000},
+      });
+      expect(res.promotion, isNotNull);
+      expect(res.promotion!.expiresAt, isNull);
+    });
+
+    test('a non-map promotion drops the banner, never the screen', () {
+      final res = PlansResponse.fromJson({
+        'monthly': <dynamic>[],
+        'promotion': 'nope',
+      });
+      expect(res.promotion, isNull);
+    });
+
+    test('a well-formed promotion still parses', () {
+      final res = PlansResponse.fromJson({
+        'monthly': <dynamic>[],
+        'promotion': {
+          'title': 'Launch',
+          'discountPercent': 20,
+          'expiresAt': '2026-12-31T00:00:00.000Z',
+        },
+      });
+      expect(res.promotion!.discountPercent, 20);
+      expect(res.promotion!.expiresAt, isNotNull);
+    });
+  });
 }
