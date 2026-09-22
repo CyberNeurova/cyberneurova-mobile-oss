@@ -231,7 +231,12 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     } finally {
       if (mounted) setState(() => _sending = false);
     }
-    _scrollToBottom(force: true);
+    // Same `mounted` gate as the setState above: sendMessage awaits a whole
+    // stream, so the user can leave this chat before it returns. _scrollToBottom
+    // calls setState (the force branch flips _stickToBottom), which throws
+    // "setState() called after dispose" on an unmounted State. The setState on
+    // the line above is already guarded; this call was left outside it.
+    if (mounted) _scrollToBottom(force: true);
   }
 
   @override

@@ -820,6 +820,17 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
     _agentFlush?.cancel();
     _agentFlush = null;
 
+    // Bail before the reconciliation below touches `state`. _replaceAssistant
+    // reads `state.valueOrNull`, which throws a StateError once the notifier is
+    // disposed — and disposing mid-run (navigating away during a stream) is the
+    // common case, not an edge one. This guard used to sit lower, past the
+    // delta-only fallback: a run that produced deltas alone reached
+    // `_replaceAssistant` here after the loop broke on `_disposed` and threw out
+    // of the async gap, past the try. The timer cleanup above still runs, and
+    // onDispose already resets the global stream flags, so returning here is the
+    // intended finish for a disposed run.
+    if (_disposed) return;
+
     // A run that ended on deltas alone never produced a whole-message frame,
     // so `accumulated` would be empty and the reply would vanish on finish.
     // `result` normally supplies it; this covers the run that stops early.
@@ -836,7 +847,6 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
       streamError = '$streamError\n\n$accumulated';
     }
 
-    if (_disposed) return;
     if (serverSideWork &&
         !deviceRan &&
         !replyWasRefusedCall &&
