@@ -171,7 +171,15 @@ void main() {
       }
 
       session = ShellSession(
-        rootDir: rootfs,
+        // GUEST '/', not the host rootfs dir. Under PRoot shell_workspace
+        // passes guest paths (root is '/', home is '/root'), and
+        // _hostRootsCanonical translates rootDir back to the host through
+        // toHostPath. Handing it the already-host rootfs path sent it through
+        // toHostPath's fallback a second time — p.join(rootfs, rootfs) — so the
+        // rootfs root canonicalised to a nonexistent nested dir and a legit
+        // '/etc/hosts' fell outside every root and resolved to null. The sibling
+        // distro test above already uses '/'; this group was the odd one out.
+        rootDir: '/',
         homeDir: '/root',
         cwd: '/root',
         enforceContainment: false,
