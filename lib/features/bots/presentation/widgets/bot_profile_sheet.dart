@@ -107,14 +107,14 @@ class _BotProfileSheet extends ConsumerWidget {
         ),
         if (agent.model != null && agent.model!.isNotEmpty) ...[
           const SizedBox(height: 18),
-          _Label('Model'),
+          const _Label('Model'),
           const SizedBox(height: 4),
           Text(agent.model!,
               style: TextStyle(fontSize: 14, color: cs.onSurface)),
         ],
         if (agent.description != null && agent.description!.trim().isNotEmpty) ...[
           const SizedBox(height: 18),
-          _Label('About'),
+          const _Label('About'),
           const SizedBox(height: 4),
           Text(agent.description!,
               style: TextStyle(
@@ -122,7 +122,7 @@ class _BotProfileSheet extends ConsumerWidget {
         ],
         if (agent.capabilities.isNotEmpty) ...[
           const SizedBox(height: 18),
-          _Label('Capabilities'),
+          const _Label('Capabilities'),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,

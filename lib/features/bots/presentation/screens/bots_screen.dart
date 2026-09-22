@@ -154,6 +154,7 @@ class BotsScreen extends ConsumerWidget {
         _openGroup(context, room);
       }
     } catch (e) {
+      if (!context.mounted) return;
       _toast(context, userMessageFor(context, e));
     }
   }
@@ -176,6 +177,7 @@ class BotsScreen extends ConsumerWidget {
         await _openDm(context, ref, agent);
       }
     } catch (e) {
+      if (!context.mounted) return;
       _toast(context, userMessageFor(context, e));
     }
   }

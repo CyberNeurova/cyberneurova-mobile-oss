@@ -69,6 +69,7 @@ class _RemoteAttachScreenState extends ConsumerState<RemoteAttachScreen> {
         path: '/',
       ));
 
+      if (!mounted) return;
       final controller = WebViewController()
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
         ..setBackgroundColor(Theme.of(context).colorScheme.surface)
@@ -76,7 +77,6 @@ class _RemoteAttachScreenState extends ConsumerState<RemoteAttachScreen> {
           onProgress: (p) => setState(() => _progress = p / 100),
         ))
         ..loadRequest(uri);
-      if (!mounted) return;
       setState(() => _webview = controller);
     } catch (e) {
       if (mounted) setState(() => _error = e);
