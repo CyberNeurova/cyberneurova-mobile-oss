@@ -96,7 +96,13 @@ void main() {
       homeDir: '/root',
       cwd: '/root',
       enforceContainment: false,
-      toHostPath: (s) => p.join(root.path, s.startsWith('/') ? s.substring(1) : s),
+      // Accept the host separator: package:path normalizes to '\' on Windows,
+      // and resolveWithin (which now runs the host containment check) feeds the
+      // normalized guest path back through here.
+      toHostPath: (s) {
+        final g = s.replaceAll(r'\', '/');
+        return p.join(root.path, g.startsWith('/') ? g.substring(1) : g);
+      },
     ));
     // Normalized rather than literal: package:path uses the HOST's separator
     // style, so these read '\root' when the suite runs on Windows and
@@ -127,5 +133,90 @@ void main() {
     expect(shortenPath('/a/b/c'), '/a/b/c');
     expect(shortenPath('/home/me/projects/app/lib/features/shell'),
         '…/lib/features/shell');
+  });
+
+  // Regression for the OSS security report (issue #2): under PRoot the file
+  // tools run natively and follow HOST symlinks, so a guest-planted symlink
+  // that escapes the rootfs AND the bind-mounted home must be refused — the
+  // old `!_enforceContainment` short-circuit returned the un-canonicalized
+  // host path and let file_read/file_write walk out to app-private data.
+  group('resolveWithin confines host symlinks under PRoot (issue #2)', () {
+    late Directory tmp;
+    late String rootfs; // guest '/'  -> here
+    late String homeHost; // guest '/root' -> here (a bind-mount OUTSIDE rootfs)
+    late String appPrivate; // outside BOTH — the escape target
+    late ShellSession session;
+
+    setUp(() {
+      tmp = Directory.systemTemp.createTempSync('shell_escape_test');
+      rootfs = p.join(tmp.path, 'rootfs');
+      homeHost = p.join(tmp.path, 'home');
+      appPrivate = p.join(tmp.path, 'app-private');
+      Directory(p.join(rootfs, 'etc')).createSync(recursive: true);
+      File(p.join(rootfs, 'etc', 'hosts')).writeAsStringSync('127.0.0.1 localhost');
+      Directory(homeHost).createSync(recursive: true);
+      File(p.join(homeHost, 'notes.txt')).writeAsStringSync('mine');
+      Directory(appPrivate).createSync(recursive: true);
+      File(p.join(appPrivate, 'token')).writeAsStringSync('SECRET');
+
+      // The session normalizes with package:path, which uses the HOST's
+      // separator — '\' when the suite runs on Windows — so accept both.
+      String toHost(String s) {
+        final g = s.replaceAll(r'\', '/');
+        if (g == '/root') return homeHost;
+        if (g.startsWith('/root/')) {
+          return p.join(homeHost, g.substring('/root/'.length));
+        }
+        return p.join(rootfs, g.startsWith('/') ? g.substring(1) : g);
+      }
+
+      session = ShellSession(
+        rootDir: rootfs,
+        homeDir: '/root',
+        cwd: '/root',
+        enforceContainment: false,
+        toHostPath: toHost,
+      );
+    });
+
+    tearDown(() => tmp.deleteSync(recursive: true));
+
+    test('legit paths in home and rootfs still resolve', () {
+      final canonHome = Directory(homeHost).resolveSymbolicLinksSync();
+      final canonRootfs = Directory(rootfs).resolveSymbolicLinksSync();
+      expect(session.resolveWithin('/root/notes.txt'),
+          p.join(canonHome, 'notes.txt'));
+      expect(session.resolveWithin('/etc/hosts'),
+          p.join(canonRootfs, 'etc', 'hosts'));
+      // A not-yet-created file in home is still writable (nearest ancestor).
+      expect(session.resolveWithin('/root/new.txt'),
+          p.join(canonHome, 'new.txt'));
+    });
+
+    test('a guest symlink escaping to app-private is refused', () {
+      Link link;
+      try {
+        link = Link(p.join(homeHost, 'escape'))
+          ..createSync(p.join(appPrivate, 'token'));
+      } catch (_) {
+        markTestSkipped('host does not permit symlink creation');
+        return;
+      }
+      expect(link.existsSync(), isTrue);
+      // The core assertion: the escaping symlink resolves to null now.
+      expect(session.resolveWithin('/root/escape'), isNull);
+    });
+
+    test('a write THROUGH an escaping symlinked directory is refused', () {
+      try {
+        Link(p.join(homeHost, 'escapedir')).createSync(appPrivate);
+      } catch (_) {
+        markTestSkipped('host does not permit symlink creation');
+        return;
+      }
+      expect(session.resolveWithin('/root/escapedir/pwn.txt'), isNull);
+      // changeDirectory into it returns a refusal message, not null (success).
+      expect(session.changeDirectory('/root/escapedir'), isNotNull);
+    });
   });
 }

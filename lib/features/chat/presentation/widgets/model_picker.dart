@@ -10,6 +10,7 @@ import 'package:cyberneurova_mobile/features/chat/data/models/model_info.dart';
 import 'package:cyberneurova_mobile/features/chat/presentation/providers/model_provider.dart';
 import 'package:cyberneurova_mobile/features/payment/data/repositories/payment_repository.dart';
 import 'package:cyberneurova_mobile/features/agents/presentation/providers/local_llm_provider.dart';
+import 'package:cyberneurova_mobile/shared/widgets/cn_shimmer.dart';
 
 /// Compact chip showing the currently selected model name.
 /// Tap → opens [showModelPickerSheet] for the full list (free + locked).
@@ -85,6 +86,11 @@ class ModelPickerChip extends ConsumerWidget {
         borderRadius: BorderRadius.circular(999),
         onTap: () {
           HapticFeedback.selectionClick();
+          // Re-fetch the lineup every time the picker opens, so a model added
+          // or retired server-side shows up WITHOUT closing and reopening the
+          // app. The sheet keeps showing the last-known list while this refetch
+          // is in flight (`skipLoadingOnRefresh`), so there's no loading flash.
+          ref.invalidate(modelsProvider);
           showModelPickerSheet(context);
         },
         child: Container(
@@ -170,13 +176,43 @@ class _ModelPickerSheet extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Text(
-              'Choose a model',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-                color: cs.onSurface,
-              ),
+            Row(
+              children: [
+                Text(
+                  'Choose a model',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                    color: cs.onSurface,
+                  ),
+                ),
+                const Spacer(),
+                // Manual refresh (the list also refetches on open). While a
+                // refetch is in flight WITH a list already shown, the icon
+                // becomes a spinner so the user knows it's checking for updates.
+                if (modelsAsync.isLoading && modelsAsync.hasValue)
+                  SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: cs.onSurfaceVariant,
+                    ),
+                  )
+                else
+                  InkWell(
+                    borderRadius: BorderRadius.circular(999),
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      ref.invalidate(modelsProvider);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(Icons.refresh_rounded,
+                          size: 20, color: cs.onSurfaceVariant),
+                    ),
+                  ),
+              ],
             ),
             // Says why something other than the pick is answering. The chip
             // shows a marker; this is where the marker is explained, because
@@ -214,15 +250,28 @@ class _ModelPickerSheet extends ConsumerWidget {
             ],
             const SizedBox(height: 16),
             modelsAsync.when(
-              loading: () => const Padding(
-                padding: EdgeInsets.all(32),
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
+              // First load (no cached list yet) → skeleton rows that mirror the
+              // real model rows, rather than a lone spinner. A refetch over an
+              // existing list skips this (skipLoadingOnRefresh) and updates in
+              // place, with the header spinner as the only cue.
+              loading: () => const _ModelPickerShimmer(),
               error: (e, _) => Padding(
                 padding: const EdgeInsets.all(20),
-                child: Text(
-                  userMessageFor(context, e),
-                  style: TextStyle(color: cs.onSurfaceVariant),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      userMessageFor(context, e),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: cs.onSurfaceVariant),
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton.icon(
+                      onPressed: () => ref.invalidate(modelsProvider),
+                      icon: const Icon(Icons.refresh_rounded, size: 18),
+                      label: const Text('Retry'),
+                    ),
+                  ],
                 ),
               ),
               data: (resp) => Column(
@@ -291,6 +340,45 @@ class _ModelPickerSheet extends ConsumerWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Skeleton placeholder for the first model-list load — four rows shaped like
+/// [_ModelRow] (avatar + name + description) so the sheet doesn't jump when the
+/// real list arrives.
+class _ModelPickerShimmer extends StatelessWidget {
+  const _ModelPickerShimmer();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(
+        4,
+        (i) => Padding(
+          padding: EdgeInsets.only(bottom: i < 3 ? 8 : 0),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Row(
+              children: [
+                CnShimmer(width: 36, height: 36, radius: 10),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CnShimmer(width: 130, height: 13, radius: 6),
+                      SizedBox(height: 7),
+                      CnShimmer(width: 210, height: 10, radius: 5),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

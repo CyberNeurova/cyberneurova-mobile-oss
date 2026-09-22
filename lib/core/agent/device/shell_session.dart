@@ -85,24 +85,26 @@ class ShellSession {
     final dir = Directory(_toHostPath(resolvedTarget));
     if (!dir.existsSync()) return 'No such directory: $target';
 
-    // Under PRoot the shell's namespace is the guest's, so the *guest* path is
-    // what must be recorded — resolving symlinks on the host would hand back a
-    // path the shell has never heard of.
-    if (!_enforceContainment) {
-      _cwd = resolvedTarget;
-      return null;
-    }
-
+    // Canonicalize on the HOST and refuse anything that escapes the real host
+    // roots — even under PRoot. PRoot confines the shell PROCESS, but the
+    // native-Dart file tools that share this session follow host symlinks, so a
+    // `cd` through a host symlink pointing outside the sandbox would let a
+    // later file_read / file_write escape it (issue #2). The host check runs in
+    // BOTH modes; only what we record as cwd differs.
     String canonical;
     try {
       canonical = dir.resolveSymbolicLinksSync();
     } catch (_) {
-      canonical = resolvedTarget;
+      canonical = dir.path;
     }
-    if (!_within(canonical)) {
+    if (!_withinHostRoots(canonical)) {
       return 'Refused: $target is outside the session directory';
     }
-    _cwd = canonical;
+
+    // Under PRoot the shell's namespace is the guest's, so record the *guest*
+    // path (what `pwd` prints) rather than the host-canonical one the shell has
+    // never heard of — but only now that the host check above has passed.
+    _cwd = _enforceContainment ? canonical : resolvedTarget;
     return null;
   }
 
@@ -116,14 +118,13 @@ class ShellSession {
   /// matters — you cannot create a file inside a directory you can't reach.
   String? resolveWithin(String target) {
     final resolved = _resolve(target);
+    // The path Dart actually opens. Identity for Android's shell; under PRoot
+    // it crosses the guest→host boundary.
+    final hostResolved = _toHostPath(resolved);
 
-    // PRoot confines the guest itself, so a guest path needs no host-side
-    // containment — only translation, so callers get something Dart can open.
-    if (!_enforceContainment) return _toHostPath(resolved);
-
-    // Walk up to the nearest existing ancestor so a not-yet-created file is
-    // still checked against a real, symlink-resolved path.
-    var probe = resolved;
+    // Walk up to the nearest existing HOST ancestor so a not-yet-created file
+    // is still checked against a real, symlink-resolved host path.
+    var probe = hostResolved;
     while (probe.isNotEmpty &&
         !Directory(probe).existsSync() &&
         !File(probe).existsSync()) {
@@ -140,10 +141,17 @@ class ShellSession {
     } catch (_) {
       canonicalProbe = probe;
     }
-    if (!_within(canonicalProbe)) return null;
+    // Confine on the HOST even under PRoot. The file tools run natively and
+    // follow host symlinks, so a symlink whose canonical target escapes BOTH
+    // the rootfs and the bind-mounted home is a sandbox escape — PRoot confines
+    // the shell process, not these Dart File calls (issue #2). The old
+    // `!_enforceContainment` short-circuit returned the un-canonicalized host
+    // path here, which is exactly what let file_read / file_write follow a
+    // guest-planted symlink out to app-private data.
+    if (!_withinHostRoots(canonicalProbe)) return null;
 
-    // Re-attach whatever tail didn't exist yet.
-    final tail = p.relative(resolved, from: probe);
+    // Re-attach whatever tail didn't exist yet (the host path the tools open).
+    final tail = p.relative(hostResolved, from: probe);
     return tail == '.' ? canonicalProbe : p.join(canonicalProbe, tail);
   }
 
@@ -173,13 +181,39 @@ class ShellSession {
     );
   }
 
-  bool _within(String candidate) {
-    String root;
-    try {
-      root = Directory(rootDir).resolveSymbolicLinksSync();
-    } catch (_) {
-      root = rootDir;
+  /// The real HOST directories the native-Dart file tools may touch, each
+  /// symlink-resolved: the sandbox rootfs, plus — under PRoot — the
+  /// bind-mounted guest home (`/root` maps to a host dir OUTSIDE the rootfs). A
+  /// path whose canonical form escapes ALL of these is a sandbox escape.
+  List<String> _hostRootsCanonical() {
+    final roots = <String>[];
+    void add(String hostPath) {
+      String canon;
+      try {
+        canon = Directory(hostPath).resolveSymbolicLinksSync();
+      } catch (_) {
+        canon = hostPath;
+      }
+      if (!roots.any((r) => p.equals(r, canon))) roots.add(canon);
     }
-    return p.equals(candidate, root) || p.isWithin(root, candidate);
+
+    // The rootfs on the HOST. Under PRoot `rootDir` is the GUEST `/`
+    // (shell_workspace passes guest paths), so it must be TRANSLATED to the
+    // host — using rootDir raw would resolve to the device's real `/` and
+    // confine nothing. On Android's shell `toHostPath` is identity and rootDir
+    // is already the host container, so this is a no-op there.
+    add(_toHostPath(rootDir));
+    // The home the file tools may reach — under PRoot a bind-mount that sits
+    // OUTSIDE the rootfs, so it's a legitimate second root. On Android home ==
+    // root and this dedups away.
+    add(_toHostPath(homeDir));
+    return roots;
+  }
+
+  bool _withinHostRoots(String candidate) {
+    for (final root in _hostRootsCanonical()) {
+      if (p.equals(candidate, root) || p.isWithin(root, candidate)) return true;
+    }
+    return false;
   }
 }
