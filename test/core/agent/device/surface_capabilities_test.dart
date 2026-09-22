@@ -39,7 +39,7 @@ void main() {
     test('Code does not promise unlimited context', () {
       // `_withPriorTurns` carries SIX turns, truncated to 600 characters each,
       // with tool results excluded — and agent turns are not stored
-      // server-side at all. "The whole project as context" was a
+      // server-side at all (outbox 054). "The whole project as context" was a
       // promise nothing in the app keeps, on the screen a user reads before
       // deciding to build something on their phone.
       const code = AgentSurface.code;

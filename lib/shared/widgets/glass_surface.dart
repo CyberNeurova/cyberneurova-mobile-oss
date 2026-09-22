@@ -2,12 +2,12 @@ import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 
-/// Frosted-glass container — the Grok/iOS-26 material used for surfaces that
+/// Frosted-glass container — the iOS-26 material used for surfaces that
 /// FLOAT over scrolling content (the composer pill, the app-bar backdrop).
 ///
 /// Why this exists: our chat used to lay the composer out in a `Column`
 /// BELOW the message list, so the list ended at a hard edge and the last
-/// bubble was visually guillotined by the composer's border. Grok instead
+/// bubble was visually guillotined by the composer's border. The reference instead
 /// floats a translucent pill over the list — content slides underneath and
 /// blurs out, which reads as depth instead of a wall.
 ///
@@ -24,6 +24,7 @@ class GlassSurface extends StatelessWidget {
     this.border = true,
     this.padding,
     this.clipBehavior = Clip.antiAlias,
+    this.solid = false,
   });
 
   final Widget child;
@@ -41,6 +42,18 @@ class GlassSurface extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final Clip clipBehavior;
 
+  /// When true, skip the `BackdropFilter` and paint a fully opaque fill.
+  ///
+  /// A `BackdropFilter` re-samples whatever is painted behind it every frame
+  /// that backdrop changes. Over a message list that updates ~20×/s during
+  /// token streaming, that means the composer and app-bar glass re-blur on
+  /// every tick — which on a physical iPhone shows as the reply "hanging" and
+  /// earlier lines smearing/overlaying through the blur (a known iOS
+  /// compositing artifact; the simulator's render path hides it). Callers
+  /// flip this on while a stream is running so the surface goes to a cheap
+  /// opaque fill for that window, then back to real glass when idle.
+  final bool solid;
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -48,26 +61,42 @@ class GlassSurface extends StatelessWidget {
     final radius = borderRadius ?? BorderRadius.circular(28);
     final fillAlpha = opacity ?? (isDark ? 0.62 : 0.72);
 
+    final decorated = Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        // Opaque when solid — no backdrop showing through, so nothing to
+        // smear. Slightly above surfaceContainer to read as "raised", the
+        // same the blur gives it.
+        color: solid
+            ? Color.alphaBlend(
+                cs.surfaceContainer, Theme.of(context).scaffoldBackgroundColor)
+            : cs.surfaceContainer.withValues(alpha: fillAlpha),
+        borderRadius: radius,
+        border: border
+            ? Border.all(
+                // Light mode: a hairline at low alpha disappears against
+                // the page, so the pill loses its shape — keep it strong.
+                color: cs.outline.withValues(alpha: isDark ? 0.45 : 0.9),
+              )
+            : null,
+      ),
+      child: child,
+    );
+
+    if (solid) {
+      return ClipRRect(
+        borderRadius: radius,
+        clipBehavior: clipBehavior,
+        child: decorated,
+      );
+    }
+
     return ClipRRect(
       borderRadius: radius,
       clipBehavior: clipBehavior,
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: Container(
-          padding: padding,
-          decoration: BoxDecoration(
-            color: cs.surfaceContainer.withValues(alpha: fillAlpha),
-            borderRadius: radius,
-            border: border
-                ? Border.all(
-                    // Light mode: a hairline at low alpha disappears against
-                    // the page, so the pill loses its shape — keep it strong.
-                    color: cs.outline.withValues(alpha: isDark ? 0.45 : 0.9),
-                  )
-                : null,
-          ),
-          child: child,
-        ),
+        child: decorated,
       ),
     );
   }

@@ -705,7 +705,8 @@ final deviceExecutorProvider =
 /// a stale block is worse than none: it makes the model confident about a
 /// device that no longer looks like that.
 ///
-/// Null for non-shell chats, which also matches the server gate (the backend honours it only when `section === "shell"`), so an ordinary chat
+/// Null for non-shell chats, which also matches the server gate (chat-team
+/// inbox/032 honours it only when `section === "shell"`), so an ordinary chat
 /// never carries a description of the user's filesystem.
 final deviceContextProvider = Provider.family<String?, String>((ref, chatId) {
   if (!ref.watch(isAgentSessionProvider(chatId))) return null;

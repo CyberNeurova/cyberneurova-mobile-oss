@@ -10,7 +10,7 @@ import 'package:cyberneurova_mobile/core/agent/device/surface_capabilities.dart'
 /// on prod — the curl answer matched core's own verified-fixed output and the
 /// phone still printed "no sources were fetched" underneath it.
 ///
-/// Core now says so directly (reply to internal notes):
+/// Core now says so directly (reply to outbox 063):
 ///
 /// ```json
 /// {"type":"system","subtype":"web_search_results","count":10,
@@ -128,7 +128,7 @@ void main() {
     });
   });
 
-  group('per-surface turn budgets', () {
+  group('per-surface turn budgets (outbox 054)', () {
     test('every surface stays inside the server clamp', () {
       for (final s in AgentSurface.values) {
         expect(s.maxTurns, greaterThan(0), reason: s.title);

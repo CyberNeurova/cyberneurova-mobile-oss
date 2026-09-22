@@ -3,7 +3,7 @@ import 'package:cyberneurova_mobile/features/chat/data/models/chat_model.dart';
 
 // Sahachiel: StreamEvent.fromJson parses every line of the /complete NDJSON
 // stream. It had blanket `as String?` casts that throw on a wrong-typed field -
-// and the backend confirmed `code` sometimes arrives as a number - which would
+// and chat-team confirmed `code` sometimes arrives as a number - which would
 // kill the parse of the event. These lock the type-safe behaviour (and the
 // unknown-type -> error fallback), plus the basic chat/message parsing.
 void main() {
@@ -86,6 +86,29 @@ void main() {
       expect(e.query, 'flutter pinning');
       expect(e.resultCount, 5);
       expect(e.source, 'web');
+      // No `sources` key on the payload → empty list, never null (so the
+      // "Sources" chip simply doesn't render).
+      expect(e.sources, isEmpty);
+    });
+
+    test('status parses the sources[] urls, dropping non-strings/blanks', () {
+      final e = StreamEvent.fromJson({
+        'type': 'status',
+        'status': 'web-searched',
+        'resultCount': 2,
+        'source': 'web',
+        'sources': ['https://nso.edu/a', '', 42, 'https://timeanddate.com/b'],
+      }) as StreamEventStatus;
+      expect(e.sources, ['https://nso.edu/a', 'https://timeanddate.com/b']);
+    });
+
+    test('status with a non-list sources is treated as none', () {
+      final e = StreamEvent.fromJson({
+        'type': 'status',
+        'status': 'web-searched',
+        'sources': 'nso.edu',
+      }) as StreamEventStatus;
+      expect(e.sources, isEmpty);
     });
 
     test('error uses message, then the error fallback', () {
@@ -103,7 +126,7 @@ void main() {
       );
     });
 
-    test('a numeric error code does not throw (the backend NDJSON quirk)', () {
+    test('a numeric error code does not throw (chat-team NDJSON quirk)', () {
       // {"type":"error","code":500} used to throw on `code as String?` and kill
       // the stream-event parse. Now code reads as null and the message survives.
       final e = StreamEvent.fromJson({

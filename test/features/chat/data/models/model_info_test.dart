@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cyberneurova_mobile/features/chat/data/models/model_info.dart';
 
-// Locks the /models capability + budget fields and
+// Locks the /models capability + budget fields (chat-team inbox/020) and
 // the "absent block reads as off" contract the UI gating relies on.
 // Originally authored by @Sahachiel in PR #14.
 void main() {

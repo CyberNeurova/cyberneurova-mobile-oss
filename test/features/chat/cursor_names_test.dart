@@ -14,7 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 ///  * `/chat` pages on `endingBefore`. The list is newest-first, so the next
 ///    page is OLDER than the cursor — `startingAfter` asks for NEWER rows,
 ///    which overlap the page already on screen. That was the other half of
-///    "the app can't page past 20 chats": the cursor arrived,
+///    "the app can't page past 20 chats" (outbox 061): the cursor arrived,
 ///    the client sent it under the wrong name, and the overlap looked like
 ///    the server refusing to paginate.
 ///

@@ -16,8 +16,8 @@ CyberNeurova is an AI assistant. The user chats with models we host
 ourselves; there is no third-party AI provider behind it. On top of chat sit
 image generation, a research workspace, and a code workspace.
 
-It is live on the iOS App Store and in the store. Android exists in the same
-codebase and is polished by the desktop app. **Every design decision has to
+It is live on the iOS App Store and in TestFlight. Android exists in the same
+codebase and is polished by the desktop team. **Every design decision has to
 work on both platforms** — we ship one Flutter codebase, not two native apps.
 
 Four paid tiers (Starter $17.99, Premium $39.99, Pro, Pro Max) sold through
@@ -240,7 +240,7 @@ drawer no longer lists Media.
 The model picker used to sit in this slot; it moved down into the composer,
 next to the thing it affects.
 
-### The composer (Grok-style frosted glass)
+### The composer (frosted glass)
 
 The single most-touched surface in the app. It **floats over** the message
 list rather than sitting below it — messages scroll underneath and blur out.
@@ -405,8 +405,8 @@ Frosted navy glass, rounded on the right edge, full-height.
 └──────────────────────────┘
 ```
 
-Destinations sit **above** the chat history, matching the common pattern in
-modern chat apps. Two destinations only; the sidebar is deliberately short.
+Destinations sit **above** the chat history, matching common chat apps.
+Two destinations only; the sidebar is deliberately short.
 
 ### Selection mode
 
@@ -492,7 +492,7 @@ It must appear on the Plans screen **and** the paywall sheet.
 
 ## 10. Android
 
-Same Flutter codebase, polished by the desktop app. Design once, but check:
+Same Flutter codebase, polished by the desktop team. Design once, but check:
 
 - Back gesture and the system back button both need to work.
 - Material ripples vs iOS's opacity press states — Flutter handles most of

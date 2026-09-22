@@ -56,7 +56,7 @@ class IapPurchaseState {
   final IapPurchasePhase phase;
 
   /// Tier of the product the flow concerns (the TAPPED tier — [result.tier]
-  /// is what was actually granted and can differ, the backend API §1).
+  /// is what was actually granted and can differ, inbox/026 §1).
   final String? tier;
 
   /// Set on [IapPurchasePhase.success] — the `/iap/verify` response.

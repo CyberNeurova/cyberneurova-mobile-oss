@@ -248,7 +248,7 @@ Both follow the same pattern:
 
 ## Image flow
 
-1. `POST /images/generate` is **synchronous** as of the backend API (Ideogram 4 on
+1. `POST /images/generate` is **synchronous** as of inbox/018 (Ideogram 4 on
    Box A returns bytes in ~15s). No polling.
 2. Response is `{success, images: [{url}], usage}`. `url` is host-relative
    `/api/images/<uuid>/view`. `ApiConstants.resolveImageUrl()` prepends
@@ -263,7 +263,7 @@ Both follow the same pattern:
    to `gal`. Custom `PhotosPermissionDeniedException` for the "open Settings"
    hint.
 6. Delete: `DELETE /api/mobile/v1/images/<uuid>` — mobile-namespaced as of
-   the backend API. Single + bulk both go through `ImagesListNotifier.deleteOne/Many`.
+   inbox/019. Single + bulk both go through `ImagesListNotifier.deleteOne/Many`.
 
 ## Paywall pattern
 
@@ -324,13 +324,27 @@ violates this and needs a sweep.
 Use `AppL10n.of(context).<key>` not hardcoded English. Server errors get a
 localized lookup via `userMessageFor(context, e)`.
 
+## `agent_comms/` paper trail
+
+Cross-team coordination with the chat-app team happens through markdown letters.
+Numbered, dated, single topic per letter.
+
+- `inbox/<NNN>_topic_YYYY-MM-DD.md` — letters the chat-app team has sent us.
+  These are the spec for API changes. Read before changing API-touching code.
+- `outbox/<NNN>_topic_YYYY-MM-DD.md` — letters we've sent. Document
+  decisions we want them to act on, bugs we've found, server-side changes we
+  need. Write a letter for anything you'd otherwise mention in a meeting.
+
+The letters serve as both a paper trail and async coordination — the chat
+team is at a different cadence and timezone.
+
 ## Build + ship
 
 - `flutter build ipa --release` → `build/ios/ipa/CyberNeurova.ipa`
 - `xcrun altool --upload-app --type ios -f <ipa> --apiKey <id> --apiIssuer <id>`
-  uploads to the store (~3 min for upload + 15-30 min for Apple processing).
+  uploads to TestFlight (~3 min for upload + 15-30 min for Apple processing).
 - Build number lives in `pubspec.yaml` `version:` line as `1.0.0+N`. Bump `+N`
-  for every the store upload; Apple rejects duplicates.
+  for every TestFlight upload; Apple rejects duplicates.
 - Avoid `flutter run` for on-device installs from CI / agentic contexts — it
   attaches a foreground process and freezes the terminal. Use `flutter install`
   or `xcrun devicectl device install app`.
@@ -340,10 +354,10 @@ localized lookup via `userMessageFor(context, e)`.
 - **StoreKit / Google Play Billing** — we use the in-app browser pattern for
   checkout. Can be added if Apple ever rejects the current approach (~1 day).
 - **Custom backend / parallel API** — every persistent feature goes through
-  the backend `/api/mobile/v1` endpoints. Don't add a sidecar.
+  the chat-team's `/api/mobile/v1` endpoints. Don't add a sidecar.
 - **WebSocket / Server-Sent Events** — server uses chunked NDJSON for chat
   streams. WS only for the voice orchestrator (out of scope for this app).
 - **Sentry / Datadog** — analytics events go to `/analytics/events` on the
-  the backend API. No third-party SDK.
+  chat-team API. No third-party SDK.
 - **Heavy navigation libraries** — go_router is the only routing dep. No
   auto-route, beamer, etc.

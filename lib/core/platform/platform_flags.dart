@@ -22,7 +22,7 @@ class PlatformFlags {
   /// has explicitly accepted the review risk of showing paywall/plans UI
   /// on iOS without StoreKit IAP. If Apple rejects again under 3.1.1 or
   /// 2.1(b), the reversal path is to flip this back to `!isIOS` and either
-  /// wait for the desktop app-owned payment layer or apply
+  /// wait for the desktop-team-owned payment layer (outbox/034) or apply
   /// for Apple's External Link Account Entitlement + add the required
   /// disclosure sheet. See git history for the previous gating impl.
   static bool get showBilling => true;

@@ -1,7 +1,7 @@
 import 'package:in_app_purchase/in_app_purchase.dart' show ProductDetails;
 import 'package:cyberneurova_mobile/core/platform/platform_flags.dart';
 
-/// Store-product catalog + tier ranking, in ONE place (the backend API §3/§4).
+/// Store-product catalog + tier ranking, in ONE place (inbox/026 §3/§4).
 ///
 /// The strings are load-bearing: a typo means "product not found" on-device
 /// (iOS) or `product_unknown` from `/iap/verify`. Change them only in
@@ -21,7 +21,7 @@ class IapCatalog {
     'pro_max': 4,
   };
 
-  /// iOS App Store product IDs (live in App Store Connect — the backend API §3.1).
+  /// iOS App Store product IDs (live in App Store Connect — inbox/026 §3.1).
   /// Monthly only: yearly variants are accepted by the server for
   /// forward-compat but do NOT exist as real products yet (§9).
   static const Map<String, String> iosProductIds = {
@@ -102,7 +102,7 @@ class IapProduct {
 
   /// Localized, store-formatted price string ("US$9.99", "₹799", …). Always
   /// display THIS next to a store CTA — never a hardcoded USD amount
-  /// (the backend API §8).
+  /// (inbox/026 §8).
   final String price;
 
   /// Live handle needed to launch the store purchase flow.
@@ -173,7 +173,7 @@ PurchaseRoute purchaseRouteFor({
 
 /// `/iap/verify` 200 response. `tier`/`source` reflect the user's EFFECTIVE
 /// subscription after reconciliation — which can differ from the product
-/// just purchased if a higher tier is active elsewhere (the backend API §1, §3.5).
+/// just purchased if a higher tier is active elsewhere (inbox/026 §1, §3.5).
 class IapVerifyResult {
   const IapVerifyResult({
     required this.tier,
@@ -263,7 +263,7 @@ class IapStatus {
 // ─── Failures ────────────────────────────────────────────────────────────────
 
 /// How the user should be able to react to a failed purchase/verify
-/// (the backend API §3 error table).
+/// (inbox/026 §3 error table).
 enum IapErrorKind {
   /// Transient (network, Apple/Google outage, iap_not_configured, expired
   /// session) — "try again" is the honest advice.

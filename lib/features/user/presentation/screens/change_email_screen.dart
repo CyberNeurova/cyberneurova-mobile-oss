@@ -7,7 +7,7 @@ import 'package:cyberneurova_mobile/features/user/data/repositories/user_reposit
 import 'package:cyberneurova_mobile/shared/widgets/cn_button.dart';
 import 'package:cyberneurova_mobile/shared/widgets/cn_text_field.dart';
 
-/// Change email screen. Per the backend API: immediately updates email,
+/// Change email screen. Per chat-team inbox/007: immediately updates email,
 /// flips emailVerified=false, sends verification link to NEW address,
 /// revokes other sessions.
 class ChangeEmailScreen extends ConsumerStatefulWidget {

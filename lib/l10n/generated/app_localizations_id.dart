@@ -367,6 +367,9 @@ class AppL10nId extends AppL10n {
   String get recents => 'Terbaru';
 
   @override
+  String get workspace => 'Workspace';
+
+  @override
   String get chatsWillAppearHere => 'Obrolan Anda akan tampil di sini';
 
   @override

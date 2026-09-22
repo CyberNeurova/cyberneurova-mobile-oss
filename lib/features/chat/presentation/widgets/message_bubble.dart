@@ -17,6 +17,9 @@ import 'package:cyberneurova_mobile/features/chat/data/models/chat_model.dart';
 import 'package:cyberneurova_mobile/features/chat/presentation/providers/attachments_provider.dart';
 import 'package:cyberneurova_mobile/features/chat/presentation/providers/chat_provider.dart';
 import 'package:cyberneurova_mobile/features/chat/presentation/providers/message_reactions_provider.dart';
+import 'package:cyberneurova_mobile/features/chat/presentation/providers/message_sources_provider.dart';
+import 'package:cyberneurova_mobile/features/chat/presentation/widgets/sources_sheet.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cyberneurova_mobile/features/chat/presentation/screens/web_preview_screen.dart';
 import 'package:cyberneurova_mobile/features/chat/presentation/widgets/code_panel.dart';
 import 'package:cyberneurova_mobile/features/chat/presentation/widgets/fence_info.dart';
@@ -103,17 +106,23 @@ class MessageBubble extends ConsumerWidget {
                   )
                 : GestureDetector(
                     onLongPress: () => _copy(context, text),
-                    child: _RichBody(
-                      text: text,
-                      chatId: chatId,
-                      // Selectable markdown builds a full SelectableText span
-                      // tree, which is the dominant cost of re-rendering the
-                      // growing bubble ~20×/s while tokens stream. Selection
-                      // is useless mid-stream anyway, so drop it until the
-                      // reply settles — the completed bubble is selectable.
-                      selectable: !(isLatest &&
-                          ref.watch(streamRunningProvider)),
-                    ),
+                    // While THIS reply is the one streaming, render it as plain
+                    // text — no markdown parse, no code/math/tool segmentation.
+                    // `_RichBody` re-segments and re-parses the whole growing
+                    // string on every ~50ms flush (the segment cache misses
+                    // because the text grew), and over thousands of chars that
+                    // jams the UI thread on a real device: the reply "flushes",
+                    // and the scroll gesture can't even be recognised. Plain
+                    // Text is effectively free to lay out. The full markdown
+                    // (code panels, math, selectable) renders once the stream
+                    // settles and this stops being the streaming message.
+                    child: (isLatest && ref.watch(streamRunningProvider))
+                        ? _StreamingBody(text: text)
+                        : _RichBody(
+                            text: text,
+                            chatId: chatId,
+                            selectable: true,
+                          ),
                   ),
           // Action row — only on assistant messages with content. Sits just
           // under the reply so it's discoverable without long-press. Copy
@@ -127,8 +136,8 @@ class MessageBubble extends ConsumerWidget {
                 messageId: message.id,
                 text: text,
                 showRetry: isLatest,
-                // Continue is driven by the backend's done.truncated flag
-                // which lives in truncatedMessagesProvider.
+                // Continue is driven by chat-team's done.truncated flag
+                // (inbox/014) which lives in truncatedMessagesProvider.
                 // Precise — no false positives on legitimate code fences.
                 ref: ref,
               ),
@@ -165,7 +174,7 @@ void _copy(BuildContext context, String text) {
 /// Action row under each assistant message: Copy + (when latest) Regenerate
 /// + thumbs up/down. Thumbs persist across rebuilds and relaunches via
 /// SharedPreferences (see `message_reactions_provider.dart`). Not yet
-/// synced to server — the backend /analytics/events is queued (#49).
+/// synced to server — chat-team's /analytics/events is queued (#49).
 class _MessageActions extends ConsumerWidget {
   const _MessageActions({
     required this.chatId,
@@ -188,7 +197,7 @@ class _MessageActions extends ConsumerWidget {
     final reactions = ref.watch(messageReactionsProvider);
     final rating = reactions[messageId] ?? 0;
 
-    // Continue is shown when the backend's done.truncated flag fired for
+    // Continue is shown when chat-team's done.truncated flag fired for
     // this bubble. Disable while a stream is in flight so a double-tap
     // can't queue two simultaneous resumes.
     final streaming = ref.watch(streamRunningProvider);
@@ -196,7 +205,12 @@ class _MessageActions extends ConsumerWidget {
         .watch(truncatedMessagesProvider)
         .contains(messageId);
 
-    return Wrap(
+    // Web sources the server fetched for this answer — shown as a tappable
+    // "Sources" chip to the right of the action icons (reference layout).
+    final sources =
+        ref.watch(messageSourcesProvider)[messageId] ?? const <String>[];
+
+    final actions = Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 4,
       children: [
@@ -287,6 +301,125 @@ class _MessageActions extends ConsumerWidget {
           },
         ),
       ],
+    );
+
+    if (sources.isEmpty) return actions;
+    // Action icons on the left, a "Sources" chip on the right (the reference
+    // layout). Expanded lets the icons wrap if the row gets tight.
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(child: actions),
+        const SizedBox(width: 8),
+        _SourcesChip(sources: sources),
+      ],
+    );
+  }
+}
+
+/// A compact "Sources" chip: overlapping source favicons + label, opening the
+/// full citation sheet on tap (reference pattern). Sits to the right of the
+/// action-icon row on answers the server web-searched.
+class _SourcesChip extends StatelessWidget {
+  const _SourcesChip({required this.sources});
+
+  /// Source URLs, in the order the server fetched them.
+  final List<String> sources;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final items = [
+      for (final u in sources) SourceItem(title: _host(u), url: u),
+    ];
+    final shown = items.take(3).toList();
+    // Overlapping favicons: each 18px circle steps 11px so ~7px peeks out.
+    final stackWidth = 18.0 + (shown.length - 1) * 11.0;
+
+    return Material(
+      color: cs.surfaceContainerHighest.withValues(alpha: 0.5),
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () {
+          HapticFeedback.selectionClick();
+          showSourcesSheet(context, sources: items);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: stackWidth,
+                height: 18,
+                child: Stack(
+                  children: [
+                    for (var i = 0; i < shown.length; i++)
+                      Positioned(
+                        left: i * 11.0,
+                        child: _Favicon(item: shown[i], ring: cs.surface),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 7),
+              Text(
+                'Sources',
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w500,
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  static String _host(String url) {
+    try {
+      return Uri.parse(url).host.replaceFirst('www.', '');
+    } catch (_) {
+      return url;
+    }
+  }
+}
+
+/// One 18px favicon circle with a themed ring so overlapping ones stay
+/// separable. Falls back to a globe glyph while loading or on error.
+class _Favicon extends StatelessWidget {
+  const _Favicon({required this.item, required this.ring});
+  final SourceItem item;
+  final Color ring;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    Widget fallback() => Icon(Icons.public_rounded,
+        size: 11, color: cs.onSurfaceVariant);
+    return Container(
+      width: 18,
+      height: 18,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: cs.surfaceContainerHighest,
+        border: Border.all(color: ring, width: 1.5),
+      ),
+      clipBehavior: Clip.antiAlias,
+      alignment: Alignment.center,
+      child: item.effectiveFavicon.isEmpty
+          ? fallback()
+          : CachedNetworkImage(
+              imageUrl: item.effectiveFavicon,
+              width: 15,
+              height: 15,
+              fit: BoxFit.cover,
+              placeholder: (_, __) => fallback(),
+              errorWidget: (_, __, ___) => fallback(),
+            ),
     );
   }
 }
@@ -517,6 +650,30 @@ class _FailedBubble extends StatelessWidget {
 // Sahachiel: cache parsed segments by text so static bubbles don't re-run the
 // two regex passes on every parent rebuild (the per-token streaming storm
 // rebuilds the whole message list).
+/// Plain-text render of the in-flight streaming reply.
+///
+/// Deliberately dumb: a single [Text] with the same paragraph metrics the
+/// markdown body uses, so when the stream settles and [_RichBody] takes over
+/// the swap is barely perceptible. No markdown parse, no segmentation, no
+/// selection tree — the whole point is that laying this out 20×/s over a
+/// growing string stays cheap enough that the UI thread keeps servicing
+/// scroll and touch. Raw markdown syntax (**, ##, ```) shows briefly during
+/// the stream, then formats on completion — the accepted trade for a reply
+/// that streams smoothly and stays scrollable.
+class _StreamingBody extends StatelessWidget {
+  const _StreamingBody({required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Text(
+      text,
+      style: TextStyle(fontSize: 15, color: cs.onSurface, height: 1.55),
+    );
+  }
+}
+
 final _segmentsCache = <String, List<_Segment>>{};
 
 class _RichBody extends ConsumerWidget {
@@ -543,14 +700,14 @@ class _RichBody extends ConsumerWidget {
   // Match $$...$$ block LaTeX. We restrict to single-paragraph blocks
   // (no blank-line-between) — keeps the regex non-greedy + safe.
   static final _mathRe = RegExp(r'\$\$([^\$]+?)\$\$');
-  // the backend API: assistant messages with an inline-generated image
+  // chat-team inbox/020: assistant messages with an inline-generated image
   // carry a `[GENERATED_IMAGE:/api/images/<uuid>/view]` marker in the body.
   // Strip the marker out of the displayed text and render the image. The
   // URL is host-relative; resolveImageUrl + AuthedNetworkImage (which sends
   // the Bearer header only to our own origin) handle the rest.
   static final _generatedImageRe =
       RegExp(r'\[GENERATED_IMAGE:([^\]]+)\]');
-  // Agentic tool-run marker: `[TOOL_RUN:{json}]`. The naive
+  // Agentic tool-run marker: `[TOOL_RUN:{json}]` (inbox/025). The naive
   // non-greedy regex `\[TOOL_RUN:(\{[\s\S]*?\})\]` under-matches, because
   // the JSON object nests braces (`{"steps":[{...}]}` — the first `}]` in
   // the text closes the *last step + steps array*, not the marker). So we
@@ -650,7 +807,7 @@ class _RichBody extends ConsumerWidget {
     }
 
     // Pass 3: split markdown segments around [GENERATED_IMAGE:url] markers
-    //. The URL is host-relative; resolveImageUrl on
+    // (chat-team inbox/020). The URL is host-relative; resolveImageUrl on
     // the render side prepends webOrigin. The marker text never reaches
     // the markdown body — we slice it out and put a real image segment
     // in its place.
@@ -675,7 +832,7 @@ class _RichBody extends ConsumerWidget {
     }
 
     // Pass 4: split markdown segments around [TOOL_RUN:{json}] markers
-    // (the backend API agentic runs). Same shape as the generated-image pass —
+    // (inbox/025 agentic runs). Same shape as the generated-image pass —
     // the marker text never reaches the markdown body; a validated marker
     // becomes a ToolRunCard segment, an unparseable one renders nothing.
     final out = <_Segment>[];

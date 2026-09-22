@@ -12,7 +12,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 ///   X-OS-Version: 26.6
 ///   X-App-Version: 1.0.0+1
 ///   X-Screen-Size: 390x844
-///   X-Locale: fr (BCP-47 language tag — the backend uses this to set
+///   X-Locale: fr (BCP-47 language tag — chat-team uses this to set
 ///                 system-prompt language via `requestHints.language`)
 ///   X-Theme: light | dark (reflects the user's chosen theme; system follows
 ///                          the device brightness)
@@ -65,7 +65,7 @@ class MobileContextInterceptor extends Interceptor {
   }
 
   /// Read user-selected locale first; fall back to device locale. We send the
-  /// BCP-47 language code only (e.g. "fr", not "fr_FR") — the backend uses
+  /// BCP-47 language code only (e.g. "fr", not "fr_FR") — the chat-team uses
   /// this to set the AI's reply language; country variants don't help and just
   /// cost us false misses when their server normalises.
   String _resolveLocale() {

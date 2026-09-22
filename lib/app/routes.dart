@@ -24,7 +24,12 @@ import 'package:cyberneurova_mobile/features/payment/presentation/screens/checko
 import 'package:cyberneurova_mobile/features/payment/presentation/screens/plans_screen.dart';
 import 'package:cyberneurova_mobile/features/projects/presentation/screens/projects_screen.dart';
 import 'package:cyberneurova_mobile/features/projects/presentation/screens/project_detail_screen.dart';
+import 'package:cyberneurova_mobile/features/remote/data/models/remote_device.dart';
+import 'package:cyberneurova_mobile/features/remote/presentation/screens/remote_attach_screen.dart';
+import 'package:cyberneurova_mobile/features/remote/presentation/screens/remote_devices_screen.dart';
 import 'package:cyberneurova_mobile/features/agents/presentation/screens/agents_screen.dart';
+import 'package:cyberneurova_mobile/features/bots/presentation/screens/bots_screen.dart';
+import 'package:cyberneurova_mobile/features/bots/presentation/screens/bot_dm_screen.dart';
 import 'package:cyberneurova_mobile/features/code/presentation/screens/code_sessions_screen.dart';
 import 'package:cyberneurova_mobile/features/agents/presentation/screens/adb_pairing_screen.dart';
 import 'package:cyberneurova_mobile/features/agents/presentation/screens/agent_environment_screen.dart';
@@ -158,7 +163,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/image/generate',
             name: 'image-generate',
-            // Grok pass: Imagine is a sibling home surface of Ask, not a
+            // redesign pass: Imagine is a sibling home surface of Ask, not a
             // modal compose flow — a horizontal slide makes Ask ↔ Imagine
             // read as one surface swapping sideways.
             pageBuilder: (_, state) =>
@@ -181,6 +186,26 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: 'settings',
             pageBuilder: (_, state) =>
                 _slideRight(state, const SettingsScreen()),
+          ),
+
+          // Remote control — attach to and drive a device from the phone
+          // (mobile = controller). Pushed from Settings.
+          GoRoute(
+            path: '/remote-devices',
+            name: 'remote-devices',
+            pageBuilder: (_, state) =>
+                _slideRight(state, const RemoteDevicesScreen()),
+          ),
+          GoRoute(
+            path: '/remote-attach',
+            name: 'remote-attach',
+            pageBuilder: (_, state) {
+              final device = state.extra;
+              if (device is! RemoteDevice) {
+                return _slideRight(state, const RemoteDevicesScreen());
+              }
+              return _slideRight(state, RemoteAttachScreen(device: device));
+            },
           ),
 
           // Chat search — a full screen (not a SearchDelegate) so results
@@ -305,6 +330,31 @@ final routerProvider = Provider<GoRouter>((ref) {
             redirect: _deviceSurfacesOnly,
                 pageBuilder: (_, state) =>
                     _slideRight(state, const AdbPairingScreen()),
+              ),
+            ],
+          ),
+
+          // Agent Contacts (bot-section) — DM AI contacts. Remote-control +
+          // on-device runs are P2–P3. Entitlement (DM = paid, groups =
+          // pro/pro_max) is enforced server-side; the screen surfaces the 403
+          // if a free user opens a DM.
+          GoRoute(
+            path: '/bots',
+            name: 'bots',
+            pageBuilder: (_, state) => _slideRight(state, const BotsScreen()),
+            routes: [
+              GoRoute(
+                path: 'room/:roomId',
+                name: 'bot-dm',
+                pageBuilder: (_, state) => _slideRight(
+                  state,
+                  BotDmScreen(
+                    roomId: state.pathParameters['roomId']!,
+                    title: state.uri.queryParameters['title'],
+                    type: state.uri.queryParameters['type'],
+                    agentId: state.uri.queryParameters['agentId'],
+                  ),
+                ),
               ),
             ],
           ),

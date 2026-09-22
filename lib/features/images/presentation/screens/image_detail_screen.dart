@@ -144,7 +144,7 @@ class ImageDetailScreen extends ConsumerWidget {
                     children: [
                       _Chip(text: image.model.toUpperCase()),
                       const SizedBox(width: 8),
-                      // the backend Ideogram-backed API doesn't return raw
+                      // Chat-team's Ideogram-backed API doesn't return raw
                       // width/height anymore — it returns aspectRatio (e.g.
                       // "1:1", "16:9"). Show that instead.
                       _Chip(text: image.aspectRatio),

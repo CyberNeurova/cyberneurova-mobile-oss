@@ -59,7 +59,8 @@
 		<key>ITSAppUsesNonExemptEncryption</key>
 		<false/>
 		<!-- Google Sign-In client ID + OAuth callback URL scheme.
-	     Values mirror ios/Runner/GoogleService-Info.plist (the backend API); the Google Sign-In SDK reads GIDClientID from THIS
+	     Values mirror ios/Runner/GoogleService-Info.plist (chat-team
+	     inbox/010); the Google Sign-In SDK reads GIDClientID from THIS
 	     Info.plist, not the GoogleService plist (we're not on Firebase).
 	     The REVERSED_CLIENT_ID URL scheme is how Google's OAuth flow
 	     redirects back into the app after consent. -->

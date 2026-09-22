@@ -7,7 +7,7 @@ import 'package:cyberneurova_mobile/features/chat/presentation/providers/chat_ti
 /// Search used to read `plainChatListProvider` and additionally require
 /// `messageCount != 0`. Between them, every Console and Research session was
 /// invisible: the provider filters to `section == chat`, and agent-run turns
-/// are never written server-side, so an agent session's
+/// are never written server-side (outbox 054), so an agent session's
 /// `messageCount` is always 0 no matter how much work is in it.
 ///
 /// Verified on device 2026-08-05: searching "sleep" found nothing while a

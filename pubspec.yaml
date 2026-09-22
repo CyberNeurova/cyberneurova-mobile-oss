@@ -1,7 +1,7 @@
 name: cyberneurova_mobile
 description: CyberNeurova AI Chat — iOS & Android mobile app
 publish_to: none
-version: 1.0.1+45
+version: 1.1.1+50
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
@@ -91,7 +91,7 @@ dependencies:
   # In-app webview for the cryptomus / card checkout pages (Android only —
   # iOS hides the entire billing surface per App Store rules).
   webview_flutter: ^4.10.0
-  # Store IAP (StoreKit 2 on iOS, Play Billing on Android) — the backend API.
+  # Store IAP (StoreKit 2 on iOS, Play Billing on Android) — inbox/026.
   # Purchases are verified server-side via POST /iap/verify before being
   # finished/acknowledged; web checkout stays as the fallback path while
   # Play Console products don't exist yet.

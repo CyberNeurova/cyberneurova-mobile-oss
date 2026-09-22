@@ -240,7 +240,7 @@ class AgentTranscript {
         // Two results arrive for the same call: ours, posted the moment the
         // device finished, carrying the real reason — and the server's echo of
         // it a moment later, which drops `error` entirely (frames captured
-        // 2026-08-05, internal notes). Assigning unconditionally meant the echo
+        // 2026-08-05, outbox 052). Assigning unconditionally meant the echo
         // erased the reason and a refused call expanded to nothing but its
         // arguments. Whoever knows something wins over whoever knows nothing.
         card

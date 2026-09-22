@@ -9,7 +9,7 @@ import 'package:cyberneurova_mobile/features/chat/presentation/providers/chat_pr
 /// Typing indicator that morphs label as time passes + reacts to
 /// auto-web-search and agentic tool status events from the stream. Priority:
 ///   1. activeToolStatusProvider != null → live tool line ("Reading
-///      main.py…") with a small spinner
+///      main.py…") with a small spinner (inbox/025)
 ///   2. activeWebSearchProvider != null → "Searching the web: <query>" /
 ///      "Web results (N)" / "No web results — answering from training"
 ///   3. _showLabel true after 1.2s of waiting → "Thinking…"

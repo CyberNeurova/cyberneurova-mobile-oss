@@ -369,6 +369,9 @@ class AppL10nNl extends AppL10n {
   String get recents => 'Recent';
 
   @override
+  String get workspace => 'Workspace';
+
+  @override
   String get chatsWillAppearHere => 'Je chats verschijnen hier';
 
   @override

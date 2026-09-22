@@ -3,9 +3,8 @@ import 'dart:io';
 
 /// `~/.neurova` — the app's own directory inside the user's shell home.
 ///
-/// The owner asked for this by name: a `~/.neurova` directory for managing
-/// memory and chats, the way developer tools keep their state in a dotfile
-/// directory under the home folder. The point is not storage —
+/// The owner asked for this by name: *"can we have .neurova for managing
+/// memory and chats in a folder they can open"*. The point is not storage —
 /// the app already had storage — it is that the storage is somewhere the user
 /// can reach. It sits in the shell home, so `ls -a ~` shows it and `cat
 /// ~/.neurova/chats/<id>.json` works from the terminal on the phone, which is

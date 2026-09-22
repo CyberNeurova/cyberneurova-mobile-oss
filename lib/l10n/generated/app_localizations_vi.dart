@@ -367,6 +367,9 @@ class AppL10nVi extends AppL10n {
   String get recents => 'Gần đây';
 
   @override
+  String get workspace => 'Workspace';
+
+  @override
   String get chatsWillAppearHere => 'Cuộc trò chuyện của bạn sẽ hiện ở đây';
 
   @override

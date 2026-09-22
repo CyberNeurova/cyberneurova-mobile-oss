@@ -38,7 +38,7 @@ class UploadResult {
 }
 
 /// Uploads via the mobile-Bearer'd `/api/mobile/v1/files/upload` route
-/// (the backend). Mirrors web policy 1:1: free tier is
+/// (chat-team round 7, inbox/007). Mirrors web policy 1:1: free tier is
 /// capped at 2 MB per file, paid at 10 MB (6 MB for zip), 500 MB/24h
 /// total. Server enforces both size + file-type allowlists.
 class UploadRepository {
@@ -47,23 +47,36 @@ class UploadRepository {
 
   /// Upload a local file as a chat attachment.
   ///
-  /// [chatId] is REQUIRED — the backend engine-backed upload route
-  /// (post-Vercel migration, the backend API) uses it to scope the workspace
+  /// [chatId] is REQUIRED — chat-team's engine-backed upload route
+  /// (post-Vercel migration, inbox/015) uses it to scope the workspace
   /// path. Without it the engine returns 400 `INVALID_INPUT` and the
   /// file would also silently land in `<userId>/general/` instead of
   /// `<userId>/<chatId>/` causing later file-loss.
   Future<UploadResult> uploadFile({
     required String filePath,
-    required String chatId,
+    String? chatId,
+    String? roomId,
+    String? projectId,
+    String? filename,
     String? contentType,
   }) async {
     final form = FormData.fromMap({
       'file': await MultipartFile.fromFile(
         filePath,
+        // Override the on-disk name when given, so the filename extension
+        // matches [contentType] + the actual bytes — the server rejects a
+        // mismatch (an OS picker can hand back a JPEG named ".png").
+        filename: filename,
         contentType:
             contentType != null ? DioMediaType.parse(contentType) : null,
       ),
-      'chatId': chatId,
+      // A real chat scopes by a UUID [chatId]; a bot-section room has no chat,
+      // so it scopes by [roomId]/[projectId] (the engine maps those to the
+      // per-user "general" namespace, chat/core 2026-08-29). Send whichever the
+      // caller provided — the route requires exactly one.
+      if (chatId != null) 'chatId': chatId,
+      if (roomId != null) 'roomId': roomId,
+      if (projectId != null) 'projectId': projectId,
     });
 
     final res = await _client.post<Map<String, dynamic>>(

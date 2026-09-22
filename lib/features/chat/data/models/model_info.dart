@@ -4,7 +4,7 @@ part 'model_info.freezed.dart';
 part 'model_info.g.dart';
 
 /// Per-model capability set returned by `/api/mobile/v1/models`
-///. All fields default to `false` so the UI is
+/// (chat-team inbox/020). All fields default to `false` so the UI is
 /// pessimistic about unknown models — better to hide an attach button
 /// than to show it and surprise the user with a 403 TIER_REQUIRED.
 @freezed
@@ -31,7 +31,7 @@ class ModelInfo with _$ModelInfo {
     @Default('') String name,
     String? description,
     @Default(true) bool available,
-    // Added 2026-06-17 per the backend API. All nullable so older
+    // Added 2026-06-17 per chat-team inbox/020. All nullable so older
     // builds don't blow up on missing fields and so we can still parse
     // historical /models responses cached locally.
     int? contextWindow,

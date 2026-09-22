@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///
 /// **Device-local v1.** ChatRepository has no archive endpoint yet — the
 /// server only knows create/list/delete — so archived state lives in
-/// SharedPreferences and does NOT sync across devices. internal notes asks
+/// SharedPreferences and does NOT sync across devices. outbox/034 asks
 /// chat/core for a server-side archived flag; when it lands, this notifier
 /// becomes a write-through cache over that field (same migration story as
 /// message_reactions_provider.dart, whose persistence pattern this follows).

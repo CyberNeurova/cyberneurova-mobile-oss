@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 /// glow (the launcher icon's gradient).
 ///
 /// Theme history:
-///  - 2026-06-01: dark theme (pure black + peach #E0846B).
+///  - 2026-06-01: dark (pure black + peach #E0846B).
 ///  - 2026-06-xx: mirrored the web chat-app's violet/indigo OKLCH palette.
 ///  - 2026-06-24: re-skinned to the official brand — **teal accent on navy**.
 ///    The violet is kept only as the second stop of the brand gradient, to

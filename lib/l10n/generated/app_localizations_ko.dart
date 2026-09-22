@@ -365,6 +365,9 @@ class AppL10nKo extends AppL10n {
   String get recents => '최근 항목';
 
   @override
+  String get workspace => 'Workspace';
+
+  @override
   String get chatsWillAppearHere => '채팅이 여기에 표시됩니다';
 
   @override

@@ -370,6 +370,9 @@ class AppL10nTr extends AppL10n {
   String get recents => 'Son kullanılanlar';
 
   @override
+  String get workspace => 'Workspace';
+
+  @override
   String get chatsWillAppearHere => 'Sohbetleriniz burada görünecek';
 
   @override

@@ -1,4 +1,4 @@
-/// Conformance harness for the mobile run protocol.
+/// Conformance harness for the mobile run protocol (chat-team inbox/029).
 ///
 /// ## What this is for
 ///
@@ -17,7 +17,7 @@
 /// The checks in 029 are about FRAMES — sequence, idempotence, refusal,
 /// billing. Driving them through the UI would test the UI. This speaks the
 /// documented protocol directly, which is also what makes it usable against
-/// the backend own simulated-device harness before a phone is involved.
+/// the chat team's own simulated-device harness before a phone is involved.
 ///
 /// ## Running it
 ///
@@ -63,7 +63,7 @@ class CheckResult {
   final String detail;
 
   /// How long it took. Reported because a check that passes in 40 seconds is
-  /// telling the backend something about the server even when it is green.
+  /// telling the chat team something about the server even when it is green.
   final Duration? took;
 
   CheckResult withTiming(Duration d) =>

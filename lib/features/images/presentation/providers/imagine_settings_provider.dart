@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// UI-only Imagine settings (Grok pass).
+/// UI-only Imagine settings (redesign pass).
 ///
 /// IMPORTANT: the backend's generate endpoint accepts ONLY `prompt` today
 /// (see ImageRepository.generateImage — body is `{'prompt': prompt}`), so

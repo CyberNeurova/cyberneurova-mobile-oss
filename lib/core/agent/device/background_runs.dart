@@ -75,7 +75,7 @@ class BackgroundRuns {
   /// workspace publishes a session count through here, so a later file inherits
   /// a stale count and a live timer scheduled by an earlier one. That is a
   /// cross-test leak, and it is exactly the kind that turns a suite red only
-  /// when files run together. Call this in setUp/tearDown of any
+  /// when files run together (outbox 067). Call this in setUp/tearDown of any
   /// test that touches the stack so neither direction leaks.
   @visibleForTesting
   void resetForTest() {

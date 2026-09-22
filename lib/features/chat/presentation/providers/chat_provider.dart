@@ -26,6 +26,7 @@ import 'package:cyberneurova_mobile/core/connectivity/connectivity_provider.dart
 import 'package:cyberneurova_mobile/features/agents/presentation/providers/device_executor_provider.dart';
 import 'package:cyberneurova_mobile/features/chat/data/chat_list_cache.dart';
 import 'package:cyberneurova_mobile/features/chat/presentation/providers/chat_title.dart';
+import 'package:cyberneurova_mobile/features/chat/presentation/providers/message_sources_provider.dart';
 import 'package:cyberneurova_mobile/features/chat/data/models/chat_model.dart';
 import 'package:cyberneurova_mobile/features/chat/data/repositories/chat_repository.dart';
 import 'package:cyberneurova_mobile/features/chat/presentation/providers/model_provider.dart';
@@ -144,7 +145,7 @@ final lastResumeErrorProvider = StateProvider<String?>((_) => null);
 /// Latest auto-web-search status emitted by the active chat stream.
 /// `null` = no search active. Cleared when stream ends or a new send starts.
 /// Surfaced by `_TypingIndicator` so the user sees "Searching the web…"
-/// instead of generic dots when the backend auto-search kicks in.
+/// instead of generic dots when chat-team's auto-search kicks in.
 class WebSearchStatus {
   const WebSearchStatus({required this.phase, this.query, this.resultCount});
 
@@ -157,7 +158,7 @@ class WebSearchStatus {
 final activeWebSearchProvider = StateProvider<WebSearchStatus?>((_) => null);
 
 /// Latest agentic tool status emitted by the active chat stream
-///. `status: 'tool-running'` events carry a human-readable
+/// (inbox/025). `status: 'tool-running'` events carry a human-readable
 /// `query` ("Reading main.py") shown live by `_TypingIndicator`;
 /// `status: 'tool-done'` clears it. Lifecycle mirrors
 /// [activeWebSearchProvider] exactly: cleared when the stream ends, a new
@@ -170,7 +171,7 @@ class ToolStatus {
 final activeToolStatusProvider = StateProvider<ToolStatus?>((_) => null);
 
 /// When true, the next send prepends "search the web for " to the user's
-/// message so the backend explicit-search regex
+/// message so chat-team's explicit-search regex
 /// (`\bsearch\s+(?:the\s+)?web\b`) catches it and forces the auto-search
 /// path — bypassing the conservative auto-detection heuristic.
 ///
@@ -241,7 +242,7 @@ class SelectedChatsNotifier extends Notifier<Set<String>> {
 }
 
 /// Set of assistant message IDs whose `done` event carried `truncated: true`
-///. The Continue button watches this set instead of
+/// (chat-team inbox/014). The Continue button watches this set instead of
 /// running a fence heuristic — precise signal, no false positives.
 ///
 /// Cleared on app cold start. We never persist this: if the server's
@@ -303,7 +304,7 @@ final chatListIsStaleProvider = StateProvider<bool>((_) => false);
 
 class ChatListNotifier extends AsyncNotifier<List<ChatModel>> {
   /// The sections the server splits chats into, per its contract (reply to
-  /// internal notes): `chat` is the day-to-day list that syncs with web and
+  /// outbox 064): `chat` is the day-to-day list that syncs with web and
   /// desktop; the rest are agent surfaces. Rows written before the field
   /// existed have no section and count as `chat`.
   static const _sections = ['chat', 'code', 'research', 'shell'];
@@ -528,7 +529,7 @@ class ChatListNotifier extends AsyncNotifier<List<ChatModel>> {
   /// Local only, now that the server names agent sessions itself.
   ///
   /// It used to PATCH as well, because agent turns are not written to
-  /// `/chat/:id/messages` so the server never saw an exchange to
+  /// `/chat/:id/messages` (outbox 046) so the server never saw an exchange to
   /// title from — leaving a Shell list of five rows all called "New Chat". It
   /// titles from the first user message on `/agent/run` as of its 064 reply,
   /// and two writers of one field is what made the phone and the web disagree
@@ -550,6 +551,12 @@ class ChatListNotifier extends AsyncNotifier<List<ChatModel>> {
     );
     if (chat.id.isEmpty) return;
     if (!isPlaceholderChatTitle(chat.title)) return;
+
+    // A greeting or filler opener ("hey", "good morning", "test") is not what
+    // the session is about — leave the title a placeholder so the NEXT,
+    // substantive message names it (this method fires per send and no-ops once
+    // a real title is set).
+    if (isGreetingOrLowSignal(message)) return;
 
     final title = titleFromMessage(message);
     if (title.isEmpty) return;
@@ -694,7 +701,7 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
         // re-runs work already on screen and answers about the wrong cwd.
         scrollback: _recentScrollback(),
         focus: ref.read(agentSurfaceProvider(arg))?.focus,
-        // Per-surface round budget. Code needs many more than
+        // Per-surface round budget (outbox 054). Code needs many more than
         // Console: building something is a long chain, and a terminal the
         // user is watching is not.
         maxTurns: ref.read(agentSurfaceProvider(arg))?.maxTurns,
@@ -734,7 +741,7 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
         // We used to infer it from the absence of a `tool_call`, which was
         // wrong the moment the pre-search moved server-side: it emits no tool
         // call, so a properly sourced answer got labelled as recalled. Core
-        // now says so directly (the backend reply to internal notes) and only when
+        // now says so directly (chat-team reply to outbox 063) and only when
         // results really came back, so this is the signal rather than a guess.
         if (json['type'] == 'system' &&
             json['subtype'] == 'web_search_results') {
@@ -848,6 +855,14 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
     // own "Sources:" block, and printing the same URLs twice under one answer
     // reads as a bug. This is the fallback for the case the 057 report was
     // really about: a confident answer with no way to check it.
+    if (searchedCount > 0 && searchedSources.isNotEmpty && !_disposed) {
+      // Expose the fetched sources as a tappable "Sources" chip under the
+      // answer (see _MessageActions), reference-style — keyed by the same id the
+      // bubble renders under, and persisted so it survives reload.
+      ref
+          .read(messageSourcesProvider.notifier)
+          .set(assistantId, searchedSources);
+    }
     if (searchedCount > 0 &&
         searchedSources.isNotEmpty &&
         streamError == null &&
@@ -958,7 +973,7 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
   /// capabilities, scope, scrollback}` — an extra `history` field would be
   /// dropped in silence, the way `focus` was. `message` is the one field that
   /// certainly arrives, so the record travels in there until the server
-  /// persists these turns properly.
+  /// persists these turns properly (outbox 054).
   ///
   /// Framed carefully. The last time context was fed in without a frame, the
   /// model read a transcript ending in its own instruction and reported the
@@ -1044,7 +1059,7 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
   /// phone", and the model is told to write them rather than describe them.
   /// On the deployed run protocol those writes land in a server container:
   /// `container_acquired` with a `/workspace` cwd, and no frame carries an
-  /// `executor` field at all.
+  /// `executor` field at all (outbox 043).
   ///
   /// That is the owner's original complaint one layer down — *"it says it did
   /// but when i go to the shell and ls nothing is there"* — and this time the
@@ -1383,7 +1398,7 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
     }
 
     // Force web-search path on this turn if the user toggled it on in
-    // the composer. The backend API shipped a proper
+    // the composer. Chat-team's inbox/019 shipped a proper
     // `forceWebSearch: true` body flag so we can send the user's
     // verbatim text and let the server bypass its heuristic. Toggle
     // resets after send so it doesn't surprise the next turn.
@@ -1425,6 +1440,12 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
     // needs and what the truncated-set keys off.
     var assistantId = 'streaming_${DateTime.now().millisecondsSinceEpoch}';
     var accumulated = '';
+
+    // Web sources fetched for this answer (from the `web-searched` status).
+    // Captured here and stored under the FINAL assistant id at stream end —
+    // the status arrives during the search, before the server id is swapped
+    // in, so keying it now would miss the id the bubble ends up rendering.
+    var searchedSources = const <String>[];
 
     // Token batching: tokens can arrive 50-100×/s, and emitting state per
     // token rebuilds the whole message list (and re-parses the growing
@@ -1487,7 +1508,7 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
     // and attaches no `tools`, so a model told about them in prose emits the
     // call template as text — the Gemma `<tool_call>` and GLM "Action:"
     // failures were both that. /agent/run attaches the eight real device tool
-    // schemas (the backend API, live 2026-08-04).
+    // schemas (chat-team inbox/003, live 2026-08-04).
     //
     // A local model wins over both: it is the user's explicit choice, and it
     // has no tools either way.
@@ -1613,7 +1634,7 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
               ref.read(truncatedMessagesProvider.notifier).mark(assistantId);
             }
           },
-          status: (status, query, reason, resultCount, source) {
+          status: (status, query, reason, resultCount, source, sources) {
             // Agent transcript: the same status events also drive tool cards
             // (see AgentStatusBridge). Until core's run protocol is exposed
             // to mobile, this is where tool activity becomes visible.
@@ -1624,7 +1645,7 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
               resultCount: resultCount,
               source: source,
             );
-            // the backend auto web-search status events.
+            // Chat-team's auto web-search status events (inbox/012).
             // Translate to a single WebSearchStatus that the UI watches.
             final notifier = ref.read(activeWebSearchProvider.notifier);
             switch (status) {
@@ -1634,9 +1655,12 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
               case 'web-searched':
                 notifier.state = WebSearchStatus(
                     phase: 'searched', resultCount: resultCount);
+                // Stash the fetched URLs — stored under the final assistant id
+                // in the stream's finally so the "Sources" chip can render.
+                if (sources.isNotEmpty) searchedSources = sources;
               case 'web-search-no-results':
                 notifier.state = const WebSearchStatus(phase: 'no-results');
-              // Agentic tool status: `query` is the live
+              // Agentic tool status (inbox/025): `query` is the live
               // human-readable line ("Reading main.py").
               case 'tool-running':
                 ref.read(activeToolStatusProvider.notifier).state =
@@ -1690,6 +1714,15 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
       // Never leave a tool card spinning after a cancel or a dropped stream.
       if (!_disposed) _agentBridge?.onStreamEnd();
       _agentBridge = null;
+      // Persist the fetched sources under the FINAL assistant id so the
+      // "Sources" chip renders (and survives reload).
+      if (!_disposed &&
+          searchedSources.isNotEmpty &&
+          assistantId.isNotEmpty) {
+        ref
+            .read(messageSourcesProvider.notifier)
+            .set(assistantId, searchedSources);
+      }
       _finishStream(streamError, assistantId, text);
     }
   }
@@ -1755,7 +1788,7 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
   /// turn + the partial assistant message and streams only the new bytes;
   /// we concat them onto the existing bubble — single seamless answer.
   ///
-  /// Spec: the backend API §4. Replaces the earlier client-side
+  /// Spec: chat-team inbox/014 §4. Replaces the earlier client-side
   /// "send a follow-up user message" fallback, which created a redundant
   /// user turn and gave the model latitude to repeat or preamble.
   Future<void> resumeMessage(String messageId) async {
@@ -1806,12 +1839,12 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
             ref.read(activeWebSearchProvider.notifier).state = null;
             ref.read(activeToolStatusProvider.notifier).state = null;
             // Resume itself may truncate again — recursion-safe per
-            // the backend spec; just re-mark the bubble.
+            // chat-team's spec; just re-mark the bubble.
             if (truncated) {
               ref.read(truncatedMessagesProvider.notifier).mark(messageId);
             }
           },
-          status: (status, query, reason, resultCount, source) {
+          status: (status, query, reason, resultCount, source, sources) {
             // Resume streams generally don't emit web-search status, but
             // forward defensively in case the model re-searches.
             final notifier = ref.read(activeWebSearchProvider.notifier);
@@ -1822,6 +1855,13 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
               case 'web-searched':
                 notifier.state = WebSearchStatus(
                     phase: 'searched', resultCount: resultCount);
+                // Resume keeps the existing (stable) message id, so store
+                // directly for the chip.
+                if (sources.isNotEmpty) {
+                  ref
+                      .read(messageSourcesProvider.notifier)
+                      .set(messageId, sources);
+                }
               case 'web-search-no-results':
                 notifier.state = const WebSearchStatus(phase: 'no-results');
               case 'tool-running':
@@ -1879,7 +1919,7 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<
   /// messages for what should be 2.
   ///
   /// Note: this only cleans up CLIENT-side. The server's DB still has the
-  /// old turn — proper regenerate requires a backend endpoint that
+  /// old turn — proper regenerate requires a chat-team endpoint that
   /// replaces the last assistant message. Queued separately.
   Future<void> retry(String text) async {
     final current = state.valueOrNull;

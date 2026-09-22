@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cyberneurova_mobile/features/auth/presentation/providers/auth_provider.dart';
+import 'package:cyberneurova_mobile/features/chat/presentation/providers/last_chat_provider.dart';
 import 'package:cyberneurova_mobile/shared/theme/app_theme.dart';
 
 /// Outcome screen shown after the webview closes / the poll terminates.
@@ -84,7 +85,7 @@ class BillingResultScreen extends ConsumerWidget {
                   onPressed: () {
                     HapticFeedback.lightImpact();
                     // Go all the way back to chats
-                    context.goNamed('chats');
+                    goToCurrentChat(context, ref);
                   },
                   child: const Text('Start using Premium'),
                 )
@@ -95,7 +96,7 @@ class BillingResultScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 TextButton(
-                  onPressed: () => context.goNamed('chats'),
+                  onPressed: () => goToCurrentChat(context, ref),
                   child: const Text('Maybe later'),
                 ),
               ],

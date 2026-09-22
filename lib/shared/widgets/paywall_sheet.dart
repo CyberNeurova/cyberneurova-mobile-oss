@@ -50,7 +50,7 @@ final pendingPaywallTriggerProvider =
 /// tapped through to Plans.
 ///
 /// Apple requires a visible "Restore Purchases" wherever a paywall shows
-/// (the backend API §6) — rendered here whenever the store is available on this
+/// (inbox/026 §6) — rendered here whenever the store is available on this
 /// platform.
 Future<bool> showPaywall(
   BuildContext context, {

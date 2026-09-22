@@ -9,7 +9,7 @@ import 'package:cyberneurova_mobile/features/agents/presentation/providers/agent
 /// retried forever, and the user saw "Couldn't reach the agent" — for a run
 /// that had already written the file correctly on the phone.
 ///
-/// It presented as a network failure and was reported to the backend as a
+/// It presented as a network failure and was reported to the chat team as a
 /// possible server 4xx. Nothing about the symptom pointed at a provider graph,
 /// which is why the shape is pinned by a test rather than left to review.
 void main() {

@@ -73,7 +73,7 @@ class ApiConstants {
   static String chatMessages(String id) => '/chat/$id/messages';
   static String chatComplete(String id) => '/chat/$id/complete';
 
-  // ── run protocol (the backend API, live on prod 2026-08-04) ──────────
+  // ── run protocol (chat-team inbox/029, live on prod 2026-08-04) ──────────
   // The agent surfaces send here rather than to /complete. The difference is
   // not the URL: /complete carries the deviceContext STRING and no tools, so
   // a model told about tools in prose emits the call template as text. This
@@ -84,6 +84,32 @@ class ApiConstants {
   static const String AGENT_DEVICE_RESULT = '/agent/device_result';
   static String chatResume(String id) => '/chat/$id/complete/resume';
   static String chatShare(String id) => '/chat/$id/share';
+
+  // ── Bot section / Agent Contacts (inbox/042, 043) ────────────────────────
+  // The mobile proxy validates our JWT and forwards to an ISOLATED bot-section
+  // instance (scoped cn_botsection PG role), so these are safe to build+persist
+  // against directly — there is no separate dev host. Contract:
+  // cyberneurova_core/docs/BOT_SECTION_API.md. All paths are under baseUrl.
+  static const String BOT_AGENTS = '/bot/agents';
+  static String botAgentById(String id) => '/bot/agents/$id';
+  static String botAgentMemory(String id) => '/bot/agents/$id/memory';
+  static const String BOT_ROOMS = '/bot/rooms';
+  static String botRoomById(String id) => '/bot/rooms/$id';
+  static String botRoomMessages(String id) => '/bot/rooms/$id/messages';
+  static String botRoomParticipants(String id) => '/bot/rooms/$id/participants';
+  static String botRoomNextSpeaker(String id) => '/bot/rooms/$id/next-speaker';
+  static String botRoomRuns(String id) => '/bot/rooms/$id/runs';
+  static String botRoomCommands(String id) => '/bot/rooms/$id/commands';
+  static String botRoomFiles(String id) => '/bot/rooms/$id/files';
+  static const String BOT_STREAM = '/bot/stream'; // multiplexed SSE (all rooms)
+  static const String BOT_PRESENCE = '/bot/presence';
+
+  // ── Remote control (mobile = controller; relay) ──────────────────────────
+  // Chat spec `collaborationdir/mobile/chat/2026-08-29-0840`. SCAFFOLD: the
+  // relay isn't live yet, and the exact base/auth is pending confirmation on
+  // wiring (proxy maps these to the engine `/v1/remote/*` shape).
+  static const String REMOTE_DEVICES = '/remote/devices';
+  static const String REMOTE_SESSION = '/remote/session';
 
   // User
   static const String USER_TOKENS = '/user/tokens';
@@ -100,7 +126,7 @@ class ApiConstants {
   static const String PAYMENT_STATUS = '/payment/status';
   static const String PAYMENT_HISTORY = '/payment/history';
 
-  // IAP (Apple / Google store purchases — the backend API)
+  // IAP (Apple / Google store purchases — inbox/026)
   static const String IAP_VERIFY = '/iap/verify';
   static const String IAP_STATUS = '/iap/status';
 
@@ -126,8 +152,8 @@ class ApiConstants {
 
   // Search
   // /search exists server-side but mobile doesn't call it directly. The AI
-  // agent handles web search itself during chat completion (the backend
-  // WebSearchTool is always enabled). See the backend API.
+  // agent handles web search itself during chat completion (chat-team's
+  // WebSearchTool is always enabled). See inbox/005.
   // static const String SEARCH = '/search';
 
   // Shared

@@ -58,7 +58,7 @@ class AuthRepository {
 
   /// Registers a new account. Response does NOT contain tokens — the user
   /// must verify email first, then call [login]. Requires ToS acceptance
-  /// per the backend API — server returns 400 TOS_NOT_ACCEPTED
+  /// per chat-team's inbox/006 — server returns 400 TOS_NOT_ACCEPTED
   /// or 409 TOS_VERSION_OUTDATED otherwise.
   Future<RegisterResponse> register({
     required String email,
@@ -177,7 +177,7 @@ class AuthRepository {
 
   /// Re-sends the email-verification link. Server-side rate-limited per
   /// IP + per email + per-email cooldown. Same opaque response for found /
-  /// already-verified / not-found (enumeration protection). Per the backend API.
+  /// already-verified / not-found (enumeration protection). Per inbox/007.
   Future<void> resendVerification(String email) async {
     await _client.post(
       '/auth/resend-verification',

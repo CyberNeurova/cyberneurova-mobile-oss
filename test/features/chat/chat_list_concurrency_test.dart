@@ -54,7 +54,7 @@ class _StubRepo implements ChatRepository {
 
 /// A server that claims another page and never advances the cursor.
 ///
-/// This is what the real one does today. Wiring pagination up
+/// This is what the real one does today (outbox 061). Wiring pagination up
 /// against it filled the drawer with duplicate rows within one scroll — the
 /// first page was requested again, appended, and `hasMore` was still true.
 class _StuckCursorRepo implements ChatRepository {

@@ -17,7 +17,7 @@ import 'package:cyberneurova_mobile/features/chat/presentation/providers/chat_pr
 /// chats. Recents filters to `section == 'chat'`, so Recents showed two. No
 /// client-side filter could have helped — the chats never arrived.
 ///
-/// The server now paginates within a section (its reply to internal notes), so the
+/// The server now paginates within a section (its reply to outbox 064), so the
 /// client asks per section and merges. These cases pin the property that
 /// matters: what one section does cannot change what another one shows.
 void main() {

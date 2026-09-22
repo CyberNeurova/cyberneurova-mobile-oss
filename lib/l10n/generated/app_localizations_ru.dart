@@ -369,6 +369,9 @@ class AppL10nRu extends AppL10n {
   String get recents => 'Недавние';
 
   @override
+  String get workspace => 'Workspace';
+
+  @override
   String get chatsWillAppearHere => 'Ваши чаты появятся здесь';
 
   @override

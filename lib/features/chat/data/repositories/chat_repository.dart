@@ -59,7 +59,7 @@ class ChatRepository {
         // `endingBefore`, NOT `startingAfter`. The list is newest-first, so
         // the next page is OLDER than the cursor; `startingAfter` asks for
         // newer rows, which overlap the page you already have. That was the
-        // other half of "can't page past 20" — the request
+        // other half of "can't page past 20" (outbox 061) — the request
         // succeeded and returned rows we had already shown.
         if (cursor != null) 'endingBefore': cursor,
         if (section != null) 'section': section,
@@ -77,7 +77,7 @@ class ChatRepository {
       },
     );
     // Tolerate the response being wrapped as {chat: {...}} or {data: {...}}
-    // OR bare. Same pattern we apply elsewhere — the backend API isn't
+    // OR bare. Same pattern we apply elsewhere — chat-team's API isn't
     // consistent across routes about wrapping.
     final body = res.data!;
     // Sahachiel: guard each unwrap with `is Map` - a present-but-wrong-typed
@@ -109,7 +109,7 @@ class ChatRepository {
       ApiConstants.chatById(id),
     );
     final data = res.data!;
-    // Defensive shape handling — the backend response on empty chats has
+    // Defensive shape handling — chat-team's response on empty chats has
     // historically returned `messages: null` or omitted the field entirely.
     // Also handle the case where the chat object is at the top level instead
     // of nested under `chat:`.
@@ -226,12 +226,12 @@ class ChatRepository {
             'message': message,
             'modelId': modelId,
             if (attachments != null) 'attachments': attachments,
-            // the backend API: when true, the server bypasses its
+            // chat-team inbox/019: when true, the server bypasses its
             // detectAutoSearch heuristic and runs webSearch on the
             // verbatim message. Replaces the build-12 "search the web
             // for ..." prefix hack.
             if (forceWebSearch) 'forceWebSearch': true,
-            // the backend API: opaque string prepended to the system
+            // chat-team inbox/032: opaque string prepended to the system
             // prompt for this turn, honoured only when the chat's section is
             // `shell`, capped at 4 KB server-side and silently ignored
             // otherwise. This is what tells the model it has a device shell —
@@ -253,7 +253,7 @@ class ChatRepository {
   /// the call template as text — the Gemma `<tool_call>` and GLM "Action:"
   /// repros were both that, not a model-quality problem. `/agent/run` attaches
   /// the eight real device tool schemas, which is what makes a tool call a
-  /// tool call (the backend API, live 2026-08-04).
+  /// tool call (chat-team inbox/003, live 2026-08-04).
   ///
   /// Raw maps rather than StreamEvent: these are run-protocol frames with
   /// `run_id` and `seq`, which AgentFrame understands and the chat event
@@ -284,14 +284,14 @@ class ChatRepository {
             // What this surface is FOR, in the agent's own terms.
             //
             // `AgentSurface.focus` existed for weeks and was read by nothing —
-            // declared, carefully worded, never sent. The backend API reported that
+            // declared, carefully worded, never sent. Outbox 051 reported that
             // Code "already tells it not to print a code block and call it
             // done"; that was wrong, and it wasted a round trip with the chat
             // team chasing a model that was never given the instruction.
             if (focus != null && focus.isNotEmpty) 'focus': focus,
             // How many rounds this surface gets before core stops the
             // run. Per-surface because the jobs differ in shape — Code
-            // was hitting the default ceiling mid-build.
+            // was hitting the default ceiling mid-build (outbox 054).
             // Server clamps to 50.
             if (maxTurns != null) 'maxTurns': maxTurns,
           },
@@ -329,7 +329,7 @@ class ChatRepository {
   /// continuation. Tokens should be appended to the existing message bubble
   /// identified by [messageId] — no new bubble is created.
   ///
-  /// Spec: the backend API §4. The `start` and `done` events on this
+  /// Spec: chat-team inbox/014 §4. The `start` and `done` events on this
   /// stream both carry `mode: "resume"` so callers can distinguish them
   /// from a fresh turn.
   Stream<StreamEvent> streamResume({

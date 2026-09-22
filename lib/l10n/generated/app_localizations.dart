@@ -821,6 +821,12 @@ abstract class AppL10n {
   /// **'Recents'**
   String get recents;
 
+  /// No description provided for @workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Workspace'**
+  String get workspace;
+
   /// No description provided for @chatsWillAppearHere.
   ///
   /// In en, this message translates to:

@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -9,6 +8,7 @@ import 'package:cyberneurova_mobile/core/constants/app_constants.dart';
 import 'package:cyberneurova_mobile/core/errors/error_messages.dart';
 import 'package:cyberneurova_mobile/core/layout/responsive.dart';
 import 'package:cyberneurova_mobile/features/auth/presentation/providers/auth_provider.dart';
+import 'package:cyberneurova_mobile/features/auth/presentation/widgets/brand_mark.dart';
 import 'package:cyberneurova_mobile/features/auth/presentation/widgets/social_sign_in_button.dart';
 import 'package:cyberneurova_mobile/l10n/generated/app_localizations.dart';
 import 'package:cyberneurova_mobile/shared/widgets/cn_text_field.dart';
@@ -16,18 +16,7 @@ import 'package:cyberneurova_mobile/shared/widgets/cn_button.dart';
 import 'package:cyberneurova_mobile/shared/widgets/error_banner.dart';
 
 /// Presents sign-in over whatever the user was doing, instead of navigating.
-///
-/// The gate used to `pushNamed('login')`. GoRouter drops imperative pushes
-/// when a redirect re-evaluates, so the login screen ended up as the ROOT of
-/// the stack — and hardware back from it left the app entirely. Verified on
-/// device: three pushes in, one back press out to the launcher. A new user
-/// typing their first question and changing their mind was ejected from the
-/// product.
-///
-/// A sheet has no such question. Nothing is navigated, back dismisses it,
-/// and the chat underneath keeps its composer text — so the send that opened
-/// this can simply be retried once there is an account.
-///
+/// (A sheet: back dismisses it, the chat underneath keeps its composer text.)
 /// Returns true when the user is signed in by the time it closes.
 Future<bool> showLoginSheet(BuildContext context) async {
   final result = await showModalBottomSheet<bool>(
@@ -51,8 +40,6 @@ class _LoginSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Closes itself the moment there is an account, so the caller can carry on
-    // with whatever the user was trying to do.
     ref.listen(authProvider, (_, next) {
       if (next.valueOrNull != null && Navigator.of(context).canPop()) {
         Navigator.of(context).pop(true);
@@ -65,8 +52,6 @@ class _LoginSheet extends ConsumerWidget {
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key, this.inSheet = false});
 
-  /// True when shown by [showLoginSheet]. A sheet is dismissed, not popped,
-  /// so it neither intercepts back nor needs its own back arrow.
   final bool inSheet;
 
   @override
@@ -80,6 +65,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordFocus = FocusNode();
   final _form = GlobalKey<FormState>();
   bool _obscure = true;
+
+  /// The landing shows the "Continue with…" choices; tapping Email reveals the
+  /// email/password form as a second step (reference login flow).
+  bool _showEmailForm = false;
 
   @override
   void dispose() {
@@ -96,230 +85,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
     HapticFeedback.lightImpact();
-    // Tell iOS/Android to save these credentials (Keychain / Smart Lock prompts)
     TextInput.finishAutofillContext();
     await ref.read(authProvider.notifier).login(
           email: _email.text.trim(),
           password: _password.text,
         );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final auth = ref.watch(authProvider);
-    final isLoading = auth.isLoading;
-    final error = auth.hasError ? userMessageFor(context, auth.error) : null;
-    // Explain an involuntary bounce here (refresh-token loss mid-session) —
-    // without this the redirect reads as a random crash back to login.
-    final sessionExpired = ref.watch(sessionExpiredProvider);
-    ref.listen(authProvider, (_, next) {
-      if (next.valueOrNull != null) {
-        ref.read(sessionExpiredProvider.notifier).state = false;
-      }
-    });
-    final cs = Theme.of(context).colorScheme;
-    final l = AppL10n.of(context);
-
-    // Hardware back from the sign-in wall used to leave the APP, not the
-    // screen. A new user taps into the composer, meets a login screen they did
-    // not ask for, presses back to think about it — and lands on their home
-    // launcher. Verified on device: three route pushes in, one back press out.
-    // (GoRouter drops imperative pushes when a redirect re-evaluates, so the
-    // stack the pop expects is not there.) Handling it here means back always
-    // goes back, whatever the router did with the stack.
-    return PopScope(
-      canPop: widget.inSheet,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _leave();
-      },
-      child: Scaffold(
-        body: SafeArea(
-          child: Stack(
-            children: [
-              Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: MaxWidthContent(
-                maxWidth: 480,
-                child: AutofillGroup(
-                child: Form(
-                key: _form,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 40),
-                    // Logo wordmark
-                    Text(
-                      'CyberNeurova',
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w700,
-                        color: cs.primary,
-                        letterSpacing: -0.5,
-                      ),
-                    ).animate()
-                        .fadeIn(duration: 400.ms)
-                        .slideY(begin: -0.2, end: 0, duration: 400.ms,
-                            curve: Curves.easeOut),
-                    const SizedBox(height: 6),
-                    Text(
-                      l.signInToContinue,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: cs.onSurfaceVariant,
-                      ),
-                    ).animate().fadeIn(delay: 100.ms, duration: 300.ms),
-                    const SizedBox(height: 40),
-                    if (error != null) ...[
-                      ErrorBanner(message: error)
-                          .animate()
-                          .fadeIn(duration: 200.ms)
-                          .shakeX(duration: 300.ms),
-                      const SizedBox(height: 16),
-                    ] else if (sessionExpired) ...[
-                      ErrorBanner(message: l.errorSessionExpired)
-                          .animate()
-                          .fadeIn(duration: 200.ms),
-                      const SizedBox(height: 16),
-                    ],
-                    CnTextField(
-                      controller: _email,
-                      focusNode: _emailFocus,
-                      label: l.email,
-                      keyboardType: TextInputType.emailAddress,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      autofillHints: const [
-                        AutofillHints.username,
-                        AutofillHints.email,
-                      ],
-                      textInputAction: TextInputAction.next,
-                      onSubmitted: (_) => _passwordFocus.requestFocus(),
-                      validator: (v) => v == null || !v.contains('@')
-                          ? l.enterValidEmail
-                          : null,
-                    ).animate().fadeIn(delay: 150.ms, duration: 300.ms)
-                        .slideY(begin: 0.1, end: 0, delay: 150.ms,
-                            duration: 300.ms),
-                    const SizedBox(height: 16),
-                    CnTextField(
-                      controller: _password,
-                      focusNode: _passwordFocus,
-                      label: l.password,
-                      obscureText: _obscure,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      autofillHints: const [AutofillHints.password],
-                      textInputAction: TextInputAction.done,
-                      onSubmitted: (_) => _submit(),
-                      // No minimum on login (backend supports legacy accounts);
-                      // just require non-empty so submission isn't a no-op.
-                      validator: (v) =>
-                          v == null || v.isEmpty ? l.enterYourPassword : null,
-                      suffix: IconButton(
-                        icon: Icon(
-                          _obscure
-                              ? Icons.visibility_off_outlined
-                              : Icons.visibility_outlined,
-                          size: 20,
-                        ),
-                        onPressed: () =>
-                            setState(() => _obscure = !_obscure),
-                      ),
-                    ).animate().fadeIn(delay: 200.ms, duration: 300.ms)
-                        .slideY(begin: 0.1, end: 0, delay: 200.ms,
-                            duration: 300.ms),
-                    const SizedBox(height: 6),
-                    Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: TextButton(
-                        onPressed: () =>
-                            context.pushNamed('forgot-password'),
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
-                          minimumSize: Size.zero,
-                          tapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: Text(l.forgotPassword),
-                      ),
-                    ).animate().fadeIn(delay: 240.ms, duration: 300.ms),
-                    const SizedBox(height: 18),
-                    CnButton(
-                      label: l.signIn,
-                      loading: isLoading,
-                      onPressed: _submit,
-                    ).animate().fadeIn(delay: 280.ms, duration: 300.ms),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: Divider(color: cs.outline.withValues(alpha: 0.4))),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Text(
-                            l.orDivider,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1,
-                              color: cs.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                            child: Divider(color: cs.outline.withValues(alpha: 0.4))),
-                      ],
-                    ).animate().fadeIn(delay: 320.ms, duration: 300.ms),
-                    const SizedBox(height: 20),
-                    SocialSignInButton.google()
-                        .animate()
-                        .fadeIn(delay: 360.ms, duration: 300.ms),
-                    // Apple Sign-In is iOS/macOS-only (no Android web flow) —
-                    // hide the button on Android so it isn't a dead control.
-                    if (defaultTargetPlatform == TargetPlatform.iOS ||
-                        defaultTargetPlatform == TargetPlatform.macOS) ...[
-                      const SizedBox(height: 12),
-                      SocialSignInButton.apple()
-                          .animate()
-                          .fadeIn(delay: 400.ms, duration: 300.ms),
-                    ],
-                    const SizedBox(height: 20),
-                    Center(
-                      child: TextButton(
-                        onPressed: () => context.pushNamed('register'),
-                        child: Text(l.dontHaveAccount),
-                      ),
-                    ).animate().fadeIn(delay: 440.ms, duration: 300.ms),
-                    const SizedBox(height: 24),
-                    const _PrivacyFooter(),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
-              ),
-              ),
-            ),
-              ),
-              // Always a way out. There was no back affordance on this screen
-              // at all, so a user who did not want to sign in yet had only the
-              // hardware button — the one that was taking them out of the app.
-              if (!widget.inSheet)
-                Positioned(
-                  top: 4,
-                  left: 4,
-                  child: IconButton(
-                    tooltip: 'Back',
-                    icon: const Icon(Icons.arrow_back_rounded),
-                    onPressed: _leave,
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   /// Leaves the sign-in wall without leaving the app.
@@ -330,11 +100,327 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       context.goNamed('chats');
     }
   }
+
+  void _back() {
+    if (_showEmailForm) {
+      setState(() => _showEmailForm = false);
+    } else {
+      _leave();
+    }
+  }
+
+  void showEmailStep() => setState(() => _showEmailForm = true);
+  void toggleObscure() => setState(() => _obscure = !_obscure);
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final showBack = !widget.inSheet || _showEmailForm;
+
+    return PopScope(
+      canPop: widget.inSheet && !_showEmailForm,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _back();
+      },
+      child: Scaffold(
+        body: Stack(
+          children: [
+            // Subtle brand glow, top-left — theme-aware.
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: const Alignment(-0.85, -0.95),
+                    radius: 1.3,
+                    colors: [
+                      cs.primary.withValues(alpha: 0.12),
+                      cs.surface.withValues(alpha: 0.0),
+                    ],
+                    stops: const [0.0, 0.55],
+                  ),
+                ),
+              ),
+            ),
+            SafeArea(
+              child: Column(
+                children: [
+                  // Top bar: back (contextual) + settings gear.
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 4, 8, 0),
+                    child: Row(
+                      children: [
+                        if (showBack)
+                          IconButton(
+                            tooltip: 'Back',
+                            icon: const Icon(Icons.arrow_back_rounded),
+                            onPressed: _back,
+                          )
+                        else
+                          const SizedBox(width: 48),
+                        const Spacer(),
+                        IconButton(
+                          tooltip: AppL10n.of(context).settings,
+                          icon: const Icon(Icons.settings_rounded),
+                          onPressed: () => context.pushNamed('settings'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: MaxWidthContent(
+                      maxWidth: 480,
+                      child: _showEmailForm
+                          ? _EmailForm(state: this)
+                          : _Landing(state: this),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-/// Small "Privacy" link shown at the bottom of auth screens. Required for
-/// App Store review and gives users a way to reach the policy without
-/// signing in. Opens in the system browser.
+// ── The "Continue with…" landing ────────────────────────────────────────────
+
+class _Landing extends ConsumerWidget {
+  const _Landing({required this.state});
+
+  final _LoginScreenState state;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    final l = AppL10n.of(context);
+    final auth = ref.watch(authProvider);
+    final error = auth.hasError ? userMessageFor(context, auth.error) : null;
+    final sessionExpired = ref.watch(sessionExpiredProvider);
+    ref.listen(authProvider, (_, next) {
+      if (next.valueOrNull != null) {
+        ref.read(sessionExpiredProvider.notifier).state = false;
+      }
+    });
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 28),
+      child: Column(
+        children: [
+          // Hero — a calm, centered promise.
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const BrandMark(size: 56),
+                  const SizedBox(height: 28),
+                  Text(
+                    'A calm space\nto think and create.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'serif',
+                      fontSize: 30,
+                      height: 1.2,
+                      fontWeight: FontWeight.w600,
+                      color: cs.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Your assistant, on every device.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 15, color: cs.onSurfaceVariant),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Auth choices, docked near the bottom.
+          if (error != null) ...[
+            ErrorBanner(message: error),
+            const SizedBox(height: 12),
+          ] else if (sessionExpired) ...[
+            ErrorBanner(message: l.errorSessionExpired),
+            const SizedBox(height: 12),
+          ],
+          _ContinueButton(
+            icon: Icons.mail_outline_rounded,
+            label: 'Continue with Email',
+            onPressed: state.showEmailStep,
+          ),
+          // Apple Sign-In is iOS/macOS-only (no Android web flow).
+          if (defaultTargetPlatform == TargetPlatform.iOS ||
+              defaultTargetPlatform == TargetPlatform.macOS) ...[
+            const SizedBox(height: 12),
+            SocialSignInButton.apple(),
+          ],
+          const SizedBox(height: 12),
+          SocialSignInButton.google(),
+          const SizedBox(height: 14),
+          const _PrivacyFooter(),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+}
+
+/// Uniform "Continue with …" pill.
+class _ContinueButton extends StatelessWidget {
+  const _ContinueButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: OutlinedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 20),
+        label: Text(label,
+            style: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w600)),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: cs.onSurface,
+          backgroundColor: cs.surfaceContainerHighest.withValues(alpha: 0.4),
+          side: BorderSide(color: cs.outline.withValues(alpha: 0.5)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16)),
+        ),
+      ),
+    );
+  }
+}
+
+// ── The email/password step ─────────────────────────────────────────────────
+
+class _EmailForm extends ConsumerWidget {
+  const _EmailForm({required this.state});
+
+  final _LoginScreenState state;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    final l = AppL10n.of(context);
+    final auth = ref.watch(authProvider);
+    final isLoading = auth.isLoading;
+    final error = auth.hasError ? userMessageFor(context, auth.error) : null;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 28),
+      child: AutofillGroup(
+        child: Form(
+          key: state._form,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 8),
+              Text(
+                'Sign in',
+                style: TextStyle(
+                  fontFamily: 'serif',
+                  fontSize: 26,
+                  fontWeight: FontWeight.w600,
+                  color: cs.onSurface,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(l.signInToContinue,
+                  style: TextStyle(fontSize: 14, color: cs.onSurfaceVariant)),
+              const SizedBox(height: 28),
+              if (error != null) ...[
+                ErrorBanner(message: error),
+                const SizedBox(height: 16),
+              ],
+              CnTextField(
+                controller: state._email,
+                focusNode: state._emailFocus,
+                label: l.email,
+                keyboardType: TextInputType.emailAddress,
+                autocorrect: false,
+                enableSuggestions: false,
+                autofillHints: const [
+                  AutofillHints.username,
+                  AutofillHints.email,
+                ],
+                textInputAction: TextInputAction.next,
+                onSubmitted: (_) => state._passwordFocus.requestFocus(),
+                validator: (v) => v == null || !v.contains('@')
+                    ? l.enterValidEmail
+                    : null,
+              ),
+              const SizedBox(height: 16),
+              CnTextField(
+                controller: state._password,
+                focusNode: state._passwordFocus,
+                label: l.password,
+                obscureText: state._obscure,
+                autocorrect: false,
+                enableSuggestions: false,
+                autofillHints: const [AutofillHints.password],
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => state._submit(),
+                validator: (v) =>
+                    v == null || v.isEmpty ? l.enterYourPassword : null,
+                suffix: IconButton(
+                  icon: Icon(
+                    state._obscure
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    size: 20,
+                  ),
+                  onPressed: state.toggleObscure,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: TextButton(
+                  onPressed: () => context.pushNamed('forgot-password'),
+                  style: TextButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(l.forgotPassword),
+                ),
+              ),
+              const SizedBox(height: 18),
+              CnButton(
+                label: l.signIn,
+                loading: isLoading,
+                onPressed: state._submit,
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: TextButton(
+                  onPressed: () => context.pushNamed('register'),
+                  child: Text(l.dontHaveAccount),
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Small "Privacy" link — required for App Store review; opens the policy in
+/// the system browser without needing an account.
 class _PrivacyFooter extends StatelessWidget {
   const _PrivacyFooter();
 
@@ -352,11 +438,10 @@ class _PrivacyFooter extends StatelessWidget {
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
         child: Text(
-          'Privacy Policy',
+          'By continuing, you agree to the Terms and Privacy Policy.',
           style: TextStyle(
             fontSize: 12,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
-            decoration: TextDecoration.underline,
           ),
         ),
       ),

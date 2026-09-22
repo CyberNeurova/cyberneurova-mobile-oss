@@ -7,7 +7,7 @@ import 'package:cyberneurova_mobile/features/user/data/repositories/user_reposit
 import 'package:cyberneurova_mobile/shared/widgets/cn_button.dart';
 import 'package:cyberneurova_mobile/shared/widgets/cn_text_field.dart';
 
-/// Change password screen. Per the backend API: on success, every
+/// Change password screen. Per chat-team inbox/007: on success, every
 /// session OTHER than the current one is revoked — surfaced as a warning
 /// so the user knows their iPad / web sessions will be logged out.
 class ChangePasswordScreen extends ConsumerStatefulWidget {

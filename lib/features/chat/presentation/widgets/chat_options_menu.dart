@@ -12,7 +12,7 @@ import 'package:cyberneurova_mobile/features/agents/presentation/widgets/scope_s
 import 'package:cyberneurova_mobile/features/projects/data/repositories/project_repository.dart';
 import 'package:cyberneurova_mobile/features/projects/presentation/providers/projects_provider.dart';
 
-/// Popup menu shown from the chat detail's 3-dots button.
+/// iOS-style popup menu shown from the chat detail's 3-dots button.
 /// Floats from the top-right with title header + actions.
 Future<void> showChatOptionsMenu({
   required BuildContext context,

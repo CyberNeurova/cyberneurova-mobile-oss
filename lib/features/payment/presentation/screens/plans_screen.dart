@@ -21,7 +21,7 @@ import 'package:cyberneurova_mobile/shared/widgets/error_view.dart';
 /// Plans screen — the one purchase surface (paywall sheet nudges here,
 /// settings' Billing row lands here).
 ///
-/// Monthly plans only (yearly store products don't exist — the backend API §9).
+/// Monthly plans only (yearly store products don't exist — inbox/026 §9).
 /// Per tier the screen prefers the STORE path: localized store price +
 /// StoreKit/Play purchase flow verified server-side. When the store is
 /// unavailable (emulator, Play products not yet created, desktop) it
@@ -64,7 +64,7 @@ class PlansScreen extends ConsumerWidget {
 
     // Availability resolves fast (a local store round-trip); waiting for it
     // avoids a web-price → store-price flash. Skeleton until BOTH are in —
-    // never an empty flash (the backend API §8).
+    // never an empty flash (inbox/026 §8).
     final loading = plansAsync.isLoading || availabilityAsync.isLoading;
     final availability =
         availabilityAsync.valueOrNull ?? const IapAvailability.unavailable();
@@ -175,7 +175,7 @@ class _PlansList extends ConsumerWidget {
     }
 
     final children = <Widget>[
-      // Current plan — tier + which SOURCE backs it (the backend API §1/§5).
+      // Current plan — tier + which SOURCE backs it (inbox/026 §1/§5).
       if (statusAsync.isLoading)
         const Padding(
           padding: EdgeInsets.only(bottom: 14),
@@ -494,7 +494,7 @@ class _PlanCard extends ConsumerWidget {
     final highlighted = !isCurrent && plan.canPurchase && !isFree;
 
     // Store-localized price when available; web price otherwise. Never both,
-    // never hardcoded USD next to a store price (the backend API §8).
+    // never hardcoded USD next to a store price (inbox/026 §8).
     final priceText = storeProduct?.price ??
         (isFree ? '\$0' : '\$${plan.price.toStringAsFixed(0)}');
 
@@ -665,7 +665,7 @@ class _PlanCard extends ConsumerWidget {
   }
 }
 
-/// Ask to Buy / deferred payment — explicitly NOT an error (the backend API §8).
+/// Ask to Buy / deferred payment — explicitly NOT an error (inbox/026 §8).
 /// The purchase completes (or not) whenever the approver acts; the store
 /// stream delivers the outcome, possibly on a later app launch.
 class _PendingPill extends StatelessWidget {
@@ -715,7 +715,7 @@ class _PendingPill extends StatelessWidget {
 
 // ─── Post-purchase confirmation ──────────────────────────────────────────────
 
-/// Reflects the VERIFY RESPONSE (the backend API §8): the granted tier can differ
+/// Reflects the VERIFY RESPONSE (inbox/026 §8): the granted tier can differ
 /// from the tapped one when a higher tier is active from another source.
 class _PostPurchaseSheet extends StatelessWidget {
   const _PostPurchaseSheet({
@@ -826,7 +826,7 @@ class _WebPurchaseSheetState extends ConsumerState<_WebPurchaseSheet> {
       // v1.0 routes web upgrades through the checkout at
       // cyberneurova.ai/pricing (in-app browser sheet — Starlink pattern).
       // The in-app invoice flow (createInvoice → checkout webview → poll)
-      // stays bypassed until the backend fixes createInvoice server-side.
+      // stays bypassed until chat-team fixes createInvoice server-side.
       Navigator.pop(context);
       final ok = await ref
           .read(paymentRepositoryProvider)

@@ -368,6 +368,9 @@ class AppL10nHi extends AppL10n {
   String get recents => 'हाल का';
 
   @override
+  String get workspace => 'Workspace';
+
+  @override
   String get chatsWillAppearHere => 'आपकी चैट यहाँ दिखाई देंगी';
 
   @override

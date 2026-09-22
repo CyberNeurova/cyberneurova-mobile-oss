@@ -81,7 +81,7 @@ class _ChatComposerState extends ConsumerState<ChatComposer> {
     });
   }
 
-  // ── Anchored attach popover (Grok pass) ──────────────────────────────────
+  // ── Anchored attach popover (redesign pass) ──────────────────────────────────
   // The + button is a CompositedTransformTarget; the popover overlay follows
   // it via this link, so when the keyboard inset animates away the card
   // tracks the composer instead of floating at a stale position.
@@ -336,7 +336,7 @@ class _ChatComposerState extends ConsumerState<ChatComposer> {
         // error) landed in the SnackBar verbatim. `_ => e.message` had the
         // same hole from the other side: the server's message is usually
         // written for a person, but not always, and "fetch failed" is what
-        // that assumption looks like when it breaks.
+        // that assumption looks like when it breaks (outbox 058).
         final friendly = e is AppException
             ? switch (e.code) {
                 'PAYLOAD_TOO_LARGE' =>
@@ -408,7 +408,7 @@ class _ChatComposerState extends ConsumerState<ChatComposer> {
             ),
           // Model picker stays in the app-bar header (not moved in this
           // pass). Web search has no composer toggle anymore — the server
-          // auto-detects when a search is needed (the backend API era); the
+          // auto-detects when a search is needed (inbox/027 era); the
           // typing indicator still surfaces server-driven search status.
           // Only in chats that genuinely CANNOT act — offering Console from
           // inside Console would be nonsense, and the agent surfaces already
@@ -482,7 +482,7 @@ class _ChatComposerState extends ConsumerState<ChatComposer> {
         ],
       );
     } else {
-      // Idle (Grok layout): the text field spans the full top row; ALL
+      // Idle (reference layout): the text field spans the full top row; ALL
       // controls live in a second row at the bottom of the same container —
       // [+ attach] … [mic / send].
       content = Column(
@@ -493,7 +493,7 @@ class _ChatComposerState extends ConsumerState<ChatComposer> {
             children: [
               _attachButton(cs),
               const SizedBox(width: 6),
-              // Model picker sits beside the composer controls (Grok's
+              // Model picker sits beside the composer controls (the reference's
               // "Auto" chip) rather than in the app bar, which now carries
               // the Ask ↔ Imagine switch. Flexible so a long model name
               // shrinks instead of overflowing the row.
@@ -507,12 +507,20 @@ class _ChatComposerState extends ConsumerState<ChatComposer> {
       );
     }
 
-    // Frosted pill (Grok-style): the composer now FLOATS over the message
+    // Frosted pill (frosted-glass): the composer now FLOATS over the message
     // list, so it's translucent and blurs whatever scrolls beneath it.
     // Previously it was an opaque box laid out below the list, which cut
     // the last bubble off at a hard edge.
+    // While a reply streams, the message list behind this pill repaints
+    // ~20×/s, and on a physical iPhone the pill's BackdropFilter re-blurring
+    // each frame shows as the reply "hanging" and earlier lines smearing
+    // through the glass (reported on device; the simulator hides it). Drop to
+    // an opaque fill for the streaming window on iOS, restore glass when idle.
+    final streaming =
+        Platform.isIOS && ref.watch(streamRunningProvider);
     final pill = GlassSurface(
       borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+      solid: streaming,
       // Clip everything to the rounded shape — the waveform can never spill out.
       padding: const EdgeInsets.fromLTRB(8, 4, 8, 6),
       child: content,
@@ -571,7 +579,7 @@ class _ChatComposerState extends ConsumerState<ChatComposer> {
 
   /// The + attach control in the bottom row: a 44dp target drawing a 36dp
   /// outlined circle. Anchor target for the attach popover. Always shown —
-  /// every model reads images now via server-side captioning (the backend API §3),
+  /// every model reads images now via server-side captioning (inbox/027 §3),
   /// so there is no per-model attach gate anymore.
   Widget _attachButton(ColorScheme cs) {
     return CompositedTransformTarget(
@@ -841,7 +849,7 @@ class _ChatComposerState extends ConsumerState<ChatComposer> {
   }
 
 
-  /// Anchored attach popover (Grok pass) — a rounded card floating just above
+  /// Anchored attach popover (redesign pass) — a rounded card floating just above
   /// the + button, replacing the old full-width bottom sheet. Dismisses on
   /// outside tap; the CompositedTransformFollower keeps it glued to the
   /// button while the keyboard inset animates away.
@@ -1006,7 +1014,7 @@ class _ChatComposerState extends ConsumerState<ChatComposer> {
   /// Small caption line at the top of the popover (the per-image billing
   /// hint — the compact stand-in for the old sheet's _AttachInfoBanner).
 
-  /// Per-message cap matches the server policy (the backend API §3a) — also
+  /// Per-message cap matches the server policy (inbox/013 §3a) — also
   /// what image_picker's `limit:` arg enforces at the OS level.
   static const int _kMaxAttachments = 5;
 
@@ -1060,7 +1068,7 @@ class _ChatComposerState extends ConsumerState<ChatComposer> {
     final result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
-      // Mirrors the server's SUPPORTED_FILE_TYPES allowlist (the backend API §3c).
+      // Mirrors the server's SUPPORTED_FILE_TYPES allowlist (inbox/013 §3c).
       allowedExtensions: const [
         'pdf',
         'doc',
@@ -1150,7 +1158,7 @@ class _AttachmentChip extends StatelessWidget {
 
   /// 1-based order index (1, 2, …, 5) shown as a corner badge so the
   /// model can refer to "image 2" and the user sees the same numbering
-  /// in the composer. Matches the spec in the backend API §3b.
+  /// in the composer. Matches the spec in inbox/013 §3b.
   final int index;
   final VoidCallback onRemove;
 

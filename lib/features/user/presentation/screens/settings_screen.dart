@@ -115,6 +115,12 @@ class SettingsScreen extends ConsumerWidget {
                       label: l.projectsTitle,
                       onTap: () => context.pushNamed('profile-projects'),
                     ),
+                    const _Sep(),
+                    _SettingRow(
+                      icon: Icons.devices_rounded,
+                      label: 'Remote control',
+                      onTap: () => context.pushNamed('remote-devices'),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),

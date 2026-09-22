@@ -43,7 +43,7 @@ class ImageRepository {
 
   /// Delete a generated image.
   ///
-  /// the backend API shipped a mobile-namespaced route at
+  /// Chat-team's inbox/019 shipped a mobile-namespaced route at
   /// `DELETE /api/mobile/v1/images/<uuid>` (audit logged under
   /// `mobile_image_deleted`). Build 12 hit the web-origin route at
   /// `/api/images/<uuid>` with an absolute URL hack — now using the

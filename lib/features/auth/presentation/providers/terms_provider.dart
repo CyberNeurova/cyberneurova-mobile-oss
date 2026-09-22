@@ -8,7 +8,7 @@ import 'package:cyberneurova_mobile/features/auth/data/repositories/auth_reposit
 ///
 /// autoDispose so we re-fetch every time the register screen mounts —
 /// catches the case where a long-lived install has gone stale relative to
-/// the server's CURRENT_TOS_VERSION (the backend API spec).
+/// the server's CURRENT_TOS_VERSION (chat-team's inbox/006 spec).
 final termsProvider = FutureProvider.autoDispose<TermsInfo>((ref) async {
   return ref.read(authRepositoryProvider).fetchCurrentTerms();
 });

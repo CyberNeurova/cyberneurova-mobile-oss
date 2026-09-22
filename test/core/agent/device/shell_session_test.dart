@@ -26,7 +26,7 @@ void main() {
     // luck on filesystems with no symlink in the temp path — macOS symlinks
     // `/var` -> `/private/var`, so `session.cwd` came back `/var/…` while every
     // assertion here expects `/private/var/…`, and the suite went red on the
-    // macOS/CI host. Feeding the canonical path makes the initial
+    // macOS/CI host (outbox 067). Feeding the canonical path makes the initial
     // cwd match the post-`cd` cwd on every host.
     session = ShellSession(rootDir: canonicalRoot);
   });

@@ -49,7 +49,7 @@ class ApiClient {
     // User-Agent, and ours was Dart's default, which its parser does not know.
     //
     // `X-Client-Type: mobile` is already sent and already tells the server
-    // this is the app, so the naming is theirs to fix too — but
+    // this is the app, so the naming is theirs to fix too (outbox 060) — but
     // sending a User-Agent that identifies the app and platform is correct
     // regardless, and it is what their parser actually reads.
     _dio.interceptors.add(
@@ -148,7 +148,7 @@ class ApiClient {
         path,
         data: data,
         // Force a fresh TCP socket per call. Dio keeps connections alive
-        // by default which is normally good — but the backend NDJSON
+        // by default which is normally good — but the chat-team's NDJSON
         // /complete endpoint returns empty on the second call when the
         // connection is reused. Cheap experiment to see if it unblocks
         // the second-message-fails bug while we wait for server-side
@@ -183,6 +183,85 @@ class ApiClient {
       if (tail.isNotEmpty) yield tail;
     }
   }
+
+  /// Returns parsed Server-Sent Events (`event:`/`data:` framing), for the
+  /// bot-section `/bot/stream` endpoint. Distinct from [stream] (NDJSON): SSE
+  /// separates events with a blank line and prefixes payload lines with
+  /// `data:` — which may span several lines (joined with `\n`). `:`-comment
+  /// keepalive lines and `id:`/`retry:` fields are ignored; only `event:` and
+  /// `data:` are surfaced.
+  ///
+  /// Byte-buffered like [stream] so multi-byte UTF-8 split across chunk
+  /// boundaries decodes correctly. It's a GET (the stream is read-only) and
+  /// yields until the socket closes or errors — reconnection (resume from the
+  /// last seq) is the caller's job.
+  Stream<SseEvent> streamSse(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+  }) async* {
+    final Response<ResponseBody> response;
+    try {
+      response = await _dio.get<ResponseBody>(
+        path,
+        queryParameters: queryParameters,
+        options: Options(
+          responseType: ResponseType.stream,
+          headers: {'Accept': 'text/event-stream'},
+        ),
+      );
+    } on DioException catch (e) {
+      _rethrow(e);
+    }
+
+    final byteBuffer = <int>[];
+    String? eventName;
+    final dataLines = <String>[];
+
+    await for (final chunk in response.data!.stream) {
+      byteBuffer.addAll(chunk);
+      while (true) {
+        final nl = byteBuffer.indexOf(0x0A);
+        if (nl == -1) break;
+        final lineBytes = byteBuffer.sublist(0, nl);
+        byteBuffer.removeRange(0, nl + 1);
+        var line = utf8.decode(lineBytes, allowMalformed: true);
+        if (line.endsWith('\r')) line = line.substring(0, line.length - 1);
+
+        if (line.isEmpty) {
+          // Blank line = event boundary. Emit what we've accumulated.
+          if (dataLines.isNotEmpty) {
+            yield SseEvent(event: eventName, data: dataLines.join('\n'));
+          }
+          eventName = null;
+          dataLines.clear();
+          continue;
+        }
+        if (line.startsWith(':')) continue; // comment / keepalive
+        final idx = line.indexOf(':');
+        final field = idx == -1 ? line : line.substring(0, idx);
+        var value = idx == -1 ? '' : line.substring(idx + 1);
+        if (value.startsWith(' ')) value = value.substring(1);
+        if (field == 'event') {
+          eventName = value;
+        } else if (field == 'data') {
+          dataLines.add(value);
+        }
+        // id / retry ignored.
+      }
+    }
+    // Flush a trailing event that had no closing blank line.
+    if (dataLines.isNotEmpty) {
+      yield SseEvent(event: eventName, data: dataLines.join('\n'));
+    }
+  }
+}
+
+/// One parsed Server-Sent Event. [data] is the concatenated `data:` payload
+/// (usually a JSON object); [event] is the optional `event:` name.
+class SseEvent {
+  const SseEvent({this.event, required this.data});
+  final String? event;
+  final String data;
 }
 
 /// `CyberNeurova/1.0.1 (Android 16)` — resolved once and reused.

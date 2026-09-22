@@ -252,7 +252,7 @@ The important part is cancelling the pending timer before arming a new one.''',
   ///   - contains "truncate" → ends with `truncated: true` (Continue pill)
   ///   - contains "agent"    → simulated agentic run: live 'tool-running'
   ///     statuses, then a reply embedding a `[TOOL_RUN:{json}]` marker
-  /// rendered as a ToolRunCard
+  ///     (inbox/025) rendered as a ToolRunCard
   @override
   Stream<StreamEvent> streamCompletion({
     required String chatId,
@@ -372,7 +372,7 @@ The important part is cancelling the pending timer before arming a new one.''',
     ];
   }
 
-  // ── Agent magic-prompt fixtures ─────────────────────────────
+  // ── Agent magic-prompt fixtures (inbox/025) ─────────────────────────────
 
   static const _agentIntro =
       "I ran an agentic pass over the workspace — here's the full activity log:\n\n";

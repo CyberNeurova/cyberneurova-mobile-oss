@@ -25,22 +25,12 @@ class _ChatBootstrapScreenState
     extends ConsumerState<ChatBootstrapScreen> {
   String? _error;
 
-  /// True from the moment routing starts until it finishes or fails, so the
-  /// sign-in listener below cannot start a second one on top of the first.
+  /// True from the moment routing starts until it finishes or fails.
   bool _routing = false;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Skip bootstrap for unauthenticated users — the /chats route is a
-      // public shell under Apple's 5.1.1(v) compliance shape, and the
-      // chatList/chatCreate API calls require auth. We render the welcome
-      // shell directly in build().
-      if (ref.read(authProvider).valueOrNull == null) return;
-      _route();
-    });
-  }
+  /// A postFrame `_route` is queued — so [build] doesn't queue a second while
+  /// the first is still pending (before [_routing] flips true).
+  bool _scheduled = false;
 
   Future<void> _route() async {
     if (_routing) return;
@@ -53,9 +43,16 @@ class _ChatBootstrapScreenState
       // 403'd this session and picking one would loop bootstrap → 403 →
       // bounce → bootstrap forever) and only mints a new record when none
       // exists. Shared with every other new-chat trigger.
-      final chatId =
-          (await ref.read(chatListProvider.notifier).reuseOrCreateEmptyChat())
-              .id;
+      // Timeout so login can never strand the user on a loading screen.
+      // reuseOrCreateEmptyChat awaits the full chat-list fetch, which rides
+      // Dio's 90s receiveTimeout — long enough that a reviewer signing in on
+      // a slow network reads it as "no content upon login" (the exact 2.1(a)
+      // rejection). Past this cap we surface a retry instead of waiting.
+      final chatId = (await ref
+              .read(chatListProvider.notifier)
+              .reuseOrCreateEmptyChat()
+              .timeout(const Duration(seconds: 15)))
+          .id;
 
       if (!mounted) return;
       // `go` not `push` — bootstrap should not stay on the back stack.
@@ -74,22 +71,25 @@ class _ChatBootstrapScreenState
 
   @override
   Widget build(BuildContext context) {
-    // Signing in while this screen is already open has to start the bootstrap.
-    //
-    // initState decides once, and at that point an unauthenticated visitor is
-    // shown the welcome shell and routing is skipped — correctly. But when
-    // they then sign in, `build` re-runs, `user` is no longer null, and the
-    // skeleton renders with nothing behind it: _route() was never called and
-    // nothing was going to call it. Observed on device — Google sign-in
-    // succeeded and the app sat on the loading skeleton indefinitely; only
-    // killing and relaunching it (so initState ran with a session) recovered.
-    ref.listen(authProvider, (previous, next) {
-      final before = previous?.valueOrNull;
-      final after = next.valueOrNull;
-      if (before == null && after != null) _route();
-    });
-
     final user = ref.watch(authProvider).valueOrNull;
+
+    // Only bootstrap when we're the ACTIVE LEAF — a bare `/chats` with no chat
+    // selected. `chat-detail` (`/chats/:id`) is a CHILD of this route, so
+    // navigating straight to a chat (e.g. the Ask toggle) mounts THIS screen as
+    // a passive parent underneath it; re-routing from here clobbered that
+    // straight back to a fresh empty chat. When we ARE the leaf, kick routing
+    // from build so an authed user is never stranded on the spinner — initState
+    // timing, a null→non-null auth flip, or a re-mount from navigating back
+    // could all miss it, and no timeout fires when _route never ran. Skipping
+    // for unauth (build renders the welcome shell) is handled below.
+    final isLeaf = GoRouterState.of(context).uri.path == '/chats';
+    if (user != null && isLeaf && !_routing && !_scheduled && _error == null) {
+      _scheduled = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scheduled = false;
+        if (mounted) _route();
+      });
+    }
     // Unauthenticated: show a static welcome shell with a composer, drawer,
     // and settings entry. The composer's Send bounces to /auth/login (Kimi
     // pattern) — satisfies Apple 5.1.1(v) by making the chat shell freely
@@ -101,6 +101,7 @@ class _ChatBootstrapScreenState
     // skeleton (app bar + composer ghost) instead of a bare spinner — the
     // 200ms fade into the real chat then reads as content filling in, not
     // as a third distinct loading screen (docs/REDESIGN.md "Boot & auth").
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: _error != null
           ? null
@@ -113,10 +114,40 @@ class _ChatBootstrapScreenState
       body: SafeArea(
         child: _error != null
             ? Center(child: _BootstrapError(error: _error!, onRetry: _route))
-            : const Column(
+            : Column(
                 children: [
-                  Expanded(child: SizedBox.shrink()),
-                  Padding(
+                  // A visible loading state, NOT a blank body. Apple rejected
+                  // an earlier build under 2.1(a) "no content upon login" —
+                  // the reviewer signed in and, while the chat list resolved,
+                  // saw an app-bar shimmer over an empty `SizedBox.shrink()`
+                  // that reads as a broken screen. A centred spinner makes the
+                  // wait legibly "loading" instead of "nothing here". Paired
+                  // with the timeout in `_route`, the screen is always one of
+                  // loading / loaded / retryable-error — never a mystery blank.
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 26,
+                            height: 26,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.2,
+                              color: cs.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          Text(
+                            'Opening your chat…',
+                            style: TextStyle(
+                                fontSize: 13, color: cs.onSurfaceVariant),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const Padding(
                     padding: EdgeInsets.fromLTRB(16, 8, 16, 12),
                     child: Row(
                       children: [

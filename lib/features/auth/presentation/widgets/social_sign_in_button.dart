@@ -18,7 +18,7 @@ import 'package:cyberneurova_mobile/features/auth/presentation/providers/auth_pr
 /// provided on Android")` without it — there's no `google-services.json` in the
 /// Android module to supply `default_web_client_id`, so we pass it explicitly.
 ///
-/// This is the backend `GOOGLE_CLIENT_ID` (the web client), which is one of
+/// This is the chat-team's `GOOGLE_CLIENT_ID` (the web client), which is one of
 /// the audiences `/api/mobile/v1/auth/google` accepts when verifying the idToken
 /// (`aud`). OAuth *client IDs* are public identifiers (not secrets). Override at
 /// build time with `--dart-define=GOOGLE_SERVER_CLIENT_ID=...`; set empty to
@@ -32,7 +32,7 @@ import 'package:cyberneurova_mobile/features/auth/presentation/providers/auth_pr
 ///
 /// It used to default to `225514883413-l3hagjcug…`, from the old project. That
 /// client was DELETED during the migration (submission/play/GOOGLE-SIGNIN-FIX.md,
-/// the backend API), so builds still carrying it cannot mint an id_token at all —
+/// inbox/024), so builds still carrying it cannot mint an id_token at all —
 /// Google answers `deleted_client` and the attempt never reaches our aud check.
 /// Step 2 of that cutover, "ship a build that sends the new serverClientId",
 /// was never merged into lib/, which is why the button worked and then stopped.
@@ -59,7 +59,7 @@ const bool _serverClientIdFromBuild =
     bool.hasEnvironment('GOOGLE_SERVER_CLIENT_ID');
 
 /// Wrapped Google and Apple sign-in buttons. Both go through the existing
-/// AuthProvider methods which post to the backend `/auth/google` and
+/// AuthProvider methods which post to the chat-team's `/auth/google` and
 /// `/auth/apple` endpoints.
 ///
 /// **Compliance:** App Store Review Guideline 4.8 requires that any app

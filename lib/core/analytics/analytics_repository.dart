@@ -5,7 +5,7 @@ import 'package:cyberneurova_mobile/core/api/api_client.dart';
 import 'package:cyberneurova_mobile/core/constants/api_constants.dart';
 
 /// Fire-and-forget analytics — events are buffered server-side and flushed
-/// to PG on a 1s tick. Per the backend API: clients SET `event_type`
+/// to PG on a 1s tick. Per chat-team's inbox/007: clients SET `event_type`
 /// + optional metadata; the server stamps user / IP / country / city.
 final analyticsRepositoryProvider = Provider<AnalyticsRepository>((ref) {
   return AnalyticsRepository(ref.watch(apiClientProvider));

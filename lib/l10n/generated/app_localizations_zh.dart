@@ -364,6 +364,9 @@ class AppL10nZh extends AppL10n {
   String get recents => '最近';
 
   @override
+  String get workspace => 'Workspace';
+
+  @override
   String get chatsWillAppearHere => '您的对话将显示在这里';
 
   @override

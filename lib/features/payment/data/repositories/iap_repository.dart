@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:cyberneurova_mobile/core/api/api_client.dart';
 import 'package:cyberneurova_mobile/core/constants/api_constants.dart';
 import 'package:cyberneurova_mobile/core/constants/dev_flags.dart';
@@ -15,7 +16,7 @@ final iapRepositoryProvider = Provider<IapRepository>((ref) {
   return repo;
 });
 
-/// Store IAP layer: StoreKit 2 on iOS (live today), Play Billing
+/// Store IAP layer (inbox/026): StoreKit 2 on iOS (live today), Play Billing
 /// on Android (blocked on Play Console — degrades to unavailable until the
 /// products exist, at which point this code path lights up unchanged).
 ///
@@ -66,6 +67,16 @@ class IapRepository {
       if (!await _iap.isAvailable()) {
         return const IapAvailability.unavailable();
       }
+      // Android Play Billing only completes purchases for builds Play itself
+      // installed and signed. A sideloaded dev APK or a de-Googled ROM can
+      // still *query* products, but launching a purchase is refused with
+      // "this version of the application is not configured for billing" — a
+      // dead end. Treat those as unavailable so the UI uses web checkout
+      // (Android's allowed external path) instead of surfacing that error.
+      // A Play-installed build reports installer `com.android.vending`.
+      if (PlatformFlags.isAndroid && !await _installedFromPlay()) {
+        return const IapAvailability.unavailable();
+      }
       final queryIds = IapCatalog.storeQueryIds; // tier → store id
       final response =
           await _iap.queryProductDetails(queryIds.values.toSet());
@@ -97,6 +108,20 @@ class IapRepository {
       return IapAvailability.available(products);
     } catch (_) {
       return const IapAvailability.unavailable();
+    }
+  }
+
+  /// Whether Google Play installed this build — the precondition for Play
+  /// Billing actually completing a purchase (as opposed to a sideloaded or
+  /// de-Googled install, where product queries succeed but the purchase
+  /// launch is refused). Unknown installer is treated as "not Play" so the
+  /// UI degrades to web checkout rather than risking the billing dead end.
+  Future<bool> _installedFromPlay() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      return info.installerStore == 'com.android.vending';
+    } catch (_) {
+      return false;
     }
   }
 

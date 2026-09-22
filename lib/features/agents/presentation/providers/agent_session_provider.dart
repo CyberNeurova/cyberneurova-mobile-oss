@@ -56,7 +56,7 @@ class RunIdHolder {
 /// Was a placeholder returning [UnavailableControlChannel] while the run
 /// protocol was undeployed — every device result was queued and never
 /// delivered, which is why a tool call could never complete. Live since
-/// 2026-08-04.
+/// 2026-08-04 (chat-team inbox/003).
 final agentControlChannelProvider =
     Provider.family<AgentControlChannel, String>((ref, chatId) {
   return RunProtocolChannel(
@@ -191,7 +191,7 @@ class AgentSessionNotifier extends FamilyNotifier<AgentSession, String> {
 
 /// Converts the chat stream's `status` events into agent frames.
 ///
-/// The backend's existing status vocabulary
+/// The backend's existing status vocabulary (chat-team inbox/012 and /025)
 /// already carries real tool activity — a web search with a query and a
 /// result count, an agentic step with a line like "Reading main.py". Until
 /// now those only drove a label on the typing indicator, discarding most of

@@ -64,7 +64,7 @@ enum AgentSurface {
       // NOT "keeps the whole project in view": the conversation carried
       // between turns is six turns, truncated to 600 characters each, with
       // tool results excluded (`_withPriorTurns`) — agent turns are not stored
-      // server-side at all. What genuinely persists is the files,
+      // server-side at all (outbox 054). What genuinely persists is the files,
       // which the agent can re-read whenever it needs them. Promising context
       // it does not have is how a user ends up wondering why it forgot.
       'Your files stay on the phone — it can re-read them any turn',
@@ -163,7 +163,7 @@ enum AgentSurface {
   /// stops the run (`/agent/run` `maxTurns`, clamped to 50 server-side).
   ///
   /// Per-surface because the jobs are not the same shape, which is what
-  /// internal notes was about — Code was hitting the ceiling mid-build:
+  /// outbox 054 was about — Code was hitting the ceiling mid-build:
   ///
   ///  * **Code** gets the most. Installing a toolchain, writing files, running
   ///    the thing and fixing what broke is genuinely many rounds, and stopping

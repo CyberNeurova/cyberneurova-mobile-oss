@@ -14,7 +14,7 @@ import 'package:cyberneurova_mobile/shared/theme/app_theme.dart';
 import 'package:cyberneurova_mobile/shared/widgets/authed_network_image.dart';
 import 'package:cyberneurova_mobile/shared/widgets/paywall_sheet.dart';
 
-/// The "Imagine" home surface (Grok pass) — sibling of the Ask/chat
+/// The "Imagine" home surface (redesign pass) — sibling of the Ask/chat
 /// surface, reached with a horizontal slide. Layout: header (back ·
 /// Imagine · settings), scrollable preview + recent-generations grid,
 /// and a chat-composer-style prompt pill pinned at the bottom with a
@@ -510,7 +510,7 @@ class _RecentTile extends StatelessWidget {
 
 // ─── Imagine settings sheet ──────────────────────────────────────────────────
 //
-// Grouped rows per the Grok reference — but the backend generate endpoint
+// Grouped rows per the design reference — but the backend generate endpoint
 // accepts ONLY `prompt` today, so the aspect-ratio selector is honest UI
 // state (kept in imagineAspectRatioProvider, NOT sent with requests) and
 // every other option row is a disabled "Coming soon" placeholder. Nothing

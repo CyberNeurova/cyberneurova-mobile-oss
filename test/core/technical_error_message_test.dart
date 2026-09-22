@@ -19,7 +19,7 @@ void main() {
         'bad gateway',
         'undefined',
         'null',
-        'connect ECONNREFUSED 127.0.0.1:8080',
+        'connect ECONNREFUSED 127.0.0.1:9095',
         'getaddrinfo ENOTFOUND api.internal',
         'read ETIMEDOUT',
         'ERR_STREAM_PREMATURE_CLOSE',

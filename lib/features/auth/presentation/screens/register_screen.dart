@@ -101,7 +101,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       );
       if (mounted) context.pop(); // back to login
     } on DioException catch (e) {
-      // ToS error codes from the backend API:
+      // ToS error codes from chat-team's inbox/006:
       //   400 TOS_NOT_ACCEPTED  → highlight the checkbox
       //   409 TOS_VERSION_OUTDATED → re-fetch + re-prompt, clear checkbox
       final rawCode =

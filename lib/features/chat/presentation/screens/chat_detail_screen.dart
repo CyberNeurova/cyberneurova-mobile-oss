@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cyberneurova_mobile/features/chat/presentation/providers/attachments_provider.dart';
 import 'package:cyberneurova_mobile/features/chat/presentation/providers/chat_provider.dart';
+import 'package:cyberneurova_mobile/features/chat/presentation/providers/last_chat_provider.dart';
 import 'package:cyberneurova_mobile/features/agents/presentation/widgets/agent_activity_strip.dart';
 import 'package:cyberneurova_mobile/features/chat/presentation/widgets/chat_composer.dart';
 import 'package:cyberneurova_mobile/features/chat/presentation/widgets/chat_options_menu.dart';
@@ -63,6 +64,9 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     // auto-send it as soon as the chat detail is mounted.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
+      // Remember this as the current chat so sibling surfaces (the Ask/Imagine
+      // toggle) can return here directly instead of round-tripping bootstrap.
+      ref.read(lastChatIdProvider.notifier).state = widget.chatId;
       // Clear any error snackbar lingering from the previously-open chat.
       // Snackbars live on the app-level Messenger, so without this the
       // "Model returned no response" toast follows the user into the next
@@ -94,6 +98,14 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     if (force && !_stickToBottom) setState(() => _stickToBottom = true);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!_scrollController.hasClients) return;
+      // RE-CHECK at execution time, not just at schedule time. Streaming
+      // flushes every 50-120ms, so there is almost always a jump already
+      // queued. If the user starts dragging between a jump being scheduled
+      // and this callback running, `_stickToBottom` is now false and this
+      // jump must NOT fire — otherwise the pending jump yanks them back to
+      // the streaming message and its scroll-end notification re-sticks
+      // them there, which reads as the list being frozen on the last line.
+      if (!force && !_stickToBottom) return;
       _activeAutoScrolls++;
       try {
         if (animate) {
@@ -262,7 +274,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       }
     });
 
-    // Stale-chat-403 recovery: the backend POST /chat/:id/complete
+    // Stale-chat-403 recovery: chat-team's POST /chat/:id/complete
     // returns 403 when the chat doesn't belong to the current user
     // (most common cause: bootstrap routed to a previous-session chat
     // id from the cached chat list). On hit, create a fresh chat, push
@@ -356,22 +368,36 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       },
       child: Scaffold(
           drawer: const AppDrawer(),
-          // Content scrolls UNDER the bar and frosts out behind it (Grok /
-          // iOS-26 material), instead of stopping at an opaque band.
+          // Content scrolls UNDER the bar and frosts out behind it (an
+          // iOS-26-style material), instead of stopping at an opaque band.
           extendBodyBehindAppBar: true,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             scrolledUnderElevation: 0,
-            // Plain page colour, NOT a glass band.
-            //
-            // `GlassSurface` fills with `surfaceContainer`, which is a
-            // different tone from the page — so across the full width its
-            // bottom edge read as a hairline rule under the app bar. There was
-            // no border drawn; the line WAS the band. Painting the scaffold
-            // colour keeps content from bleeding through under
-            // `extendBodyBehindAppBar` while leaving no visible seam.
-            flexibleSpace: ColoredBox(
-              color: Theme.of(context).scaffoldBackgroundColor,
+            // A soft top→bottom fade, NOT an opaque band (reference chat
+            // design). The page colour is fully opaque under the status bar
+            // and the button row — so the clock, the menu, the Ask/Imagine
+            // switch and the actions all stay legible — then fades to
+            // transparent at the bar's bottom edge. The newest content scrolls
+            // up and DISSOLVES under the header instead of being guillotined
+            // by a hard band, and because the fade has no hard bottom edge it
+            // leaves no hairline seam (the reason the old `GlassSurface` band,
+            // then the flat `ColoredBox`, were both dropped).
+            flexibleSpace: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Theme.of(context).scaffoldBackgroundColor,
+                    Theme.of(context).scaffoldBackgroundColor,
+                    Theme.of(context)
+                        .scaffoldBackgroundColor
+                        .withValues(alpha: 0.0),
+                  ],
+                  stops: const [0.0, 0.72, 1.0],
+                ),
+              ),
               child: const SizedBox.expand(),
             ),
             leading: Builder(
@@ -386,7 +412,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
               ),
             ),
             centerTitle: true,
-            // Ask ↔ Imagine lives in the header (Grok pattern) — switching
+            // Ask ↔ Imagine lives in the header (reference pattern) — switching
             // between chatting and image generation is a high-frequency
             // move, and it used to cost a drawer trip. The model picker
             // moved down into the composer's control row, where it sits
@@ -495,7 +521,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
               const SizedBox(width: 4),
             ],
           ),
-          // Grok-style floating composer: the message list fills the whole
+          // floating composer: the message list fills the whole
           // body and the composer is layered ON TOP as frosted glass, so
           // content slides underneath and blurs out. The previous Column
           // layout ended the list at a hard edge, which visually guillotined

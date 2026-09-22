@@ -11,8 +11,8 @@
 ///     <|tool_call>call:Write{path:<|"|>hello.txt<|"|>,content:<|"|>hi<|"|>}<tool_call|>
 ///
 /// Seen on prod 2026-08-04: Gemma emits `Write` where the registered tool is
-/// `file_write`. The naming mismatch is the backend's to fix and is filed as
-/// internal notes — but the app should not be showing raw template text to a user
+/// `file_write`. The naming mismatch is the chat team's to fix and is filed as
+/// outbox 043 — but the app should not be showing raw template text to a user
 /// under any circumstance, whatever the server sends. This is the same class
 /// as the identity leak, and the same answer: guard it at the point of
 /// rendering rather than hoping every producer is well-behaved.

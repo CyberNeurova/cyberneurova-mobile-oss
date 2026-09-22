@@ -9,6 +9,62 @@ library;
 
 const _maxLength = 44;
 
+// A greeting at the START of a message ("hey, …", "good morning …") is not
+// part of what the chat is about — strip it so the title names the ask.
+final _greetingPrefix = RegExp(
+  r'^\s*('
+  r'hi+|hey+|hello+|yo+|sup|hiya|heya|howdy|hola|greetings|gm|gn|'
+  r'good\s+(?:morning|afternoon|evening|day)|whats?\s*up|wass?up'
+  r')\b'
+  r'(?:\s+(?:there|all|guys|everyone|team|folks|friend|buddy|man|bro|dude))?'
+  r'[\s,!.\-–—:;]*',
+  caseSensitive: false,
+);
+
+// The WHOLE message is a greeting (maybe + a name/emoji/punctuation) — or a
+// bit of filler ("ok", "thanks", "test"). Matched after normalising away
+// punctuation, emoji and digits.
+final _greetingWhole = RegExp(
+  r'^('
+  r'hi+|hey+|hello+|yo+|sup|hiya|heya|howdy|hola|greetings|gm|gn|'
+  r'good (?:morning|afternoon|evening|day)|whats up|wass?up|whatsup|'
+  r'how are (?:you|u)|hows it going|how is it going|how are things|how do you do'
+  r')'
+  r'( (?:there|all|guys|everyone|team|folks|friend|buddy|man|bro|dude|sir|maam))?$',
+);
+
+const _fillerWhole = {
+  'ok', 'okay', 'k', 'kk', 'test', 'testing', 'thanks', 'thank you', 'ty',
+  'thx', 'cool', 'nice', 'lol', 'hmm', 'hm', 'yeah', 'nah', 'yep', 'nope',
+};
+
+/// A first message that is *only* a greeting or filler ("hey", "hi there",
+/// "good morning", "thanks", "ok", "test") is NOT what the chat is about.
+/// Titling from it produces a list of "Hey" / "Hi" rows that say nothing, so
+/// callers skip it and let the NEXT, substantive message name the session.
+bool isGreetingOrLowSignal(String message) {
+  final normalized = message
+      .toLowerCase()
+      // Drop apostrophes INSIDE words so "what's up" → "whats up" (a space
+      // here would split it into three tokens and miss the greeting).
+      .replaceAll(RegExp(r"['’`]"), '')
+      // Everything else non-letter (punctuation, emoji, digits) → a space, so
+      // "hey!!", "hi 👋" and "good morning." reduce to the bare greeting.
+      .replaceAll(RegExp(r'[^\p{L}\s]', unicode: true), ' ')
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .trim();
+  if (normalized.isEmpty) return true;
+  return _greetingWhole.hasMatch(normalized) ||
+      _fillerWhole.contains(normalized);
+}
+
+/// Removes a leading greeting from a message so a title names the ask.
+String _stripGreeting(String text) {
+  final m = _greetingPrefix.firstMatch(text);
+  if (m == null || m.end == 0) return text;
+  return text.substring(m.end);
+}
+
 /// Titles that are not names — the server's placeholder for a chat nobody has
 /// spoken in yet, plus the ones we might set ourselves.
 bool isPlaceholderChatTitle(String title) {
@@ -63,6 +119,13 @@ String titleFromMessage(String message) {
       .replaceAll(RegExp(r'[`*_]'), '')
       .replaceAll(RegExp(r'\s+'), ' ')
       .trim();
+  if (t.isEmpty) return '';
+
+  // "hey, what's the capital of France" → "What's the capital of France".
+  // If the message is nothing BUT a greeting, this empties `t` and we bail —
+  // callers should have skipped it via isGreetingOrLowSignal, but titling is
+  // idempotent and this keeps it correct if reached directly.
+  t = _stripGreeting(t).trim();
   if (t.isEmpty) return '';
 
   // Stop at the first sentence end if that already gives us something

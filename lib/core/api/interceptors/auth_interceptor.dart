@@ -8,7 +8,7 @@ import 'package:cyberneurova_mobile/core/storage/secure_storage.dart';
 ///
 /// **Concurrency:** if multiple requests fail with 401 at the same time,
 /// they all share a single refresh future via `_refreshLock`. Without this,
-/// each 401 would fire its own `/auth/refresh` and — since the backend rotates
+/// each 401 would fire its own `/auth/refresh` and — since chat-team rotates
 /// the refresh token on use — all but the first would 401 again and log the
 /// user out spuriously.
 class AuthInterceptor extends Interceptor {

@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Stored in SharedPreferences under `reaction:<id>` so the user's choice
 /// survives rebuilds + app relaunches.
 ///
-/// **Not** synced to the server yet — the backend `/analytics/events` is
+/// **Not** synced to the server yet — chat-team's `/analytics/events` is
 /// queued (#49). When it lands, hook `set()` to POST the rating server-side
 /// in addition to writing the local prefs entry.
 class MessageReactions extends Notifier<Map<String, int>> {

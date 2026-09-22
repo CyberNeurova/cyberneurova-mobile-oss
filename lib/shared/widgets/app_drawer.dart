@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cyberneurova_mobile/core/layout/responsive.dart';
-import 'package:cyberneurova_mobile/core/platform/platform_flags.dart';
 import 'package:cyberneurova_mobile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cyberneurova_mobile/features/chat/data/models/chat_model.dart';
 import 'package:cyberneurova_mobile/features/chat/presentation/providers/archived_chats_provider.dart';
@@ -15,10 +14,8 @@ import 'package:cyberneurova_mobile/features/chat/presentation/widgets/chat_sele
 import 'package:cyberneurova_mobile/features/projects/data/repositories/project_repository.dart';
 import 'package:cyberneurova_mobile/features/projects/presentation/providers/projects_provider.dart';
 import 'package:cyberneurova_mobile/l10n/generated/app_localizations.dart';
-import 'package:cyberneurova_mobile/shared/theme/app_theme.dart';
-import 'package:cyberneurova_mobile/shared/widgets/upgrade_pill.dart';
 
-/// Grok-style left drawer (drawer v2, docs/REDESIGN.md "Grok pass").
+/// left drawer (drawer v2, docs/REDESIGN.md "redesign pass").
 /// Header = wordmark + avatar/name/tier as one tappable block (→ settings).
 /// Body = quiet Recents list (title + relative date) and a divider-separated
 /// secondary nav group, all one CustomScrollView. A floating pill bar docked
@@ -51,12 +48,6 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
     final ref = this.ref;
     final user = ref.watch(authProvider).valueOrNull;
     final l = AppL10n.of(context);
-    final initial = user == null
-        ? '?'
-        : (user.name?.isNotEmpty == true
-                ? user.name![0]
-                : user.email[0])
-            .toUpperCase();
 
     return Drawer(
       width: Responsive.drawerWidth(context),
@@ -135,13 +126,18 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Selection mode action bar — only shown when one or
-                  // more chats are selected. Replaces the brand row to
+                  // more chats are selected. Replaces the top controls to
                   // make the mode obvious (gmail/photos pattern).
                   const _SelectionActionBar(),
-                  // Everything above the bottom bar is one scroll surface.
-                  // SlidableAutoCloseBehavior: opening one row's action pane
-                  // closes any other open pane, so at most one pane is ever
-                  // locked open (scrolling closes it too — closeOnScroll).
+                  // Fixed top: a compact search pill (where thumbs expect it).
+                  // Hidden in selection mode so the action bar reads as
+                  // exclusive.
+                  _MaybeSearchBar(l: l, ref: ref),
+                  // Everything between the top controls and the account card is
+                  // one scroll surface. SlidableAutoCloseBehavior: opening one
+                  // row's action pane closes any other open pane, so at most
+                  // one pane is ever locked open (scrolling closes it too —
+                  // closeOnScroll).
                   Expanded(
                     child: SlidableAutoCloseBehavior(
                       // Fetch the next page as the user nears the bottom.
@@ -169,20 +165,11 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                         },
                         child: CustomScrollView(
                         slivers: [
-                          // Header block (wordmark + identity) — scrolls away
-                          // when the user is looking at older chats. Hidden in
-                          // selection mode to keep the visual focus on the
-                          // selected chats.
+                          // Nav (Projects, Agents, Bot Chat) — compact
+                          // icon+label rows, the drawer's navigation, BEFORE
+                          // the chat history. Hidden in selection mode.
                           SliverToBoxAdapter(
-                            child: _MaybeHeader(
-                                user: user, initial: initial, l: l),
-                          ),
-                          // Destinations (Projects, Agents) come
-                          // BEFORE the chat history — the common chat-app
-                          // drawer pattern (quick nav on top, conversations
-                          // below) per user feedback 2026-07-20.
-                          SliverToBoxAdapter(
-                            child: _MaybeSecondaryNav(l: l),
+                            child: _MaybeWorkspace(l: l),
                           ),
                           SliverToBoxAdapter(
                             child: _SectionLabel(label: l.recents),
@@ -192,7 +179,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                           const _RecentsSliver(),
                           // Collapsed "Archived (N)" group under the recents
                           // (device-local archive v1 — see
-                          // archived_chats_provider.dart + internal notes).
+                          // archived_chats_provider.dart + outbox/034).
                           const SliverToBoxAdapter(child: _ArchivedSection()),
                           const SliverToBoxAdapter(
                               child: SizedBox(height: 12)),
@@ -202,10 +189,11 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                     ),
                   ),
 
-                  // Floating bottom bar: search pill + settings + new chat.
-                  // Hidden while the selection action bar is up so the mode
-                  // reads as exclusive (Gmail/Photos pattern).
-                  _MaybeBottomBar(l: l, ref: ref),
+                  // Bottom bar — a compact teal "New chat" pill + a settings
+                  // gear (reference pattern). No heavy profile card; identity and
+                  // plan live behind the gear, in settings. Hidden while the
+                  // selection action bar is up so the mode reads as exclusive.
+                  _MaybeBottomBar(l: l, ref: ref, user: user),
                 ],
               ),
             ),
@@ -216,183 +204,152 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
   }
 }
 
-// ─── Header (wordmark + identity, one tappable block) ────────────────────────
+// ─── Top controls (search + New chat) ───────────────────────────────────────
 
-/// Small serif wordmark with the avatar + name + tier row directly under it.
-/// The identity row is ONE tap target → settings (authed) or login (unauth);
-/// the whole thing reads as a single header block, Grok-style.
-class _DrawerHeader extends StatelessWidget {
-  const _DrawerHeader({
-    required this.user,
-    required this.initial,
-    required this.l,
-  });
-
-  final dynamic user;
-  final String initial;
+/// A floating search icon at the top of the drawer (reference pattern) — the
+/// search input itself lives on the search screen, so a tap just opens it.
+/// Right-aligned so it echoes the reference's top-right search affordance.
+class _SearchBar extends StatelessWidget {
+  const _SearchBar({required this.l, required this.ref});
   final AppL10n l;
-
-  String _tierLabel(String? tier) => switch (tier) {
-        'pro_max' => l.proMaxPlan,
-        'pro' => l.proPlan,
-        'premium' => l.premiumPlan,
-        _ => l.freePlan,
-      };
+  final WidgetRef ref;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    // Light-mode legibility: the light palette's primary (#0E9C86) is only
-    // ~2.9:1 as small text on the light drawer — deepen it with onSurface
-    // ink to clear 4.5:1. Dark keeps the brand teal untouched.
-    final accentInk = Theme.of(context).brightness == Brightness.light
-        ? Color.alphaBlend(cs.onSurface.withValues(alpha: 0.35), cs.primary)
-        : cs.primary;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 14, 20, 2),
-          child: Text(
-            'CyberNeurova',
-            style: AppTheme.serifDisplay(
-              size: 16,
-              weight: FontWeight.w400,
-              color: cs.onSurfaceVariant,
-            ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 4, 8, 2),
+      child: Row(
+        children: [
+          const Spacer(),
+          _CircleButton(
+            icon: Icons.search_rounded,
+            tooltip: l.search,
+            iconColor: cs.onSurfaceVariant,
+            fill: cs.surfaceContainerHighest.withValues(alpha: 0.5),
+            onTap: () {
+              // Capture the router BEFORE popping the drawer — the drawer's own
+              // context is torn down by the pop.
+              final router = GoRouter.of(context);
+              Navigator.pop(context);
+              router.pushNamed('chat-search');
+            },
           ),
-        ),
-        InkWell(
-          onTap: () {
-            HapticFeedback.selectionClick();
-            // Capture the router BEFORE popping the drawer — after the
-            // pop this context starts disposing (see New Chat note in
-            // _BottomBar).
-            final router = GoRouter.of(context);
-            Navigator.pop(context);
-            if (user == null) {
-              router.goNamed('login');
-            } else {
-              router.pushNamed('settings');
-            }
-          },
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 16, 12),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: user == null
-                        ? cs.primary.withValues(alpha: 0.12)
-                        : Colors.transparent,
-                    border: Border.all(
-                      color: user == null
-                          ? cs.primary.withValues(alpha: 0.4)
-                          : cs.outline,
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: user == null
-                      ? Icon(Icons.person_outline_rounded,
-                          size: 20, color: accentInk)
-                      : Text(
-                          initial,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: cs.onSurface,
-                          ),
-                        ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        user == null
-                            ? 'Sign in'
-                            : (user?.name ?? user?.email ?? ''),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: user == null ? accentInk : cs.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 1),
-                      Text(
-                        user == null
-                            ? 'Save your chats and unlock everything'
-                            : _tierLabel(user?.tier),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: cs.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Free-tier upsell: compact Upgrade pill inside the identity
-                // row (subtitle already reads "Free Plan"). Gated on the same
-                // PlatformFlags rule as every other upgrade CTA so the App
-                // Store on/off switch stays in one auditable place.
-                if (user != null &&
-                    UpgradePill.isFreeTier(user?.tier as String?) &&
-                    PlatformFlags.showUpgradeCta) ...[
-                  const SizedBox(width: 8),
-                  UpgradePill(
-                    onTap: () {
-                      // Capture the router BEFORE popping the drawer — same
-                      // disposal race as the header tap above.
-                      final router = GoRouter.of(context);
-                      Navigator.pop(context);
-                      router.pushNamed('billing-plans');
-                    },
-                  ),
-                  const SizedBox(width: 4),
-                ],
-                Icon(Icons.chevron_right_rounded,
-                    size: 20, color: cs.onSurfaceVariant),
-              ],
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
-// ─── Secondary nav (Projects, Agents) ───────────────────────────────────────
+// ─── Bottom bar (New chat pill + settings gear) ──────────────────────────────
 
-/// Quieter destination group below Recents. Same tap behavior as before the
-/// reorder (pop drawer, then push) — only the placement and styling changed.
-class _SecondaryNav extends StatelessWidget {
-  const _SecondaryNav({required this.l});
+/// A compact teal "New chat" pill next to a settings gear (reference pattern) —
+/// the accented action no longer spans the whole drawer, and there is no heavy
+/// profile card. Identity and plan live behind the gear, in settings (or
+/// login when signed out).
+class _BottomBar extends StatelessWidget {
+  const _BottomBar({required this.l, required this.ref, required this.user});
   final AppL10n l;
+  final WidgetRef ref;
+  final dynamic user;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+      child: Row(
+        children: [
+          // New chat — a content-sized teal pill, not a full-width row.
+          Material(
+            color: cs.primary,
+            borderRadius: BorderRadius.circular(22),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(22),
+              onTap: () => _newChat(context),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add_rounded, size: 20, color: cs.onPrimary),
+                    const SizedBox(width: 8),
+                    Text(
+                      l.newChat,
+                      style: TextStyle(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w600,
+                        color: cs.onPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const Spacer(),
+          // Settings gear — identity + plan live here now (login when signed
+          // out).
+          _CircleButton(
+            icon: Icons.settings_outlined,
+            tooltip: 'Settings',
+            iconColor: cs.onSurfaceVariant,
+            fill: cs.surfaceContainerHighest.withValues(alpha: 0.5),
+            onTap: () {
+              final router = GoRouter.of(context);
+              Navigator.pop(context);
+              router.pushNamed(user == null ? 'login' : 'settings');
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _newChat(BuildContext context) async {
+    // Reuse an existing empty chat when one exists (or create one otherwise) —
+    // repeated New Chat taps without sending used to mint a blank server
+    // record each time. Capture router + messenger BEFORE Navigator.pop —
+    // once the drawer pops, this context starts disposing and goNamed no-ops.
+    HapticFeedback.mediumImpact();
+    final router = GoRouter.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    Navigator.pop(context);
+    try {
+      final chat =
+          await ref.read(chatListProvider.notifier).reuseOrCreateEmptyChat();
+      router.goNamed('chat-detail', pathParameters: {'id': chat.id});
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(context.mounted
+              ? "Couldn't create chat. ${userMessageFor(context, e)}"
+              : "Couldn't create chat."),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
+  }
+}
+
+// ─── Workspace (Projects, Agents, Bot Chat) ──────────────────────────────────
+
+/// The drawer's navigation group, above Recents: compact icon + label rows
+/// (reference pattern — no header, no wells, no chevrons). Same tap behaviour
+/// as before (pop drawer, then push).
+class _Workspace extends StatelessWidget {
+  const _Workspace({required this.l});
+  final AppL10n l;
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: 8),
-        Divider(
-          height: 0.5,
-          indent: 20,
-          endIndent: 20,
-          color: cs.outline.withValues(alpha: 0.5),
-        ),
-        const SizedBox(height: 8),
-        _SecondaryNavItem(
+        const SizedBox(height: 4),
+        _WorkspaceNavItem(
           icon: Icons.folder_outlined,
           label: l.projectsTitle,
           onTap: () {
@@ -408,12 +365,23 @@ class _SecondaryNav extends StatelessWidget {
         // Research is no longer a top-level peer either: it sits inside
         // Agents alongside Code, so the two agentic workspaces live together
         // and the sidebar stays two destinations deep.
-        _SecondaryNavItem(
-          icon: Icons.auto_awesome_mosaic_outlined,
+        _WorkspaceNavItem(
+          icon: Icons.auto_awesome_outlined,
           label: 'Agents',
           onTap: () {
             Navigator.pop(context);
             context.pushNamed('agents');
+          },
+        ),
+        // Agent Contacts (bot-section) — DM your AI contacts. A peer of Agents:
+        // Agents is where the agent runs tools; Contacts is where you talk to
+        // them and (P2+) drive a work chat remotely.
+        _WorkspaceNavItem(
+          icon: Icons.forum_outlined,
+          label: 'Bot Chat',
+          onTap: () {
+            Navigator.pop(context);
+            context.pushNamed('bots');
           },
         ),
       ],
@@ -421,10 +389,10 @@ class _SecondaryNav extends StatelessWidget {
   }
 }
 
-/// Visually quieter than `_NavItem`: onSurfaceVariant icon + label, 14px
-/// text, no fill. Still a full-width ≥44px touch target.
-class _SecondaryNavItem extends StatelessWidget {
-  const _SecondaryNavItem({
+/// A destination row: plain icon + label, no well and no chevron (the reference
+/// density). The whole row is a ≥44px touch target.
+class _WorkspaceNavItem extends StatelessWidget {
+  const _WorkspaceNavItem({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -445,17 +413,21 @@ class _SecondaryNavItem extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 44),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: Row(
             children: [
-              Icon(icon, size: 18, color: cs.onSurfaceVariant),
-              const SizedBox(width: 14),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: cs.onSurfaceVariant,
+              Icon(icon, size: 20, color: cs.onSurface),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: cs.onSurface,
+                  ),
                 ),
               ),
             ],
@@ -475,14 +447,17 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 2),
       child: Text(
-        label,
+        label.toUpperCase(),
         style: TextStyle(
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: FontWeight.w600,
-          letterSpacing: 0.2,
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          letterSpacing: 0.6,
+          color: Theme.of(context)
+              .colorScheme
+              .onSurfaceVariant
+              .withValues(alpha: 0.8),
         ),
       ),
     );
@@ -502,7 +477,7 @@ class _RecentsSliver extends ConsumerWidget {
     final l = AppL10n.of(context);
 
     // Hide empty chats (`messageCount == 0`) AND archived chats in normal
-    // browse mode — chat-app drawers typically don't show blank conversations, and
+    // browse mode — common chat-app drawers don't show blank conversations, and
     // archived rows live in the collapsed "Archived (N)" group below.
     // Selection mode shows EVERYTHING (blanks + archived) so legacy blanks
     // and archived chats can still be bulk-selected and deleted.
@@ -636,7 +611,7 @@ class _RecentItem extends ConsumerWidget {
               ref.read(selectedChatsProvider.notifier).toggle(chat.id);
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: Row(
                 children: [
                   if (isSelectionMode) ...[
@@ -649,35 +624,31 @@ class _RecentItem extends ConsumerWidget {
                     ),
                     const SizedBox(width: 10),
                   ],
+                  // Title left, relative time right (reference row layout).
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          chat.title.isEmpty
-                              ? AppL10n.of(context).newConversation
-                              : chat.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: cs.onSurface,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        if (when.isNotEmpty) ...[
-                          const SizedBox(height: 1),
-                          Text(
-                            when,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: cs.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ],
+                    child: Text(
+                      chat.title.isEmpty
+                          ? AppL10n.of(context).newConversation
+                          : chat.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: cs.onSurface,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
+                  if (when.isNotEmpty) ...[
+                    const SizedBox(width: 10),
+                    Text(
+                      when,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -730,7 +701,7 @@ class _RecentItem extends ConsumerWidget {
   }
 
   /// Device-local archive (v1 — see archived_chats_provider.dart +
-  /// internal notes for the server-side ask). The row leaves Recents via the
+  /// outbox/034 for the server-side ask). The row leaves Recents via the
   /// provider filter; Undo simply removes the id again.
   // (Pane buttons live in _PaneButton at the bottom of this file.)
   Future<void> _archive(BuildContext context, WidgetRef ref) async {
@@ -886,8 +857,8 @@ class _ArchivedSectionState extends ConsumerState<_ArchivedSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Quiet toggle row — styled like _SecondaryNavItem (18px icon,
-        // 14px onSurfaceVariant text, ≥44px target).
+        // Quiet toggle row — 18px icon, 14px onSurfaceVariant text,
+        // ≥44px target.
         InkWell(
           onTap: () {
             HapticFeedback.selectionClick();
@@ -944,33 +915,48 @@ class _ArchivedSectionState extends ConsumerState<_ArchivedSection> {
 
 // ─── Selection mode: action bar + visibility helpers ────────────────────────
 
-class _MaybeHeader extends ConsumerWidget {
-  const _MaybeHeader({
-    required this.user,
-    required this.initial,
-    required this.l,
-  });
-  final dynamic user;
-  final String initial;
+/// Fixed top search pill, hidden in selection mode so the action bar reads as
+/// exclusive.
+class _MaybeSearchBar extends ConsumerWidget {
+  const _MaybeSearchBar({required this.l, required this.ref});
   final AppL10n l;
+  final WidgetRef ref;
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final hidden = ref.watch(selectedChatsProvider).isNotEmpty;
-    return hidden
-        ? const SizedBox.shrink()
-        : _DrawerHeader(user: user, initial: initial, l: l);
+  Widget build(BuildContext context, WidgetRef wRef) {
+    final hidden = wRef.watch(selectedChatsProvider).isNotEmpty;
+    return hidden ? const SizedBox.shrink() : _SearchBar(l: l, ref: ref);
   }
 }
 
-/// Hidden in selection mode for the same reason as `_MaybeHeader` — keep
+/// Bottom bar (New chat pill + gear), hidden in selection mode — keep the
+/// visual focus on the selected chats and the action bar.
+class _MaybeBottomBar extends ConsumerWidget {
+  const _MaybeBottomBar({
+    required this.l,
+    required this.ref,
+    required this.user,
+  });
+  final AppL10n l;
+  final WidgetRef ref;
+  final dynamic user;
+  @override
+  Widget build(BuildContext context, WidgetRef wRef) {
+    final hidden = wRef.watch(selectedChatsProvider).isNotEmpty;
+    return hidden
+        ? const SizedBox.shrink()
+        : _BottomBar(l: l, ref: ref, user: user);
+  }
+}
+
+/// Hidden in selection mode for the same reason as `_MaybeBottomBar` — keep
 /// the visual focus on the selected chats and the action bar.
-class _MaybeSecondaryNav extends ConsumerWidget {
-  const _MaybeSecondaryNav({required this.l});
+class _MaybeWorkspace extends ConsumerWidget {
+  const _MaybeWorkspace({required this.l});
   final AppL10n l;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final hidden = ref.watch(selectedChatsProvider).isNotEmpty;
-    return hidden ? const SizedBox.shrink() : _SecondaryNav(l: l);
+    return hidden ? const SizedBox.shrink() : _Workspace(l: l);
   }
 }
 
@@ -1001,7 +987,7 @@ Future<void> _bulkAddToProject(
   WidgetRef ref,
   Set<String> ids,
 ) async {
-  // the backend API extended POST /projects/<id>/chats to accept
+  // Chat-team's inbox/019 extended POST /projects/<id>/chats to accept
   // an array `chatIds: [...]`. We open a project picker; on tap, fire
   // the batch endpoint once and report the result.
   final cs = Theme.of(context).colorScheme;
@@ -1154,144 +1140,10 @@ class _BulkProjectPickerSheet extends ConsumerWidget {
   }
 }
 
-// ─── Bottom bar (search pill · settings gear · new chat) ─────────────────────
+// ─── Circular icon button (shared helper) ────────────────────────────────────
 
-/// Hides the bottom bar while the selection action bar is up — the old
-/// pinned footer's chrome similarly yielded to selection mode, and showing
-/// global actions (new chat, search) mid-selection would fight the mode.
-class _MaybeBottomBar extends ConsumerWidget {
-  const _MaybeBottomBar({required this.l, required this.ref});
-  final AppL10n l;
-  final WidgetRef ref;
-  @override
-  Widget build(BuildContext context, WidgetRef wRef) {
-    final hidden = wRef.watch(selectedChatsProvider).isNotEmpty;
-    return hidden ? const SizedBox.shrink() : _BottomBar(l: l, ref: ref);
-  }
-}
-
-/// Floating pill bar docked at the drawer's bottom safe area:
-/// search pill (expands) · settings gear · new chat. All targets ≥44px,
-/// `surfaceContainerHigh` fills, `radiusXl` pill.
-class _BottomBar extends StatelessWidget {
-  const _BottomBar({required this.l, required this.ref});
-  final AppL10n l;
-  final WidgetRef ref;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final fill = cs.surfaceContainerHigh;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
-      child: Row(
-        children: [
-          // Search pill — expands to take the remaining width.
-          Expanded(
-            child: Material(
-              color: fill,
-              borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-                onTap: () {
-                  HapticFeedback.selectionClick();
-                  // Capture the router BEFORE popping the drawer — the
-                  // drawer's own context is torn down by the pop (same
-                  // capture pattern as New Chat below).
-                  final router = GoRouter.of(context);
-                  Navigator.pop(context);
-                  router.pushNamed('chat-search');
-                },
-                child: SizedBox(
-                  height: 48,
-                  child: Row(
-                    children: [
-                      const SizedBox(width: 16),
-                      Icon(Icons.search_rounded,
-                          size: 20, color: cs.onSurfaceVariant),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          l.search,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: cs.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          _CircleButton(
-            icon: Icons.settings_outlined,
-            tooltip: 'Settings',
-            iconColor: cs.onSurfaceVariant,
-            fill: fill,
-            onTap: () {
-              final router = GoRouter.of(context);
-              Navigator.pop(context);
-              router.pushNamed('settings');
-            },
-          ),
-          const SizedBox(width: 10),
-          _CircleButton(
-            icon: Icons.add_comment_outlined,
-            tooltip: l.newChat,
-            iconColor: cs.onSurface,
-            fill: fill,
-            onTap: () async {
-              // Reuse an existing empty chat when one exists (or create one
-              // otherwise) — repeated New Chat taps without sending used to
-              // mint a blank server record each time and pile "New chat"
-              // rows into Recents. Empty chats are also hidden from Recents
-              // now, so reuse can't read as "nothing happened".
-              //
-              // Capture router + messenger BEFORE Navigator.pop — once the
-              // drawer pops, this `context` starts disposing, and by the
-              // time the chat resolves (~300ms) `context.mounted` is false
-              // and `context.goNamed` silently no-ops. Was reported as
-              // "New Chat button doesn't start a new chat" — the chat WAS
-              // created server-side, but the user was never navigated to it.
-              final router = GoRouter.of(context);
-              final messenger = ScaffoldMessenger.of(context);
-              Navigator.pop(context);
-              HapticFeedback.mediumImpact();
-              try {
-                final chat = await ref
-                    .read(chatListProvider.notifier)
-                    .reuseOrCreateEmptyChat();
-                router.goNamed(
-                  'chat-detail',
-                  pathParameters: {'id': chat.id},
-                );
-              } catch (e) {
-                messenger.showSnackBar(
-                  SnackBar(
-                    content: Text(context.mounted
-                        ? "Couldn't create chat. "
-                            '${userMessageFor(context, e)}'
-                        : "Couldn't create chat."),
-                    behavior: SnackBarBehavior.floating,
-                    duration: const Duration(seconds: 4),
-                  ),
-                );
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// 48px circular icon button for the bottom bar (≥44px target).
+/// 48px circular icon button (≥44px target). Used for the account card's
+/// inline settings gear; pass a transparent fill for a bare look.
 class _CircleButton extends StatelessWidget {
   const _CircleButton({
     required this.icon,

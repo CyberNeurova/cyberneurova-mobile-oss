@@ -14,7 +14,7 @@ void main() {
   // otherwise carries a debounce Timer and stale counters between test files.
   // Reset around every test so this file neither inherits nor leaks that state
   // — the shell suite went red only in the FULL suite on a macOS/CI host
-  //, which is the signature of exactly this cross-file leak.
+  // (outbox 067), which is the signature of exactly this cross-file leak.
   setUp(BackgroundRuns.instance.resetForTest);
   tearDown(BackgroundRuns.instance.resetForTest);
 

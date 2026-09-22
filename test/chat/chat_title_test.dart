@@ -98,4 +98,65 @@ void main() {
       expect(sessionDisplayTitle('Scan my network'), 'Scan my network');
     });
   });
+
+  group('isGreetingOrLowSignal', () {
+    test('bare greetings are low-signal (title from the NEXT message)', () {
+      for (final g in [
+        'hey',
+        'Hey!',
+        'hi',
+        'hi there',
+        'hello',
+        'hellooo',
+        'yo',
+        'sup',
+        'howdy',
+        'good morning',
+        'Good afternoon.',
+        'good evening 👋',
+        "what's up",
+        'wassup',
+        'how are you?',
+        'hey team',
+        'hi everyone',
+      ]) {
+        expect(isGreetingOrLowSignal(g), isTrue, reason: 'greeting: "$g"');
+      }
+    });
+
+    test('filler openers are low-signal', () {
+      for (final f in ['ok', 'okay', 'test', 'testing', 'thanks', 'thx']) {
+        expect(isGreetingOrLowSignal(f), isTrue, reason: 'filler: "$f"');
+      }
+    });
+
+    test('a real ask is NOT low-signal — even one starting with a greeting',
+        () {
+      expect(isGreetingOrLowSignal("what's the capital of France?"), isFalse);
+      expect(isGreetingOrLowSignal('hey, help me write a regex'), isFalse);
+      expect(isGreetingOrLowSignal('hello world program in rust'), isFalse);
+      expect(isGreetingOrLowSignal('hi'), isTrue); // but a bare "hi" is
+    });
+  });
+
+  group('titleFromMessage strips a leading greeting', () {
+    test('greeting + ask titles from the ask', () {
+      expect(titleFromMessage("hey, what's the capital of France?"),
+          "What's the capital of France");
+      expect(titleFromMessage('good morning — help me debug this crash'),
+          'Help me debug this crash');
+      expect(titleFromMessage('hi there, write a haiku about the sea'),
+          'Write a haiku about the sea');
+    });
+
+    test('a greeting-only message yields no title', () {
+      expect(titleFromMessage('hey'), '');
+      expect(titleFromMessage('good morning!'), '');
+    });
+
+    test('a normal ask is untouched by the greeting strip', () {
+      expect(titleFromMessage('write a haiku about the sea'),
+          'Write a haiku about the sea');
+    });
+  });
 }

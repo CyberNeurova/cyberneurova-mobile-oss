@@ -123,7 +123,7 @@ class StreamEvent with _$StreamEvent {
     required String messageId,
     String? model,
     /// "resume" when the stream is a continuation of a truncated turn.
-    /// `null` for a normal new turn.
+    /// `null` for a normal new turn. (chat-team inbox/014)
     String? mode,
   }) = StreamEventStart;
 
@@ -143,7 +143,7 @@ class StreamEvent with _$StreamEvent {
   ///
   /// `finishReason` per OpenAI semantics: "stop" | "length" | "unknown".
   /// `truncated` is the single boolean signal driving the Continue button —
-  /// equals `finishReason == 'length'` server-side.
+  /// equals `finishReason == 'length'` server-side (chat-team inbox/014).
   const factory StreamEvent.done({
     String? messageId,
     String? finishReason,
@@ -157,10 +157,10 @@ class StreamEvent with _$StreamEvent {
     String? code,
   }) = StreamEventError;
 
-  /// Informational status events emitted by the backend auto web-search
-  /// pipeline. Three variants today:
+  /// Informational status events emitted by chat-team's auto web-search
+  /// pipeline (see inbox/012). Three variants today:
   ///   - status="web-searching"        + query + reason
-  ///   - status="web-searched"         + resultCount + source
+  ///   - status="web-searched"         + resultCount + source + sources[]
   ///   - status="web-search-no-results"
   /// Future status types (deep-thinking, tool-running, ...) flow through
   /// the same StreamEventStatus event — match on `status` not type.
@@ -170,11 +170,15 @@ class StreamEvent with _$StreamEvent {
     String? reason,
     int? resultCount,
     String? source,
+    /// The fetched result URLs on `web-searched` (chat backend, mobile
+    /// outbox/086) — feeds the message's "Sources" chip. Empty on backends
+    /// that don't send it yet.
+    @Default(<String>[]) List<String> sources,
   }) = StreamEventStatus;
 
   factory StreamEvent.fromJson(Map<String, dynamic> json) {
     // Sahachiel: read every field type-safely. The /complete NDJSON stream can
-    // carry a wrong-typed field - the backend confirmed `code` sometimes arrives
+    // carry a wrong-typed field - chat-team confirmed `code` sometimes arrives
     // as a number, not a string. A blanket `as String?` throws on that and kills
     // the parse of the whole event (and, depending on the caller, the stream).
     // `str()` returns null on a non-string instead of throwing; numeric counts
@@ -215,6 +219,12 @@ class StreamEvent with _$StreamEvent {
           resultCount:
               json['resultCount'] is num ? (json['resultCount'] as num).toInt() : null,
           source: str('source'),
+          sources: json['sources'] is List
+              ? [
+                  for (final s in json['sources'] as List)
+                    if (s is String && s.isNotEmpty) s
+                ]
+              : const <String>[],
         ),
       'error' => StreamEvent.error(
           message: str('message') ?? str('error') ?? 'Unknown error',

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cyberneurova_mobile/features/chat/presentation/providers/last_chat_provider.dart';
 import 'package:cyberneurova_mobile/shared/theme/app_theme.dart';
 
 /// Which of the two primary surfaces is currently on screen.
 enum AskImagineMode { ask, imagine }
 
 /// Persistent [Ask | Imagine] segmented control, docked in the app-bar title
-/// slot on both primary surfaces (Grok pattern).
+/// slot on both primary surfaces (reference pattern).
 ///
 /// Why it lives in the header rather than the drawer: switching between
 /// chatting and image generation is a *high-frequency* move, and burying it
@@ -17,13 +19,13 @@ enum AskImagineMode { ask, imagine }
 ///
 /// Navigation uses `go` (replace), not `push`: Ask and Imagine are siblings,
 /// so bouncing between them must not grow a back stack.
-class AskImagineSwitch extends StatelessWidget {
+class AskImagineSwitch extends ConsumerWidget {
   const AskImagineSwitch({super.key, required this.mode});
 
   final AskImagineMode mode;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -42,7 +44,9 @@ class AskImagineSwitch extends StatelessWidget {
           _Segment(
             label: 'Ask',
             selected: mode == AskImagineMode.ask,
-            onTap: () => context.goNamed('chats'),
+            // Return to the CURRENT chat directly — no bootstrap round-trip and
+            // no "Opening your chat…" flash.
+            onTap: () => goToCurrentChat(context, ref),
           ),
           _Segment(
             label: 'Imagine',
@@ -90,18 +94,17 @@ class _Segment extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: selected ? cs.surface : Colors.transparent,
+            // Active tab reads as the brand accent (reference design); inactive
+            // is transparent.
+            color: selected ? cs.primary : Colors.transparent,
             borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-            border: selected
-                ? Border.all(color: cs.outline.withValues(alpha: 0.5))
-                : null,
           ),
           child: Text(
             label,
             style: TextStyle(
               fontSize: 14,
-              fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-              color: selected ? cs.onSurface : cs.onSurfaceVariant,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              color: selected ? cs.onPrimary : cs.onSurfaceVariant,
             ),
           ),
         ),

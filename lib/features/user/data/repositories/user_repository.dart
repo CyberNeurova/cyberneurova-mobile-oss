@@ -13,7 +13,7 @@ class UserRepository {
 
   /// Updates the user's profile fields (name, image, etc.).
   /// Uses the dedicated `/user/profile` PATCH endpoint shipped by the
-  /// the backend on 2026-06-01. The older
+  /// chat team on 2026-06-01 (see agent_comms inbox/001). The older
   /// `/user/settings` endpoint only accepts preferences (theme, etc.).
   Future<void> updateProfile({String? fullName, String? image}) async {
     await _client.patch(
@@ -58,14 +58,14 @@ class UserRepository {
   }
 
   /// Detailed usage breakdown (session / weekly / weekly-premium / extras).
-  /// per the backend API. Legacy v1 accounts get a {legacy: true} flag —
+  /// Per chat-team inbox/007. Legacy v1 accounts get a {legacy: true} flag —
   /// caller falls back to UserModel.tokens for usage display in that case.
   Future<UsageDetail> getUsage() async {
     final res = await _client.get<Map<String, dynamic>>('/user/usage');
     return UsageDetail.fromJson(res.data!);
   }
 
-  /// Updates the user's password. Per the backend API: bcrypt-verifies
+  /// Updates the user's password. Per chat-team inbox/007: bcrypt-verifies
   /// current pwd, on success revokes all OTHER sessions (current stays).
   Future<void> changePassword({
     required String currentPassword,

@@ -92,7 +92,7 @@ class ProjectRepository {
     );
   }
 
-  /// Bulk version — the backend API extended the endpoint to
+  /// Bulk version — chat-team's inbox/019 extended the endpoint to
   /// accept `chatIds: [...]` (up to 100 per call). Server fans out
   /// sequentially via coreFetch but it's still one round-trip from
   /// the client's POV, which saves ~N×400ms over the old loop.
