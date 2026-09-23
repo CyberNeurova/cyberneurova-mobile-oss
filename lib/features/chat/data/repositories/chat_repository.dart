@@ -209,12 +209,13 @@ class ChatRepository {
   ///
   /// **API quirk (2026-06):** the server's zod schema requires `modelId`
   /// (not `model`) and it's mandatory. The doc says `model` and optional —
-  /// the route handler disagrees. We send `modelId`. Default to the free-tier
-  /// model `tiny-neurova` if caller doesn't specify.
+  /// the route handler disagrees. We send `modelId`. Callers should pass
+  /// `effectiveModelProvider`, which resolves the server's per-tier default;
+  /// the fallback here only covers a caller that names no model at all.
   Stream<StreamEvent> streamCompletion({
     required String chatId,
     required String message,
-    String modelId = 'tiny-neurova',
+    String modelId = AppConstants.kFallbackModelId,
     List<Map<String, dynamic>>? attachments,
     bool forceWebSearch = false,
     String? deviceContext,

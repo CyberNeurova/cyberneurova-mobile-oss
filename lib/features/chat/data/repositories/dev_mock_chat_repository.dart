@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cyberneurova_mobile/core/constants/app_constants.dart';
 import 'package:cyberneurova_mobile/features/chat/data/models/chat_model.dart';
 import 'package:cyberneurova_mobile/features/chat/data/repositories/chat_repository.dart';
 
@@ -257,7 +258,7 @@ The important part is cancelling the pending timer before arming a new one.''',
   Stream<StreamEvent> streamCompletion({
     required String chatId,
     required String message,
-    String modelId = 'tiny-neurova',
+    String modelId = AppConstants.kFallbackModelId,
     List<Map<String, dynamic>>? attachments,
     bool forceWebSearch = false,
     String? deviceContext,

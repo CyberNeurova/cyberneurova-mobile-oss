@@ -31,6 +31,20 @@ class AppConstants {
   static const String tierPro = 'pro';
   static const String tierProMax = 'pro_max';
 
+  // Models
+  /// Last-resort model id, and the ONLY hardcoded one left in the app.
+  ///
+  /// The lineup and the per-tier default are server-driven: `/models` returns
+  /// `models` (what this account may send on), `locked` (upgrade path) and
+  /// `defaultModel`. Use `ModelsResponse.defaultModel`. This constant is the
+  /// offline fallback for the window before that call answers — it is not
+  /// policy, and nothing should branch on it.
+  ///
+  /// Points at the free-tier default in `config/models.yaml`
+  /// (`default_for_tier: ["free"]`). It replaced `tiny-neurova`, retired
+  /// 2026-09-06 when its backend was decommissioned.
+  static const String kFallbackModelId = 'cyberneurova-gemma';
+
   // Chat sections
   static const String sectionChat = 'chat';
   static const String sectionCode = 'code';

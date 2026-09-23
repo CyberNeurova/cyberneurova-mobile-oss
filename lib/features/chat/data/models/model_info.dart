@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'package:cyberneurova_mobile/core/constants/app_constants.dart';
+
 part 'model_info.freezed.dart';
 part 'model_info.g.dart';
 
@@ -55,7 +57,9 @@ class ModelsResponse with _$ModelsResponse {
   const factory ModelsResponse({
     @Default([]) List<ModelInfo> models,
     @Default([]) List<ModelInfo> locked,
-    @Default('tiny-neurova') String defaultModel,
+    // Literal rather than AppConstants.kFallbackModelId because freezed copies
+    // this into model_info.freezed.dart; keep the two in sync.
+    @Default('cyberneurova-gemma') String defaultModel,
   }) = _ModelsResponse;
 
   // Constructs directly: parse each entry defensively and drop blank-id ones so
@@ -83,7 +87,7 @@ class ModelsResponse with _$ModelsResponse {
       locked: parse(json['locked']),
       defaultModel: json['defaultModel'] is String
           ? json['defaultModel'] as String
-          : 'tiny-neurova',
+          : AppConstants.kFallbackModelId,
     );
   }
 }

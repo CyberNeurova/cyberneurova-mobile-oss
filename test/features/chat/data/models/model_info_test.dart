@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:cyberneurova_mobile/core/constants/app_constants.dart';
 import 'package:cyberneurova_mobile/features/chat/data/models/model_info.dart';
 
 // Locks the /models capability + budget fields (chat-team inbox/020) and
@@ -29,7 +30,8 @@ void main() {
     });
 
     test('an absent capabilities block reads as all-off (no false enable)', () {
-      final m = ModelInfo.fromJson({'id': 'tiny-neurova', 'name': 'Tiny'});
+      final m = ModelInfo.fromJson(
+          {'id': 'cyberneurova-gemma', 'name': 'CyberNeurova Gemma'});
 
       expect(m.capabilities, isNull);
       expect(m.supportsVision, isFalse);
@@ -82,6 +84,16 @@ void main() {
       expect(r.locked, hasLength(1));
       expect(r.locked.first.supportsFileUpload, isFalse);
       expect(r.defaultModel, 'a');
+    });
+
+    // The lineup is the server's to name. When it doesn't, the app falls back
+    // to ONE compiled-in id — which must be a live model, not a retired one
+    // (`tiny-neurova` outlived its backend here by three months).
+    test('a missing defaultModel falls back to the live free-tier model', () {
+      final r = ModelsResponse.fromJson({'models': [], 'locked': []});
+
+      expect(r.defaultModel, AppConstants.kFallbackModelId);
+      expect(r.defaultModel, 'cyberneurova-gemma');
     });
   });
 }

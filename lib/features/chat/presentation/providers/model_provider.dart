@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cyberneurova_mobile/core/api/api_client.dart';
 import 'package:cyberneurova_mobile/core/constants/api_constants.dart';
+import 'package:cyberneurova_mobile/core/constants/app_constants.dart';
 import 'package:cyberneurova_mobile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cyberneurova_mobile/features/agents/presentation/providers/local_llm_provider.dart';
 import 'package:cyberneurova_mobile/features/chat/data/models/model_info.dart';
@@ -24,7 +25,10 @@ class SelectedModelNotifier extends Notifier<String> {
   @override
   String build() {
     _load();
-    return 'tiny-neurova';
+    // Placeholder until SharedPreferences answers. Never sent as-is: what goes
+    // on the wire is [effectiveModelProvider], which prefers the server's
+    // `defaultModel` over anything compiled in.
+    return AppConstants.kFallbackModelId;
   }
 
   Future<void> _load() async {
@@ -42,7 +46,7 @@ class SelectedModelNotifier extends Notifier<String> {
 
 /// The capability set for the model the user will actually send on
 /// (i.e. matches [effectiveModelProvider], not [selectedModelProvider]
-/// — free users get `tiny-neurova` regardless of saved selection).
+/// — a pick the server doesn't serve this account is substituted).
 ///
 /// Returns `null` while `/models` is still loading OR when the server
 /// hasn't shipped per-model capabilities yet (older backend), in which
@@ -62,28 +66,42 @@ final effectiveModelInfoProvider = Provider<ModelInfo?>((ref) {
   return null;
 });
 
-/// The model id we'll ACTUALLY send on the wire. Policy:
-///   - Free tier → always `tiny-neurova` (the only free model).
-///   - Paid tier → user's persisted selection, BUT if that selection is in
-///     the locked list (e.g., they downgraded), fall back to the backend's
-///     `defaultModel`. Don't overwrite the saved preference — the user may
-///     upgrade again.
-/// Reads modelsProvider non-blockingly: if not loaded yet, trusts the
-/// saved selection (the server will still reject MODEL_ACCESS_DENIED
-/// loud enough for us to surface a snackbar).
+/// The model id we'll ACTUALLY send on the wire. The lineup is SERVER-DRIVEN:
+/// `/models` returns `models` (everything this account may send on, already
+/// filtered by tier, surface and backend health), `locked` (the upgrade path)
+/// and `defaultModel` for this tier. So:
+///   - Selection is in the served list → send it.
+///   - It isn't (free tier, a downgrade, or an id retired since it was saved)
+///     → send the server's `defaultModel`. Don't overwrite the saved
+///     preference — the user may upgrade again.
+///
+/// This used to return a hardcoded `tiny-neurova` for free/signed-out users,
+/// which outlived the model: its backend was decommissioned 2026-09-06 and the
+/// id now only survives as a YAML alias. A per-tier default is the server's to
+/// decide; the app's job is to ask.
+///
+/// Reads modelsProvider non-blockingly, and that is the ONLY branch where a
+/// compiled-in id is used: with no lineup yet (still loading, or the call
+/// failed) a paid account keeps its saved pick — the server rejects with
+/// MODEL_ACCESS_DENIED loud enough for us to surface a snackbar — while a
+/// free/signed-out one gets [AppConstants.kFallbackModelId], because a saved
+/// paid pick would only 403.
 final effectiveModelProvider = Provider<String>((ref) {
   final selected = ref.watch(selectedModelProvider);
   final user = ref.watch(authProvider).valueOrNull;
 
-  if (user == null || user.tier == 'free') return 'tiny-neurova';
-
   final modelsAsync = ref.watch(modelsProvider);
   final models = modelsAsync.valueOrNull;
-  if (models == null) return selected;
+  if (models == null) {
+    if (user == null || user.tier == AppConstants.tierFree) {
+      return AppConstants.kFallbackModelId;
+    }
+    return selected;
+  }
 
-  final isLocked = models.locked.any((m) => m.id == selected);
-  if (isLocked) return models.defaultModel;
-  return selected;
+  final isServed = models.models.any((m) => m.id == selected);
+  if (isServed) return selected;
+  return models.defaultModel;
 });
 
 /// Why the model actually in use is not the one the user picked.

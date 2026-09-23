@@ -30,7 +30,9 @@ void main() {
         // The composer reaches for the model list to render its picker; in a
         // test there is no API client behind it.
         modelsProvider.overrideWith((ref) async => const ModelsResponse(
-              models: [ModelInfo(id: 'tiny-neurova', name: 'Tiny')],
+              models: [
+                ModelInfo(id: 'cyberneurova-gemma', name: 'CyberNeurova Gemma')
+              ],
             )),
       ],
       child: MaterialApp(
