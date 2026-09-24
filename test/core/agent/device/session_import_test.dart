@@ -120,4 +120,31 @@ void main() {
     expect(File(p.join(root.path, 'a.txt')).readAsStringSync(), 'A');
     expect(File(p.join(root.path, 'b.txt')).readAsStringSync(), 'B');
   });
+
+  group('safeName', () {
+    test('does not throw on a filename whose extension exceeds 120 chars', () {
+      // `p.extension` of "a." + 200 chars is a 201-char extension, so the old
+      // `substring(0, 120 - ext.length)` went negative and threw a RangeError,
+      // breaking copyInto's "Never throws" contract.
+      final huge = 'a.${'b' * 200}';
+      expect(() => SessionImport.safeName(huge), returnsNormally);
+      expect(SessionImport.safeName(huge).length, lessThanOrEqualTo(120));
+    });
+
+    test('keeps the real extension when only the whole name is long', () {
+      final name = '${'x' * 200}.tar.gz';
+      final out = SessionImport.safeName(name);
+      expect(out.length, lessThanOrEqualTo(120));
+      expect(out, endsWith('.gz'));
+    });
+
+    test('leaves a normal name untouched', () {
+      expect(SessionImport.safeName('notes.txt'), 'notes.txt');
+    });
+
+    test('neutralizes path separators and leading dashes', () {
+      expect(SessionImport.safeName('../etc/passwd'), isNot(contains('/')));
+      expect(SessionImport.safeName('-rf'), isNot(startsWith('-')));
+    });
+  });
 }

@@ -136,7 +136,14 @@ class SessionImport {
     // Long names are legal and miserable in a 40-column terminal.
     if (name.length > 120) {
       final ext = p.extension(name);
-      name = name.substring(0, 120 - ext.length) + ext;
+      // Sahachiel: clamp so the substring start can't go negative. A filename
+      // whose final extension is itself longer than 120 chars (e.g. "a." + 200
+      // chars) made `120 - ext.length` negative and threw a RangeError here,
+      // which escapes copyInto's "Never throws" contract (safeName runs outside
+      // its try). Drop the oversized extension in that case.
+      name = ext.length >= 120
+          ? name.substring(0, 120)
+          : name.substring(0, 120 - ext.length) + ext;
     }
     return name;
   }
