@@ -337,8 +337,11 @@ class _BottomBar extends StatelessWidget {
 // ─── Workspace (Projects, Agents, Bot Chat) ──────────────────────────────────
 
 /// The drawer's navigation group, above Recents: compact icon + label rows
-/// (reference pattern — no header, no wells, no chevrons). Same tap behaviour
-/// as before (pop drawer, then push).
+/// (reference pattern — no header, no wells, no chevrons). Each row captures the
+/// router BEFORE popping the drawer: once the drawer pops, this context starts
+/// disposing and a push on it no-ops — which read as "tapping does nothing / it
+/// just loops back." Same capture-then-pop-then-push order as New Chat and the
+/// settings gear above.
 class _Workspace extends StatelessWidget {
   const _Workspace({required this.l});
   final AppL10n l;
@@ -353,8 +356,9 @@ class _Workspace extends StatelessWidget {
           icon: Icons.folder_outlined,
           label: l.projectsTitle,
           onTap: () {
+            final router = GoRouter.of(context);
             Navigator.pop(context);
-            context.pushNamed('profile-projects');
+            router.pushNamed('profile-projects');
           },
         ),
         // Media is no longer a drawer destination — the Ask ↔ Imagine switch
@@ -369,8 +373,9 @@ class _Workspace extends StatelessWidget {
           icon: Icons.auto_awesome_outlined,
           label: 'Agents',
           onTap: () {
+            final router = GoRouter.of(context);
             Navigator.pop(context);
-            context.pushNamed('agents');
+            router.pushNamed('agents');
           },
         ),
         // Agent Contacts (bot-section) — DM your AI contacts. A peer of Agents:
@@ -380,8 +385,9 @@ class _Workspace extends StatelessWidget {
           icon: Icons.forum_outlined,
           label: 'Bot Chat',
           onTap: () {
+            final router = GoRouter.of(context);
             Navigator.pop(context);
-            context.pushNamed('bots');
+            router.pushNamed('bots');
           },
         ),
       ],
@@ -1080,11 +1086,11 @@ class _BulkProjectPickerSheet extends ConsumerWidget {
                   children: [
                     for (final p in list)
                       ListTile(
-                        // Third place this had to be learned: the server
-                        // stores icon NAMES, so this sheet listed every
-                        // project as "folder <name>".
-                        leading: Text(projectGlyph(p.icon),
-                            style: const TextStyle(fontSize: 22)),
+                        // A real icon, not the server's icon NAME (which once
+                        // listed every project as "folder <name>") nor a raw
+                        // emoji — the same projectGlyphIcon the list uses.
+                        leading: Icon(projectGlyphIcon(p.icon),
+                            color: cs.onSurfaceVariant),
                         title: Text(p.name,
                             style: TextStyle(color: cs.onSurface)),
                         onTap: () => _assign(context, ref, p.id, p.name),

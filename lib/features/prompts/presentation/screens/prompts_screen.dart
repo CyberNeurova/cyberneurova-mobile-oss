@@ -9,6 +9,24 @@ import 'package:cyberneurova_mobile/features/prompts/presentation/providers/prom
 import 'package:cyberneurova_mobile/shared/widgets/cn_shimmer.dart';
 import 'package:cyberneurova_mobile/shared/widgets/error_view.dart';
 
+/// The icon to draw for a saved prompt.
+///
+/// Mirrors `projectGlyphIcon`: `prompt.icon` may be a name or an emoji an older
+/// build stored, and both map to one Material icon so the list shows a
+/// consistent icon set instead of emoji. Unknown values fall back to a spark.
+IconData promptGlyphIcon(String? icon) {
+  final raw = (icon ?? '').trim().toLowerCase();
+  return switch (raw) {
+    'code' || 'terminal' || '💻' => Icons.code_rounded,
+    'write' || 'pen' || 'edit' || '📝' => Icons.edit_outlined,
+    'idea' || 'bulb' || '💡' => Icons.lightbulb_outline_rounded,
+    'chat' || 'message' || '💬' => Icons.chat_bubble_outline_rounded,
+    'search' || 'find' || '🔍' => Icons.search_rounded,
+    'star' || 'favourite' || 'favorite' || '⭐' => Icons.star_outline_rounded,
+    _ => Icons.auto_awesome_outlined,
+  };
+}
+
 class PromptsScreen extends ConsumerWidget {
   const PromptsScreen({super.key});
 
@@ -160,9 +178,10 @@ class _PromptCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Center(
-                child: Text(
-                  prompt.icon ?? '✨',
-                  style: const TextStyle(fontSize: 18),
+                child: Icon(
+                  promptGlyphIcon(prompt.icon),
+                  size: 18,
+                  color: cs.primary,
                 ),
               ),
             ),

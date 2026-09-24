@@ -3,9 +3,21 @@ import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:cyberneurova_mobile/core/errors/app_exception.dart';
 import 'package:cyberneurova_mobile/features/bots/data/models/bot_models.dart';
 import 'package:cyberneurova_mobile/features/bots/data/models/bot_stream_frame.dart';
 import 'package:cyberneurova_mobile/features/bots/data/repositories/bot_repository.dart';
+
+/// A clean message for the DM error banner.
+///
+/// A provider has no BuildContext, so it can't call `userMessageFor`; storing
+/// `e.toString()` instead leaked a raw exception ("Instance of
+/// 'ServerException'") into the banner. Every backend failure is an
+/// [AppException] whose `message` is already user-facing (a 5xx becomes
+/// "Server error. We're on it."), so surface that and fall back to a generic
+/// line for anything unexpected.
+String botErrorText(Object e) =>
+    e is AppException ? e.message : 'Something went wrong. Please try again.';
 
 // ── Contacts (agents) ────────────────────────────────────────────────────────
 final botContactsProvider =
@@ -164,7 +176,7 @@ class BotChatNotifier extends AutoDisposeFamilyNotifier<BotChatState, String> {
       state = state.copyWith(messages: msgs, loading: false, clearError: true);
     } catch (e) {
       if (_closed) return;
-      state = state.copyWith(loading: false, error: e.toString());
+      state = state.copyWith(loading: false, error: botErrorText(e));
     }
   }
 
@@ -239,7 +251,7 @@ class BotChatNotifier extends AutoDisposeFamilyNotifier<BotChatState, String> {
       state = state.copyWith(sending: false);
     } catch (e) {
       if (_closed) return;
-      state = state.copyWith(sending: false, error: e.toString());
+      state = state.copyWith(sending: false, error: botErrorText(e));
     }
   }
 

@@ -284,9 +284,10 @@ class _ProjectRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               alignment: Alignment.center,
-              child: Text(
-                projectGlyph(project.icon),
-                style: const TextStyle(fontSize: 18),
+              child: Icon(
+                projectGlyphIcon(project.icon),
+                size: 18,
+                color: color,
               ),
             ),
             const SizedBox(width: 12),
@@ -592,24 +593,22 @@ class _ProjectEditorState extends ConsumerState<_ProjectEditor> {
   }
 }
 
-/// The glyph to draw for a project.
+/// The icon to draw for a project.
 ///
-/// `project.icon` is meant to be an emoji, but the server also stores NAMES —
-/// this list rendered two projects as "fol", the word "folder" clipped to fit
-/// a 36px box. Anything containing a Latin letter is a name, not a glyph: map
-/// the handful we have seen and fall back to a folder for the rest. An emoji
-/// passes through untouched.
-String projectGlyph(String? icon) {
-  final raw = (icon ?? '').trim();
-  if (raw.isEmpty) return '📁';
-  if (!RegExp(r'[A-Za-z]').hasMatch(raw)) return raw;
-  return switch (raw.toLowerCase()) {
-    'folder' || 'directory' => '📁',
-    'code' || 'terminal' => '💻',
-    'book' || 'notes' || 'docs' => '📓',
-    'star' || 'favourite' || 'favorite' => '⭐',
-    'rocket' || 'launch' => '🚀',
-    'flask' || 'science' || 'research' => '🧪',
-    _ => '📁',
+/// `project.icon` may be an icon NAME the server stores ("folder", "code") or
+/// an emoji an older build saved ("📁", "💻"). Both map to a single Material
+/// icon so the app shows one consistent icon set instead of emoji — which
+/// render differently per device and clash with the rest of the chrome (and
+/// once printed the clipped word "fol" when a name reached a Text widget raw).
+/// Anything unrecognised falls back to a folder.
+IconData projectGlyphIcon(String? icon) {
+  final raw = (icon ?? '').trim().toLowerCase();
+  return switch (raw) {
+    'code' || 'terminal' || '💻' => Icons.code_rounded,
+    'book' || 'notes' || 'docs' || '📓' => Icons.menu_book_outlined,
+    'star' || 'favourite' || 'favorite' || '⭐' => Icons.star_outline_rounded,
+    'rocket' || 'launch' || '🚀' => Icons.rocket_launch_outlined,
+    'flask' || 'science' || 'research' || '🧪' => Icons.science_outlined,
+    _ => Icons.folder_outlined,
   };
 }

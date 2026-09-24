@@ -11,6 +11,8 @@ import 'package:cyberneurova_mobile/features/agents/presentation/providers/devic
 import 'package:cyberneurova_mobile/features/agents/presentation/widgets/scope_sheet.dart';
 import 'package:cyberneurova_mobile/features/projects/data/repositories/project_repository.dart';
 import 'package:cyberneurova_mobile/features/projects/presentation/providers/projects_provider.dart';
+import 'package:cyberneurova_mobile/features/projects/presentation/screens/projects_screen.dart'
+    show projectGlyphIcon;
 
 /// iOS-style popup menu shown from the chat detail's 3-dots button.
 /// Floats from the top-right with title header + actions.
@@ -219,7 +221,7 @@ class _ProjectPicker extends ConsumerWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: list
                           .map((p) => _ProjectRow(
-                                emoji: p.icon ?? '📁',
+                                icon: projectGlyphIcon(p.icon),
                                 name: p.name,
                                 onTap: () async {
                                   HapticFeedback.lightImpact();
@@ -265,8 +267,8 @@ class _ProjectPicker extends ConsumerWidget {
 
 class _ProjectRow extends StatelessWidget {
   const _ProjectRow(
-      {required this.emoji, required this.name, required this.onTap});
-  final String emoji;
+      {required this.icon, required this.name, required this.onTap});
+  final IconData icon;
   final String name;
   final VoidCallback onTap;
 
@@ -285,7 +287,7 @@ class _ProjectRow extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 20)),
+            Icon(icon, size: 20, color: cs.onSurfaceVariant),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -326,14 +328,37 @@ Future<void> _showRenameDialog(
         TextButton(
           onPressed: () async {
             final title = ctrl.text.trim();
-            if (title.isNotEmpty) {
+            if (title.isEmpty) {
+              Navigator.pop(dialogCtx);
+              return;
+            }
+            // Capture before the await: dialogCtx disposes the moment we pop,
+            // and the outer messenger outlives the dialog so the error is still
+            // visible after it closes.
+            final messenger = ScaffoldMessenger.of(context);
+            final navigator = Navigator.of(dialogCtx);
+            try {
               await ref
                   .read(chatRepositoryProvider)
                   .updateChat(chatId, title: title);
               ref.invalidate(chatDetailProvider(chatId));
               ref.invalidate(chatListProvider);
+              navigator.pop();
+            } catch (e) {
+              // Without this, a rejected PATCH threw out of the async onPressed
+              // unhandled: the dialog stayed open and nothing changed, so the
+              // rename read as "does nothing." Close the dialog and say why.
+              navigator.pop();
+              messenger.showSnackBar(
+                SnackBar(
+                  content: Text(context.mounted
+                      ? "Couldn't rename. ${userMessageFor(context, e)}"
+                      : "Couldn't rename the chat."),
+                  behavior: SnackBarBehavior.floating,
+                  duration: const Duration(seconds: 4),
+                ),
+              );
             }
-            if (dialogCtx.mounted) Navigator.pop(dialogCtx);
           },
           child: const Text('Save'),
         ),

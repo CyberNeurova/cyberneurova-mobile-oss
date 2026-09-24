@@ -25,12 +25,16 @@ class ShellSession {
     String? homeDir,
     Map<String, String>? env,
     String Function(String)? toHostPath,
+    // Retained for the construction API (callers still pass it) but INERT: the
+    // host-side containment check now runs UNCONDITIONALLY in both backends,
+    // because the native-Dart file tools follow host symlinks even under PRoot
+    // (OSS issue #2). It no longer gates anything.
+    // ignore: avoid_unused_constructor_parameters
     bool enforceContainment = true,
   })  : _cwd = cwd ?? homeDir ?? rootDir,
         homeDir = homeDir ?? cwd ?? rootDir,
         _env = {...?env},
-        _toHostPath = toHostPath ?? _identity,
-        _enforceContainment = enforceContainment;
+        _toHostPath = toHostPath ?? _identity;
 
   /// Where `~` and a bare `cd` land.
   ///
@@ -49,13 +53,6 @@ class ShellSession {
   /// `File`/`Directory` call here has to cross that boundary or it will report
   /// "no such file" for a file the terminal can `cat`.
   final String Function(String) _toHostPath;
-
-  /// Whether to apply the host-side sandbox check.
-  ///
-  /// Off under PRoot: the rootfs **is** the boundary and PRoot enforces it on
-  /// every syscall. Re-checking here would add a second, subtly different
-  /// notion of "outside" that rejects legitimate guest paths.
-  final bool _enforceContainment;
 
   /// Exposed so tools that touch the filesystem translate the same way the
   /// session does, rather than each inventing its own mapping.
@@ -101,10 +98,16 @@ class ShellSession {
       return 'Refused: $target is outside the session directory';
     }
 
-    // Under PRoot the shell's namespace is the guest's, so record the *guest*
-    // path (what `pwd` prints) rather than the host-canonical one the shell has
-    // never heard of — but only now that the host check above has passed.
-    _cwd = _enforceContainment ? canonical : resolvedTarget;
+    // Record the path in the shell's OWN namespace — the guest path under PRoot,
+    // the container path on the bare Android shell — because that is what `pwd`,
+    // the breadcrumb and `parentOf`/`display` all speak. Storing the
+    // host-canonical form (used only for the containment check above) drifted
+    // the cwd into a different namespace: on Android `/data/data/<pkg>` is a
+    // symlink to `/data/user/0/<pkg>`, so after a `cd` the breadcrumb stopped
+    // collapsing to `~` and the "up" row was computed against the wrong root —
+    // navigation back out appeared to fail. The security check already ran on
+    // `canonical`; what we store here is only ever a label.
+    _cwd = resolvedTarget;
     return null;
   }
 

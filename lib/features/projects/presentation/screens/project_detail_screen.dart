@@ -47,12 +47,10 @@ class ProjectDetailScreen extends ConsumerWidget {
         ),
         title: Row(
           children: [
-            // Through `projectGlyph`, like the list. The server stores icon
-            // NAMES as well as emoji, so reading `icon` raw printed the word
-            // "folder" next to the project's title in the app bar. The list
-            // learned this already; this screen had not.
-            Text(projectGlyph(project?.icon),
-                style: const TextStyle(fontSize: 18)),
+            // Through `projectGlyphIcon`, like the list — one Material icon set,
+            // never a raw emoji or the icon NAME the server also stores (which
+            // once printed the word "folder" next to the title in the app bar).
+            Icon(projectGlyphIcon(project?.icon), size: 20),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
