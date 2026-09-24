@@ -79,23 +79,36 @@ class ShellSession {
   /// why the resolved path is compared rather than the literal one.
   String? changeDirectory(String target) {
     final resolvedTarget = _resolve(target);
-    final dir = Directory(_toHostPath(resolvedTarget));
-    if (!dir.existsSync()) return 'No such directory: $target';
-
-    // Canonicalize on the HOST and refuse anything that escapes the real host
-    // roots — even under PRoot. PRoot confines the shell PROCESS, but the
+    // Confine even under PRoot. PRoot confines the shell PROCESS, but the
     // native-Dart file tools that share this session follow host symlinks, so a
-    // `cd` through a host symlink pointing outside the sandbox would let a
-    // later file_read / file_write escape it (issue #2). The host check runs in
-    // BOTH modes; only what we record as cwd differs.
-    String canonical;
-    try {
-      canonical = dir.resolveSymbolicLinksSync();
-    } catch (_) {
-      canonical = dir.path;
-    }
-    if (!_withinHostRoots(canonical)) {
-      return 'Refused: $target is outside the session directory';
+    // `cd` through a symlink pointing outside the sandbox would let a later
+    // file_read / file_write escape it (issue #2). The check runs in BOTH
+    // modes; only what we record as cwd differs.
+    if (_guestNamespace) {
+      // Under PRoot both the existence check AND the confinement resolve
+      // symlinks in the GUEST namespace: an absolute distro symlink like
+      // `/var/run` -> `/run` means `<rootfs>/run`, not the HOST's `/run` (see
+      // [resolveWithin]). Testing `Directory(_toHostPath(...)).existsSync()`
+      // would follow the link natively to the host's `/run` — which need not
+      // exist even though `<rootfs>/run` does — while a host canonicalisation
+      // would walk a crafted link out of the sandbox.
+      final host = _resolveWithinGuest(resolvedTarget);
+      if (host == null) {
+        return 'Refused: $target is outside the session directory';
+      }
+      if (!Directory(host).existsSync()) return 'No such directory: $target';
+    } else {
+      final dir = Directory(_toHostPath(resolvedTarget));
+      if (!dir.existsSync()) return 'No such directory: $target';
+      String canonical;
+      try {
+        canonical = dir.resolveSymbolicLinksSync();
+      } catch (_) {
+        canonical = dir.path;
+      }
+      if (!_withinHostRoots(canonical)) {
+        return 'Refused: $target is outside the session directory';
+      }
     }
 
     // Record the path in the shell's OWN namespace — the guest path under PRoot,
@@ -121,8 +134,16 @@ class ShellSession {
   /// matters — you cannot create a file inside a directory you can't reach.
   String? resolveWithin(String target) {
     final resolved = _resolve(target);
-    // The path Dart actually opens. Identity for Android's shell; under PRoot
-    // it crosses the guest→host boundary.
+    return _guestNamespace
+        ? _resolveWithinGuest(resolved)
+        : _resolveWithinHost(resolved);
+  }
+
+  /// [resolveWithin] for the bare Android shell, where the shell's namespace IS
+  /// the host's and [toHostPath] is identity: canonicalise on the host and
+  /// confine to the real host roots.
+  String? _resolveWithinHost(String resolved) {
+    // The path Dart actually opens. Identity for Android's shell.
     final hostResolved = _toHostPath(resolved);
 
     // Walk up to the nearest existing HOST ancestor so a not-yet-created file
@@ -144,18 +165,160 @@ class ShellSession {
     } catch (_) {
       canonicalProbe = probe;
     }
-    // Confine on the HOST even under PRoot. The file tools run natively and
-    // follow host symlinks, so a symlink whose canonical target escapes BOTH
-    // the rootfs and the bind-mounted home is a sandbox escape — PRoot confines
-    // the shell process, not these Dart File calls (issue #2). The old
-    // `!_enforceContainment` short-circuit returned the un-canonicalized host
-    // path here, which is exactly what let file_read / file_write follow a
-    // guest-planted symlink out to app-private data.
+    // Confine on the HOST. The file tools run natively and follow host
+    // symlinks, so a symlink whose canonical target escapes the container is a
+    // sandbox escape (issue #2).
     if (!_withinHostRoots(canonicalProbe)) return null;
 
     // Re-attach whatever tail didn't exist yet (the host path the tools open).
     final tail = p.relative(hostResolved, from: probe);
     return tail == '.' ? canonicalProbe : p.join(canonicalProbe, tail);
+  }
+
+  /// [resolveWithin] for a PRoot guest, where the shell speaks guest paths and
+  /// the native-Dart file tools would otherwise follow HOST symlinks.
+  ///
+  /// The difference that matters: an absolute GUEST symlink target is re-rooted
+  /// under the rootfs, not followed to the host. `/var/run` -> `/run` means
+  /// `<rootfs>/run`; `/etc/mtab` -> `/proc/self/mounts` means
+  /// `<rootfs>/proc/self/mounts`. Host `resolveSymbolicLinksSync` reads those
+  /// absolute targets in the HOST root, so the link either lands outside the
+  /// rootfs and is over-rejected (you cannot enter `/var/run`, and `parentOf`
+  /// drops the "up" row) or, for a symlink crafted to point at app-private host
+  /// data like `/data/data/<pkg>/...`, walks straight out of the sandbox
+  /// (issue #2).
+  ///
+  /// [_canonicalizeGuest] resolves the link in the guest namespace instead and
+  /// returns the confined host path the tools then open — so both the browser
+  /// and the file tools open the guest-re-rooted path rather than following the
+  /// host link.
+  String? _resolveWithinGuest(String resolved) {
+    final canonGuest = _canonicalizeGuest(resolved);
+    if (canonGuest == null) return null;
+
+    // The re-rooted host path. Any GUEST symlink has already been resolved, so
+    // the only symlinks left are in the HOST-side prefix (the real on-disk
+    // location of the rootfs / bind-mounted home — `/data/data` -> `/data/user/0`
+    // on Android). Canonicalise the nearest existing ancestor (the leaf may not
+    // exist yet, for file_write) so the containment prefixes line up, then
+    // re-attach the tail. This cannot re-follow a guest link out of the sandbox.
+    final host = _toHostPath(canonGuest);
+    var probe = host;
+    while (probe.isNotEmpty &&
+        !Directory(probe).existsSync() &&
+        !File(probe).existsSync()) {
+      final parent = p.dirname(probe);
+      if (parent == probe) break;
+      probe = parent;
+    }
+    String canonicalProbe;
+    try {
+      canonicalProbe = Directory(probe).existsSync()
+          ? Directory(probe).resolveSymbolicLinksSync()
+          : File(probe).resolveSymbolicLinksSync();
+    } catch (_) {
+      canonicalProbe = probe;
+    }
+    final tail = p.relative(host, from: probe);
+    final canonHost = tail == '.' ? canonicalProbe : p.join(canonicalProbe, tail);
+    return _withinHostRoots(canonHost) ? canonHost : null;
+  }
+
+  /// Canonicalises [guestPath] in the GUEST namespace, following each symlink
+  /// component and re-rooting an ABSOLUTE target under the rootfs via
+  /// [toHostPath]. Returns the canonical guest path, or null when it cannot be
+  /// confined:
+  ///
+  ///  * a symlink loop, or
+  ///  * a followed symlink whose re-rooted target does not exist INSIDE the
+  ///    sandbox — either a dangling link (nothing to read) or one crafted to
+  ///    point at a host-only path such as `/data/data/<pkg>/...`, which has no
+  ///    counterpart under the rootfs (issue #2). Refusing loses nothing a real
+  ///    file tool could have read and closes the escape.
+  ///
+  /// A trailing component of the ORIGINAL path may legitimately not exist yet
+  /// (file_write creating a new file); only symlink TARGETS must resolve to
+  /// something real, which is what separates "create `/root/new.txt`" (allowed)
+  /// from "follow `/root/escape` -> app-private data" (refused).
+  String? _canonicalizeGuest(String guestPath) {
+    // Each queued component carries whether it MUST already exist: original
+    // path components may be created, components injected by following a symlink
+    // must resolve to something real.
+    final pending = <MapEntry<String, bool>>[];
+    void pushAll(String path, {required bool mustExist}) {
+      for (final c in p.posix.split(path.replaceAll(r'\', '/'))) {
+        if (c.isEmpty || c == '.' || c == '/') continue;
+        pending.add(MapEntry(c, mustExist));
+      }
+    }
+
+    pushAll(guestPath, mustExist: false);
+    final out = <String>[];
+    var hops = 0;
+    var i = 0;
+    while (i < pending.length) {
+      final entry = pending[i++];
+      final comp = entry.key;
+      final mustExist = entry.value;
+      if (comp == '..') {
+        if (out.isNotEmpty) out.removeLast();
+        continue;
+      }
+      final guestSoFar = '/${[...out, comp].join('/')}';
+      final hostSoFar = _toHostPath(guestSoFar);
+      FileSystemEntityType type;
+      try {
+        type = FileSystemEntity.typeSync(hostSoFar, followLinks: false);
+      } catch (_) {
+        type = FileSystemEntityType.notFound;
+      }
+
+      if (type == FileSystemEntityType.notFound) {
+        // A re-rooted symlink target that is absent is an escape/dangling link.
+        if (mustExist) return null;
+        // An original, not-yet-created leaf: keep it and whatever follows
+        // verbatim — nothing left under it exists to resolve.
+        out.add(comp);
+        for (; i < pending.length; i++) {
+          final c = pending[i].key;
+          if (c == '..') {
+            if (out.isNotEmpty) out.removeLast();
+          } else {
+            out.add(c);
+          }
+        }
+        break;
+      }
+
+      if (type != FileSystemEntityType.link) {
+        out.add(comp);
+        continue;
+      }
+
+      if (++hops > 40) return null; // symlink loop
+      String linkTarget;
+      try {
+        linkTarget = Link(hostSoFar).targetSync().replaceAll(r'\', '/');
+      } catch (_) {
+        return null;
+      }
+      final rest = pending.sublist(i);
+      pending.clear();
+      if (p.posix.isAbsolute(linkTarget)) {
+        // GUEST-absolute: restart from the guest root so toHostPath re-roots it
+        // under the rootfs (or the bind-mounted home for `/root/...`).
+        out.clear();
+        pushAll(linkTarget, mustExist: true);
+      } else {
+        // Relative to the link's own directory.
+        final base = out.isEmpty ? '' : out.join('/');
+        out.clear();
+        pushAll(p.posix.normalize('/$base/$linkTarget'), mustExist: true);
+      }
+      pending.addAll(rest);
+      i = 0;
+    }
+    return '/${out.join('/')}';
   }
 
   /// Absolutises [target] in the SHELL's namespace — what `pwd` would print.
@@ -183,6 +346,13 @@ class ShellSession {
       p.isAbsolute(target) ? target : p.join(_cwd, target),
     );
   }
+
+  /// True under PRoot, where the shell's namespace (`/`, `/root`) differs from
+  /// the host's and [toHostPath] is a real translation. On the bare Android
+  /// shell the two coincide and [rootDir] is the host container path, never `/`
+  /// — so this is the one honest signal for "resolve symlinks in the guest
+  /// namespace" without threading a backend flag through the session.
+  bool get _guestNamespace => rootDir == '/';
 
   /// The real HOST directories the native-Dart file tools may touch, each
   /// symlink-resolved: the sandbox rootfs, plus — under PRoot — the

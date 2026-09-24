@@ -227,4 +227,120 @@ void main() {
       expect(session.changeDirectory('/root/escapedir'), isNotNull);
     });
   });
+
+  // Regression for the PRoot absolute-symlink follow-up to issue #2. A guest
+  // ABSOLUTE symlink (`/var/run` -> `/run`, `/etc/mtab` -> `/proc/self/mounts`)
+  // must resolve in the GUEST namespace so the browser can enter it and climb
+  // back out — WITHOUT reopening the issue-#2 escape, so a symlink to
+  // app-private host data OUTSIDE the rootfs+home is still refused. The old code
+  // ran the target through the HOST realpath, which over-rejected the first
+  // (it landed on the host's `/run`) and, before issue #2, followed the second.
+  group('resolveWithin follows guest absolute symlinks under PRoot', () {
+    late Directory tmp;
+    late String rootfs; // guest '/'  -> here
+    late String homeHost; // guest '/root' -> here (bind-mount OUTSIDE rootfs)
+    late String appPrivate; // OUTSIDE both — the escape target
+    late ShellSession session;
+    late FileBrowser fb;
+    var canSymlink = true;
+
+    setUp(() {
+      tmp = Directory.systemTemp.createTempSync('shell_guestlink_test');
+      rootfs = p.join(tmp.path, 'rootfs');
+      homeHost = p.join(tmp.path, 'home');
+      appPrivate = p.join(tmp.path, 'app-private');
+
+      // A real in-rootfs target the guest symlink points at.
+      Directory(p.join(rootfs, 'run')).createSync(recursive: true);
+      File(p.join(rootfs, 'run', 'hello')).writeAsStringSync('hi from rootfs');
+      Directory(p.join(rootfs, 'var')).createSync(recursive: true);
+      Directory(p.join(rootfs, 'etc')).createSync(recursive: true);
+      Directory(homeHost).createSync(recursive: true);
+      // The escape target lives OUTSIDE rootfs+home, exactly like app-private
+      // data on the device (`/data/data/<pkg>/...`).
+      Directory(appPrivate).createSync(recursive: true);
+      File(p.join(appPrivate, 'token')).writeAsStringSync('SECRET');
+
+      try {
+        // `/var/run` -> `/run`: an absolute GUEST target. Host realpath resolves
+        // it to the HOST's `/run` (over-rejected); guest-aware it is
+        // `<rootfs>/run`.
+        Link(p.join(rootfs, 'var', 'run')).createSync('/run');
+        // Two shapes of the escape: a symlinked FILE (for read) and a symlinked
+        // DIRECTORY (for cd / write-through), both pointing at app-private data.
+        Link(p.join(rootfs, 'etc', 'evil'))
+            .createSync(p.join(appPrivate, 'token'));
+        Link(p.join(rootfs, 'etc', 'evildir')).createSync(appPrivate);
+      } catch (_) {
+        canSymlink = false;
+      }
+
+      // The session normalizes with package:path, which uses the HOST's
+      // separator — '\' when the suite runs on Windows — so accept both.
+      String toHost(String s) {
+        final g = s.replaceAll(r'\', '/');
+        if (g == '/root') return homeHost;
+        if (g.startsWith('/root/')) {
+          return p.join(homeHost, g.substring('/root/'.length));
+        }
+        return p.join(rootfs, g.startsWith('/') ? g.substring(1) : g);
+      }
+
+      session = ShellSession(
+        rootDir: '/',
+        homeDir: '/root',
+        cwd: '/root',
+        toHostPath: toHost,
+      );
+      fb = FileBrowser(session);
+    });
+
+    tearDown(() => tmp.deleteSync(recursive: true));
+
+    test('an absolute guest symlink to an in-rootfs dir resolves', () {
+      if (!canSymlink) {
+        markTestSkipped('host does not permit symlink creation');
+        return;
+      }
+      final canonRun =
+          Directory(p.join(rootfs, 'run')).resolveSymbolicLinksSync();
+      // Resolves to the RE-ROOTED target, never the host's own `/run`.
+      expect(session.resolveWithin('/var/run'), canonRun);
+      expect(session.resolveWithin('/var/run/hello'), p.join(canonRun, 'hello'));
+
+      // The browser can enter it and read THROUGH it — proof the file tools open
+      // the guest-re-rooted path, not the host link.
+      final listed = fb.list('/var/run');
+      expect(listed.ok, isTrue);
+      expect([for (final e in listed.entries) e.name], contains('hello'));
+      final read = fb.read('/var/run/hello');
+      expect(read.ok, isTrue);
+      expect(read.text, 'hi from rootfs');
+
+      // ...and you can climb back out: the "up" row survives, and cd succeeds.
+      expect(fb.parentOf('/var/run'), isNotNull);
+      expect(session.changeDirectory('/var/run'), isNull);
+    });
+
+    test('a guest symlink to app-private host data is still refused', () {
+      if (!canSymlink) {
+        markTestSkipped('host does not permit symlink creation');
+        return;
+      }
+      // The core issue-#2 assertion, preserved: the escape resolves to null.
+      expect(session.resolveWithin('/etc/evil'), isNull);
+      // A write THROUGH an escaping symlinked directory is refused too.
+      expect(session.resolveWithin('/etc/evildir/pwn.txt'), isNull);
+
+      // And nothing reads the secret out of it — the browser reports the
+      // containment refusal rather than the app-private bytes.
+      final read = fb.read('/etc/evil');
+      expect(read.ok, isFalse);
+      expect(read.error, contains('Outside'));
+      expect(read.text, isNot(contains('SECRET')));
+
+      // cd into the escaping directory is refused (a message, not null).
+      expect(session.changeDirectory('/etc/evildir'), isNotNull);
+    });
+  });
 }
