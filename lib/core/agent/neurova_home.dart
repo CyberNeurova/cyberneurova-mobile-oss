@@ -38,7 +38,9 @@ This directory belongs to CyberNeurova.
 
   chats/    One JSON file per conversation, including the text of every turn.
             Agent sessions are not stored on our servers, so this is the only
-            copy — deleting a file here loses that conversation.
+            copy — deleting a file here loses that conversation. A file the
+            app cannot read is renamed to <id>.json.unreadable-<time> and
+            left alone, never written over.
   memory/   Notes the agent keeps between sessions.
 
 It is plain JSON on purpose. Read it, grep it, back it up, delete it. It is
@@ -92,9 +94,27 @@ class StoredTurn {
       id: id,
       role: role,
       content: content,
-      createdAt: DateTime.tryParse(raw['at'] as String? ?? '') ??
-          DateTime.fromMillisecondsSinceEpoch(0),
+      createdAt: _readAt(raw['at']) ?? DateTime.fromMillisecondsSinceEpoch(0),
     );
+  }
+
+  /// The timestamp, read the way anything other than [toJson] might write it.
+  ///
+  /// This used to be `raw['at'] as String?`, and a cast that throws is not a
+  /// tolerant read: one turn with an epoch number in it — a hand edit, or a
+  /// tool on the phone tidying the file — threw out of the load loop and the
+  /// whole conversation read as empty. A number is taken as epoch
+  /// milliseconds, which is what JavaScript's `Date.now()` writes. Anything
+  /// else is the caller's fallback, so a wrong timestamp costs the turn its
+  /// place in the order, never its text.
+  static DateTime? _readAt(Object? at) {
+    if (at is String) return DateTime.tryParse(at);
+    // fromMillisecondsSinceEpoch throws outside ±8.64e15, and toInt throws on
+    // infinity — which is what jsonDecode makes of a literal like 1e400.
+    if (at is num && at.isFinite && at.abs() <= 8.64e15) {
+      return DateTime.fromMillisecondsSinceEpoch(at.toInt());
+    }
+    return null;
   }
 }
 
@@ -111,8 +131,23 @@ class LocalChatStore {
 
   static const _version = 1;
 
+  /// Chats whose file on disk could be neither read nor moved aside by the
+  /// last [load]. Saving would write over it, so for those the save is
+  /// skipped while that file is still in place: losing this session's new
+  /// turns is the lesser harm next to destroying the copy of everything
+  /// before them.
+  final _blocked = <String>{};
+
   Future<void> save(String chatId, List<StoredTurn> turns) async {
     final file = home.chatFile(chatId);
+    if (_blocked.contains(chatId)) {
+      // Checked here rather than when the move failed: overlapping loads of
+      // the same unreadable file race to move it, and the one whose rename
+      // loses can still see the file an instant before the winner moves it.
+      // What matters is whether it is in the way now.
+      if (await file.exists()) return;
+      _blocked.remove(chatId);
+    }
     if (turns.isEmpty) {
       if (await file.exists()) await file.delete();
       return;
@@ -131,20 +166,86 @@ class LocalChatStore {
   /// Everything stored for [chatId], oldest first. Empty when there is nothing
   /// or the file cannot be read — a damaged file must degrade to "no history",
   /// never to a chat that will not open.
+  ///
+  /// "No history" must not become "no file", though. The chat opens empty, the
+  /// next prompt saves the visible messages, and if the unreadable file were
+  /// still in place that save would be written over the only copy of the
+  /// conversation. So a file that cannot be read as a whole is moved aside
+  /// first, and a single bad turn costs that turn rather than the file.
   Future<List<StoredTurn>> load(String chatId) async {
+    _blocked.remove(chatId);
+    final file = home.chatFile(chatId);
     try {
-      final file = home.chatFile(chatId);
       if (!await file.exists()) return const [];
-      final json = jsonDecode(await file.readAsString());
-      if (json is! Map || json['v'] != _version) return const [];
-      final out = <StoredTurn>[];
-      for (final raw in (json['turns'] as List? ?? const [])) {
-        final turn = StoredTurn.fromJson(raw);
-        if (turn != null) out.add(turn);
-      }
-      return out;
     } catch (_) {
       return const [];
+    }
+
+    final rows = await _readRows(file);
+    if (rows == null) {
+      await _setAside(chatId, file);
+      return const [];
+    }
+
+    final out = <StoredTurn>[];
+    for (final raw in rows) {
+      try {
+        final turn = StoredTurn.fromJson(raw);
+        if (turn != null) out.add(turn);
+      } catch (_) {
+        // fromJson is meant not to throw; if some shape still makes it, that
+        // is one turn lost, not the conversation.
+      }
+    }
+    return out;
+  }
+
+  /// The `turns` list of a file this version understands, or null when the
+  /// file is truncated, not JSON, not valid UTF-8, from another version, or
+  /// shaped in a way that leaves no list of turns to read.
+  Future<List<Object?>?> _readRows(File file) async {
+    try {
+      final json = jsonDecode(await file.readAsString());
+      if (json is! Map || json['v'] != _version) return null;
+      final turns = json['turns'];
+      return turns is List ? turns : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Renames an unreadable chat file to `<id>.json.unreadable-<time>`, beside
+  /// where it was, so the next [save] starts a new file instead of replacing
+  /// it.
+  ///
+  /// Renamed rather than deleted: a truncated write still holds most of the
+  /// conversation, and a file from a newer build is perfectly good to that
+  /// build. Either way it stays where `ls ~/.neurova/chats` shows it. The
+  /// suffix keeps it off `*.json`, and a sanitised chat id has no dots, so it
+  /// can never be mistaken for a chat file.
+  Future<void> _setAside(String chatId, File file) async {
+    try {
+      final n = DateTime.now();
+      String two(int v) => v.toString().padLeft(2, '0');
+      // No colons: they are not legal in a Windows file name.
+      final base = '${file.path}.unreadable-'
+          '${n.year}${two(n.month)}${two(n.day)}-'
+          '${two(n.hour)}${two(n.minute)}${two(n.second)}';
+      // On POSIX a rename replaces whatever is at the target, so two files set
+      // aside in the same second must not share a name — that would trade one
+      // kept copy for the other.
+      var target = base;
+      for (var i = 2;
+          await FileSystemEntity.type(target, followLinks: false) !=
+              FileSystemEntityType.notFound;
+          i++) {
+        target = '$base-$i';
+      }
+      await file.rename(target);
+    } catch (_) {
+      // It could not be moved, so it may still be where the next save would
+      // write. [save] skips this chat for as long as it is.
+      _blocked.add(chatId);
     }
   }
 
