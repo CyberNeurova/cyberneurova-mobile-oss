@@ -79,8 +79,47 @@ class ChatListResponse with _$ChatListResponse {
     @Default(false) bool hasMore,
   }) = _ChatListResponse;
 
-  factory ChatListResponse.fromJson(Map<String, dynamic> json) =>
-      _$ChatListResponseFromJson(json);
+  // Constructs directly, row by row, like MessagesResponse. The generated
+  // parser was all-or-nothing: one wrong-typed row (`messageCount` as "12",
+  // `lastMessage` as an object, an epoch `updatedAt`, a null entry) threw for
+  // the whole page. The list provider awaits all four section pages together,
+  // so that one row cost every section — no list at all on a first login, and
+  // otherwise a cached list that never refreshed. A row we cannot read is
+  // dropped; the rest of the page, and the other sections, still render.
+  //
+  // When every row fails, though, it is the format that changed, not a row,
+  // and an empty page would be taken for the truth: the saved list would be
+  // replaced with nothing and the offline notice cleared. So the first
+  // failure is rethrown and the list keeps its previous behaviour for that.
+  // Nothing serialises this type, so losing the generated toJson is fine.
+  factory ChatListResponse.fromJson(Map<String, dynamic> json) {
+    final rawChats = json['chats'];
+    final chats = <ChatModel>[];
+    Object? failure;
+    StackTrace? failureStack;
+    if (rawChats is List) {
+      for (final e in rawChats) {
+        if (e is Map) {
+          try {
+            chats.add(ChatModel.fromJson(Map<String, dynamic>.from(e)));
+          } catch (error, stack) {
+            failure ??= error;
+            failureStack ??= stack;
+          }
+        }
+      }
+    }
+    if (chats.isEmpty && failure != null) {
+      Error.throwWithStackTrace(failure, failureStack!);
+    }
+    final cursor = json['nextCursor'];
+    final hasMore = json['hasMore'];
+    return ChatListResponse(
+      chats: chats,
+      nextCursor: cursor is String ? cursor : null,
+      hasMore: hasMore is bool ? hasMore : false,
+    );
+  }
 }
 
 @freezed
