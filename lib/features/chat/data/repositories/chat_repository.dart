@@ -120,14 +120,27 @@ class ChatRepository {
     final chatJson = data['chat'] is Map<String, dynamic>
         ? data['chat'] as Map<String, dynamic>
         : data;
-    final messagesRaw = data['messages'] is List ? data['messages'] as List : const [];
-    return (
-      chat: ChatModel.fromJson(chatJson),
-      messages: messagesRaw
-          .whereType<Map<String, dynamic>>()
-          .map(MessageModel.fromJson)
-          .toList(),
-    );
+    // The chat object is only the header. A wrong-typed field in it (a
+    // `messageCount` sent as a string) is no reason to withhold the history,
+    // so it falls back to the id we asked for plus every field that still
+    // has the right type. Bare defaults would not do: the share sheet would
+    // call a public chat 'private', and owner actions would show on a chat
+    // the user does not own.
+    ChatModel chat;
+    try {
+      chat = ChatModel.fromJson(chatJson);
+    } catch (_) {
+      T? field<T>(String key) => chatJson[key] is T ? chatJson[key] as T : null;
+      chat = ChatModel(
+        id: id,
+        title: field<String>('title') ?? '',
+        visibility: field<String>('visibility') ?? 'private',
+        section: field<String>('section') ?? 'chat',
+        isPublishedToDiscover: field<bool>('isPublishedToDiscover') ?? false,
+        isOwner: field<bool>('isOwner') ?? true,
+      );
+    }
+    return (chat: chat, messages: MessageModel.listFromJson(data['messages']));
   }
 
   Future<MessagesResponse> getMessages(
