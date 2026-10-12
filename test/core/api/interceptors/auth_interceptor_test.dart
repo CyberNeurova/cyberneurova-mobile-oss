@@ -26,6 +26,8 @@ void main() {
   setUpAll(() {
     registerFallbackValue(RequestOptions(path: '/'));
     registerFallbackValue(Options());
+    registerFallbackValue(
+        DioException(requestOptions: RequestOptions(path: '/')));
   });
 
   late _MockSecureStorage storage;
@@ -50,6 +52,43 @@ void main() {
       requestOptions: ro,
       response: Response<dynamic>(requestOptions: ro, statusCode: 401),
     );
+  }
+
+  /// What the refresh POST throws, shaped the way Dio delivers it. With no
+  /// [status] the server never answered (no network, a timeout).
+  DioException refreshError({int? status, DioExceptionType? type}) {
+    final ro = RequestOptions(path: ApiConstants.AUTH_REFRESH);
+    return DioException(
+      requestOptions: ro,
+      type: type ?? DioExceptionType.badResponse,
+      response: status == null
+          ? null
+          : Response<dynamic>(requestOptions: ro, statusCode: status),
+    );
+  }
+
+  void stubRefreshThrows(DioException failure) {
+    when(() => storage.getRefreshToken()).thenAnswer((_) async => 'refreshOld');
+    when(() => dio.post<dynamic>(any(),
+        data: any(named: 'data'),
+        options: any(named: 'options'))).thenAnswer((_) async => throw failure);
+    when(() => storage.clearAll()).thenAnswer((_) async {});
+  }
+
+  void stubRefreshAnswers(Map<String, dynamic> body) {
+    when(() => storage.getRefreshToken()).thenAnswer((_) async => 'refreshOld');
+    when(() => dio.post<dynamic>(any(),
+            data: any(named: 'data'), options: any(named: 'options')))
+        .thenAnswer((_) async => Response<dynamic>(
+              requestOptions: RequestOptions(path: ApiConstants.AUTH_REFRESH),
+              statusCode: 200,
+              data: body,
+            ));
+    when(() => storage.saveTokens(
+          accessToken: any(named: 'accessToken'),
+          refreshToken: any(named: 'refreshToken'),
+        )).thenAnswer((_) async {});
+    when(() => storage.clearAll()).thenAnswer((_) async {});
   }
 
   group('onRequest', () {
@@ -109,19 +148,7 @@ void main() {
 
     test('a 401 refreshes the token and retries the original request',
         () async {
-      when(() => storage.getRefreshToken())
-          .thenAnswer((_) async => 'refreshOld');
-      when(() => dio.post<dynamic>(any(),
-              data: any(named: 'data'), options: any(named: 'options')))
-          .thenAnswer((_) async => Response<dynamic>(
-                requestOptions: RequestOptions(path: ApiConstants.AUTH_REFRESH),
-                statusCode: 200,
-                data: {'accessToken': 'newA', 'refreshToken': 'newR'},
-              ));
-      when(() => storage.saveTokens(
-            accessToken: any(named: 'accessToken'),
-            refreshToken: any(named: 'refreshToken'),
-          )).thenAnswer((_) async {});
+      stubRefreshAnswers({'accessToken': 'newA', 'refreshToken': 'newR'});
       final retried = Response<dynamic>(
         requestOptions: RequestOptions(path: '/data'),
         statusCode: 200,
@@ -139,8 +166,61 @@ void main() {
             refreshToken: 'newR',
           )).called(1);
       expect(input.requestOptions.headers['Authorization'], 'Bearer newA');
+      verify(() => dio.fetch<dynamic>(input.requestOptions)).called(1);
       verify(() => handler.resolve(retried)).called(1);
       expect(rotated, contains('newA'));
+    });
+
+    test('a refresh response without a new refresh token keeps the current one',
+        () async {
+      // A server that does not rotate refresh tokens answers with the access
+      // token alone. That is a successful refresh, not a reason to log out.
+      stubRefreshAnswers({'accessToken': 'newA'});
+      final retried = Response<dynamic>(
+        requestOptions: RequestOptions(path: '/data'),
+        statusCode: 200,
+        data: 'ok',
+      );
+      when(() => dio.fetch<dynamic>(any())).thenAnswer((_) async => retried);
+
+      final handler = _MockErrorHandler();
+      await interceptor.onError(err401('/data'), handler);
+
+      verify(() => storage.saveTokens(
+            accessToken: 'newA',
+            refreshToken: 'refreshOld',
+          )).called(1);
+      verifyNever(() => storage.clearAll());
+      verify(() => handler.resolve(retried)).called(1);
+    });
+
+    test('a retried request that still gets 401 is passed on, not refreshed',
+        () async {
+      // Real Dio sends the retried request back through this interceptor. If
+      // the endpoint refuses even the fresh token, refreshing again would only
+      // rotate the tokens and get refused again, round and round.
+      stubRefreshAnswers({'accessToken': 'newA', 'refreshToken': 'newR'});
+      when(() => dio.fetch<dynamic>(any())).thenAnswer((_) async =>
+          Response<dynamic>(
+              requestOptions: RequestOptions(path: '/data'),
+              statusCode: 200,
+              data: 'ok'));
+
+      final first = err401('/data');
+      await interceptor.onError(first, _MockErrorHandler());
+
+      final ro = first.requestOptions;
+      final again = DioException(
+        requestOptions: ro,
+        response: Response<dynamic>(requestOptions: ro, statusCode: 401),
+      );
+      final handler = _MockErrorHandler();
+      await interceptor.onError(again, handler);
+
+      verify(() => handler.next(again)).called(1);
+      verify(() => dio.post<dynamic>(any(),
+          data: any(named: 'data'), options: any(named: 'options'))).called(1);
+      verify(() => dio.fetch<dynamic>(any())).called(1);
     });
 
     test('a 401 with no stored refresh token surfaces the error', () async {
@@ -155,23 +235,74 @@ void main() {
       expect(rotated, isEmpty);
     });
 
-    test('a failed refresh clears storage and notifies a null token', () async {
-      when(() => storage.getRefreshToken())
-          .thenAnswer((_) async => 'refreshOld');
-      when(() => dio.post<dynamic>(any(),
-              data: any(named: 'data'), options: any(named: 'options')))
-          .thenAnswer((_) async =>
-              throw DioException(requestOptions: RequestOptions(path: '/')));
-      when(() => storage.clearAll()).thenAnswer((_) async {});
+    // The refresh endpoint answering "no" is the only thing that ends the
+    // session: the refresh token is dead, so keeping it would be pointless.
+    for (final status in [400, 401, 403]) {
+      test('a refresh rejected with $status clears storage and notifies null',
+          () async {
+        stubRefreshThrows(refreshError(status: status));
+
+        final input = err401('/data');
+        final handler = _MockErrorHandler();
+
+        await interceptor.onError(input, handler);
+
+        verify(() => storage.clearAll()).called(1);
+        expect(rotated, [null]);
+        verify(() => handler.next(input)).called(1);
+        verifyNever(() => dio.fetch<dynamic>(any()));
+      });
+    }
+
+    // A refresh that never got a verdict says nothing about the session. The
+    // refresh token is still good, so wiping it would sign the user out over
+    // a dropped connection or a deploy. The request fails with what actually
+    // went wrong, and the next 401 simply tries the refresh again.
+    for (final (label, failure) in [
+      ('no network', refreshError(type: DioExceptionType.connectionError)),
+      ('a timeout', refreshError(type: DioExceptionType.connectionTimeout)),
+      ('a 502', refreshError(status: 502)),
+      ('a 503', refreshError(status: 503)),
+      ('a 429', refreshError(status: 429)),
+    ]) {
+      test('a refresh failing with $label keeps the tokens and surfaces it',
+          () async {
+        stubRefreshThrows(failure);
+
+        final input = err401('/data');
+        final handler = _MockErrorHandler();
+
+        await interceptor.onError(input, handler);
+
+        verifyNever(() => storage.clearAll());
+        expect(rotated, isEmpty);
+        verify(() => handler.next(failure)).called(1);
+        verifyNever(() => handler.next(input));
+        verifyNever(() => dio.fetch<dynamic>(any()));
+      });
+    }
+
+    test('an unreadable refresh response keeps the tokens and is not a 401',
+        () async {
+      // A 200 without an access token cannot be used, but it is not the
+      // server rejecting the session either. Handing on the original 401
+      // would read as signed out at cold start while the tokens are kept.
+      stubRefreshAnswers({'unexpected': true});
 
       final input = err401('/data');
       final handler = _MockErrorHandler();
 
       await interceptor.onError(input, handler);
 
-      verify(() => storage.clearAll()).called(1);
-      expect(rotated, contains(null));
-      verify(() => handler.next(input)).called(1);
+      verifyNever(() => storage.clearAll());
+      expect(rotated, isEmpty);
+      verifyNever(() => handler.next(input));
+      verify(() => handler.next(any(
+            that: isA<DioException>()
+                .having((e) => e.type, 'type', DioExceptionType.unknown)
+                .having((e) => e.response, 'response', isNull),
+          ))).called(1);
+      verifyNever(() => dio.fetch<dynamic>(any()));
     });
 
     test('concurrent 401s share a single refresh call (single-flight)',
@@ -204,8 +335,7 @@ void main() {
       await Future.wait([f1, f2]);
 
       verify(() => dio.post<dynamic>(any(),
-          data: any(named: 'data'),
-          options: any(named: 'options'))).called(1);
+          data: any(named: 'data'), options: any(named: 'options'))).called(1);
     });
   });
 }
