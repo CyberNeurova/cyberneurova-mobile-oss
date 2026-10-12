@@ -52,10 +52,48 @@ class MessageModel with _$MessageModel {
   static Map<String, dynamic> normalize(Map<dynamic, dynamic> raw) {
     final m = Map<String, dynamic>.from(raw);
     final meta = m['metadata'];
-    if (m['modelName'] == null && meta is Map && meta['modelName'] != null) {
+    // Only a string: the generated fromJson casts modelName to String?, so
+    // lifting anything else would throw and cost the whole row.
+    if (m['modelName'] == null && meta is Map && meta['modelName'] is String) {
       m['modelName'] = meta['modelName'];
     }
     return m;
+  }
+
+  /// Parses a server list of message rows one row at a time, skipping any row
+  /// that is not a map or does not fit the model.
+  ///
+  /// The generated [MessageModel.fromJson] throws on a single wrong-typed
+  /// field — a content-block array where a string belongs, an epoch number
+  /// for `createdAt`. Parsing the list in one `.map` lets that one row take
+  /// the whole conversation down with it. Every path that reads history goes
+  /// through here so they cannot drift apart again: only the paged messages
+  /// path had this guard, and the one that actually opens a chat did not.
+  ///
+  /// Skipping is for drift in a row. When every row fails, it is the format
+  /// that changed, and an empty list would open the chat as if it had no
+  /// history — one the user can type into — so the first failure is rethrown
+  /// and the caller shows its error instead.
+  static List<MessageModel> listFromJson(Object? raw) {
+    final messages = <MessageModel>[];
+    Object? failure;
+    StackTrace? failureStack;
+    if (raw is List) {
+      for (final e in raw) {
+        if (e is Map) {
+          try {
+            messages.add(MessageModel.fromJson(MessageModel.normalize(e)));
+          } catch (error, stack) {
+            failure ??= error;
+            failureStack ??= stack;
+          }
+        }
+      }
+    }
+    if (messages.isEmpty && failure != null) {
+      Error.throwWithStackTrace(failure, failureStack!);
+    }
+    return messages;
   }
 }
 
@@ -95,17 +133,7 @@ class MessagesResponse with _$MessagesResponse {
   // after}}`. We surface `cursor.before` (the oldest id on this page) as
   // nextCursor — the id to send back as `before` to load older messages.
   factory MessagesResponse.fromJson(Map<String, dynamic> json) {
-    final rawMsgs = json['messages'];
-    final messages = <MessageModel>[];
-    if (rawMsgs is List) {
-      for (final e in rawMsgs) {
-        if (e is Map) {
-          try {
-            messages.add(MessageModel.fromJson(MessageModel.normalize(e)));
-          } catch (_) {/* skip malformed row */}
-        }
-      }
-    }
+    final messages = MessageModel.listFromJson(json['messages']);
     final cursor = json['cursor'];
     final before = cursor is Map ? cursor['before'] : null;
     return MessagesResponse(
