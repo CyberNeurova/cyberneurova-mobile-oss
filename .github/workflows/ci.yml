@@ -17,14 +17,29 @@ concurrency:
 jobs:
   analyze-and-test:
     name: Analyze & test
-    runs-on: ubuntu-latest
+    # Pinned, not ubuntu-latest: GitHub moves ubuntu-latest to Ubuntu 26 from
+    # 2026-10-19, and an unplanned image swap is exactly how a green CI turns
+    # red overnight. Bump deliberately.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
+      # The hosted image ships ~13 GB free and a debug Android build plus the
+      # Flutter SDK, pub cache and Gradle transforms needs about that much, so
+      # it was one dependency away from "No space left on device". Drop
+      # preinstalled toolchains this job never touches. NOT /usr/local/lib/android
+      # — that's the Android SDK the build needs.
+      - name: Free disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
+            /opt/hostedtoolcache/CodeQL /usr/local/share/boost /usr/share/swift
+          df -h /
+
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -55,8 +70,12 @@ jobs:
       # Sahachiel: actually compile the Android app so build-breaking config
       # (gradle / manifest / assets / plugin drift) fails CI instead of slipping
       # past analyze+test - the dangling round-icon ref got through before this.
+      # One ABI is enough to prove the app compiles; four unstripped debug
+      # engines (one large libflutter.so each) is what exhausts the disk.
       - name: Build Android (debug APK)
-        run: flutter build apk --debug --flavor play
+        run: |
+          flutter build apk --debug --flavor play --target-platform android-arm64
+          df -h /
 
   # No iOS lane in CI: iOS is built and released from a Mac. The analyze +
   # test job above runs on every push/PR, so Dart-side breakage fails fast;
