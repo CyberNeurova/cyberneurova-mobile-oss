@@ -10,6 +10,7 @@ import 'package:path/path.dart' as p;
 /// the install hash and dangling every link) is tedious to reproduce on a
 /// phone and trivial here.
 void main() {
+  final noSymlinks = _symlinkSkipReason();
   late Directory tmp;
   late Directory fakeLibDir;
   late Directory prefix;
@@ -67,7 +68,7 @@ void main() {
         expect(link.existsSync(), isTrue, reason: '$applet should be linked');
         expect(link.targetSync(), p.join(fakeLibDir.path, 'libbusybox.so'));
       }
-    });
+    }, skip: noSymlinks);
 
     test('skips applets whose library was not shipped', () async {
       shipLibrary('libbusybox.so');
@@ -78,7 +79,7 @@ void main() {
 
       expect(linked, ['grep']);
       expect(Link(p.join(prefix.path, 'bin', 'nmap')).existsSync(), isFalse);
-    });
+    }, skip: noSymlinks);
 
     test('is idempotent — running twice changes nothing', () async {
       shipLibrary('libbusybox.so');
@@ -89,7 +90,7 @@ void main() {
       final second = await boot().linkBinaries(toolset: toolset);
       expect(second, first);
       expect(Directory(p.join(prefix.path, 'bin')).listSync().length, 1);
-    });
+    }, skip: noSymlinks);
 
     test('re-points stale links after an app update', () async {
       shipLibrary('libbusybox.so');
@@ -114,7 +115,7 @@ void main() {
         Link(p.join(prefix.path, 'bin', 'grep')).targetSync(),
         p.join(newLibDir.path, 'libbusybox.so'),
       );
-    });
+    }, skip: noSymlinks);
 
     test('creates bin/ when the prefix is empty', () async {
       shipLibrary('libbusybox.so');
@@ -161,4 +162,26 @@ void main() {
       expect(boot().pathFor(inherited: ''), boot().pathFor());
     });
   });
+}
+
+/// Null when this host can symlink to a FILE — what linkBinaries makes —
+/// otherwise the reason to skip the tests that assert on those links.
+///
+/// A Windows account without Developer Mode cannot (errno 1314). linkBinaries
+/// then links nothing by design, and these assertions fail for a reason that
+/// cannot happen on a device — the same case file_browser_test skips with
+/// `markTestSkipped`. Probed rather than assumed from the OS, so a Windows host
+/// that can link still runs them; the probe makes the same kind of link
+/// linkBinaries does, one to a file.
+String? _symlinkSkipReason() {
+  final dir = Directory.systemTemp.createTempSync('symlink_probe');
+  try {
+    final target = File(p.join(dir.path, 'target'))..writeAsStringSync('');
+    Link(p.join(dir.path, 'link')).createSync(target.path);
+    return null;
+  } on FileSystemException {
+    return 'host does not permit symlink creation';
+  } finally {
+    dir.deleteSync(recursive: true);
+  }
 }
