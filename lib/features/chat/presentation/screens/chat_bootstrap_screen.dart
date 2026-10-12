@@ -37,6 +37,16 @@ class _ChatBootstrapScreenState
     _routing = true;
     setState(() => _error = null);
     try {
+      // A failed list load stays failed: the provider keeps the error, and
+      // awaiting it again returns that error without asking the server. So
+      // Retry used to send nothing at all, and a blip during sign-in with no
+      // saved list kept the user on the error screen until the app was
+      // restarted. Start a fresh fetch when the last one ended in an error.
+      // A list that loaded fine is left alone, so a failed chat creation
+      // retries just the creation.
+      if (ref.read(chatListProvider) is AsyncError) {
+        ref.invalidate(chatListProvider);
+      }
       // Always land in "fresh chat mode" on cold launch — user-requested
       // 2026-06-18. reuseOrCreateEmptyChat picks an existing empty chat
       // (`messageCount == 0`, not blacklisted — blacklisted chats have
