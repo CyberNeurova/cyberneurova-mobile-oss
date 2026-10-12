@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:cyberneurova_mobile/core/errors/app_exception.dart';
 
@@ -100,7 +102,7 @@ class ErrorInterceptor extends Interceptor {
   }
 
   _Envelope _envelope(Response? response) {
-    final data = response?.data;
+    final data = _jsonFromBytes(response?.data);
     if (data is! Map) return const _Envelope();
     // Sahachiel: read each field defensively instead of blanket `as` casts. A
     // single wrong-typed field (e.g. {"error": 123}) used to throw inside the
@@ -121,6 +123,25 @@ class ErrorInterceptor extends Interceptor {
       code: str('code'),
       retryAfter: intOf('retryAfter'),
     );
+  }
+
+  /// Dio applies the request's [ResponseType] to error responses as well, so
+  /// a request made with [ResponseType.bytes] (TTS audio) gets its JSON error
+  /// envelope back as raw bytes rather than a Map. Reading only Maps threw
+  /// away the code, message and retryAfter of every such failure: a free-tier
+  /// Listen became a ForbiddenException with no TIER_REQUIRED, so the voice
+  /// paywall could never open and the button just went quiet.
+  ///
+  /// Any other body is returned untouched. Bytes that are not UTF-8 JSON are
+  /// returned untouched too — the catch is deliberately broad, because a body
+  /// we cannot read must cost only the envelope, never the typed exception.
+  static Object? _jsonFromBytes(Object? data) {
+    if (data is! List<int>) return data;
+    try {
+      return jsonDecode(utf8.decode(data));
+    } catch (_) {
+      return data;
+    }
   }
 }
 
