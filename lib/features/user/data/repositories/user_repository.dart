@@ -62,7 +62,7 @@ class UserRepository {
   /// caller falls back to UserModel.tokens for usage display in that case.
   Future<UsageDetail> getUsage() async {
     final res = await _client.get<Map<String, dynamic>>('/user/usage');
-    return UsageDetail.fromJson(res.data!);
+    return UsageDetail.fromJson(UsageDetail.sanitize(res.data!));
   }
 
   /// Updates the user's password. Per chat-team inbox/007: bcrypt-verifies
